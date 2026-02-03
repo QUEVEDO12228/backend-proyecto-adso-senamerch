@@ -1,0 +1,128 @@
+.seller-cards__container {
+  display: grid;
+  gap: var(--gap-lg);
+  width: 100%;
+  box-sizing: border-box;
+  margin: var(--gap-md) auto;
+  padding-inline: 24px;
+  justify-content: center;
+  justify-items: center;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .seller-cards__container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-lg);
+    padding-inline: var(--gap-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .seller-cards__container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap-lg);
+    padding-inline: var(--gap-lg);
+  }
+}
+
+@media (min-width: 1280px) {
+  .seller-cards__container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap-lg);
+    padding-inline: var(--gap-lg);
+  }
+}
+
+/* ---------------- CARD ---------------- */
+
+.card-seller {
+  border: 1px solid var(--secundary-900);
+  border-radius: 12px;
+  padding: 24px;
+  background-color: var(--secundary-50);
+  width: 100%;
+  box-shadow: 0 2px 4px var(--secundary-900);
+  overflow: visible;            /* ← IMPORTANTE */
+  display: flex;
+  flex-direction: column;
+}
+
+.card-seller:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+}
+
+.card-seller__image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* ------------ GRID EN DESKTOP (2 COLUMNAS) ------------ */
+
+.card-seller__info {
+  display: grid;
+  width: 100%;
+  margin-top: 16px;
+  gap: 12px;
+  grid-template-columns: 40% 60%;   /* título izquierda / precio derecha */
+}
+
+.card-seller__title {
+  grid-column: 1;
+  text-align: left;
+  font-size: var(--fs-xs);
+  color: var(--secundary-900);
+  margin: 0;
+  font-weight: 400;
+}
+
+.card-seller__price {
+  grid-column: 2;
+  text-align: right;
+  font-size: var(--fs-sm);
+  color: var(--black);
+  font-weight: 800;
+  margin: 0;
+}
+
+.card-seller__secondary {
+  grid-column: 1;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.card-seller__primary {
+  grid-column: 2;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+
+  .card-seller {
+    padding: 16px;
+    overflow: visible;
+  }
+
+  .card-seller__image {
+    height: 180px;
+  }
+
+  .card-seller__info {
+    grid-template-columns: 1fr !important; /* UNA col */
+    gap: 8px;
+  }
+
+  /* QUE TODO OCUPE 1 COLUMNA */
+  .card-seller__title,
+  .card-seller__price,
+  .card-seller__secondary,
+  .card-seller__primary {
+    grid-column: 1 / -1 !important;
+    text-align: left;
+    justify-content: flex-start;
+  }
+}

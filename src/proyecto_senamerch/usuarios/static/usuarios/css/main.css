@@ -1,0 +1,107 @@
+/* main.css
+   Este archivo centraliza todos los estilos
+   Se carga UNA sola vez desde el HTML
+*/
+
+/* ===== Base ===== */
+@import url('./variables.css');
+@import url('./layout.css');
+
+/* ===== Pages ===== */
+@import url('./pages/home.css');
+
+/* ===== Themes ===== */
+@import url('./themes/dark-mode.css');
+
+/* ================= COMPONENTS ================= */
+
+/* SenaMerch Juan Jose */
+@import url('./components/footer.css');
+@import url('./components/forms.css');
+@import url('./components/add_adress.css');
+@import url('./components/hero.css');
+@import url('./components/register.css');
+@import url('./components/login.css');
+@import url('./components/client_view.css');
+@import url('./components/edit_profile_client.css');
+@import url('./components/forgot_password.css');
+@import url('./components/code_verify.css');
+@import url('./components/reset_password.css');
+@import url('./components/admin_validation.css');
+
+/* SenaMerch Mateo */
+@import url('./components/car.css');
+@import url('./components/sales-history.css');
+@import url('./components/users.css');
+@import url('./components/posts.css');
+@import url('./components/products.css');
+
+/* SenaMerch Emanuel */
+@import url('./components/card.css');
+@import url('./components/description.css');
+@import url('./components/option.css');
+@import url('./components/primary_button.css');
+@import url('./components/search_bar.css');
+@import url('./components/secondary_button.css');
+@import url('./components/option_payment_method.css');
+@import url('./components/quantity_input.css');
+@import url('./components/sale_details.css');
+@import url('./components/profile_user.css');
+@import url('./components/index.css');
+@import url('./components/contact1.css');
+@import url('./components/create_store.css');
+@import url('./components/admin.css');
+@import url('./components/store_orders.css');
+@import url('./components/store_order_detail.css');
+@import url('./components/wiews_users_admin.css');
+@import url('./components/views_admin_products.css');
+@import url('./components/views_admin_posts.css');
+@import url('./components/admin_index.css');
+@import url('./components/views_sales_admin.css');
+@import url('./components/views_order_admin.css');
+@import url('./components/views_stores_admin.css');
+@import url('./components/seller_card.css');
+@import url('./components/edit_post.css');
+@import url('./components/purchases.css');
+@import url('./components/create_store2.css');
+@import url('./components/edit_store_seller2.css');
+@import url('./components/publications_gestor2.css');
+@import url('./components/publications_gestor.css');
+@import url('./components/edit_post2.css');
+@import url('./components/admin_profile.css');
+@import url('./components/edit_admin_profile.css');
+@import url('./components/managed_user.css');
+@import url('./components/managed_store.css');
+@import url('./components/hero_seller.css');
+@import url('./components/profile_store_seller.css');
+@import url('./components/edit_store_seller.css');
+@import url('./components/store_admin_form.css');
+@import url('./components/view_car.css');
+@import url('./components/description_product_seller.css');
+@import url('./components/managed_product.css');
+@import url('./components/managed_orders.css');
+@import url('./components/managed_sales.css');
+@import url('./components/card_home.css');
+@import url('./components/sales_made.css');
+@import url('./components/add_adress_store.css');
+@import url('./components/global_form_structure.css');
+@import url('./components/shopping_cart.css');
+@import url('./components/publications_gestor5.css');
+@import url('./components/edit_post5.css');
+@import url('./components/navbar_product_category.css');
+@import url('./components/client_order.css');
+@import url('./components/edit_order_client.css');
+@import url('./components/order_delivered.css');
+@import url('./components/publication_gestor6.css');
+@import url('./components/view_seller_cards.css');
+@import url('./components/form_images_product.css');
+@import url('./components/product_card.css');
+@import url('./components/comments.css');
+@import url('./components/view_login.css');
+@import url('./components/navabar_go_go.css');
+
+/* SenaMerch Jeferson */
+@import url('./components/order.css');
+@import url('./components/sales-doc.css');
+@import url('./components/stores.css');
+@import url('./components/order_admin.css');

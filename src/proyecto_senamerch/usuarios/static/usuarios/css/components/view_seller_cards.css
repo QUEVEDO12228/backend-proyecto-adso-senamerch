@@ -1,0 +1,23 @@
+/* Habilitamos flex solo para permitir que 2 hijos puedan ir lado a lado */
+.section-footer-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+/* TODOS los hijos de section-footer-content van a ocupar 100% */
+.section-footer-content > * {
+  width: 100%;
+}
+
+/* >>> SOLO ESTOS DOS se ponen lado a lado desde 1024px */
+@media (min-width: 1024px) {
+
+  .seeker_products_list {
+    flex: 50%;     /* columna izquierda fija */
+  }
+
+  .sellers_product_list {
+    flex: 1;             /* columna derecha flexible */
+  }
+}

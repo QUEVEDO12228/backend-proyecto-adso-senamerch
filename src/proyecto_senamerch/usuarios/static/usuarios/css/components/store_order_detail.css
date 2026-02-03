@@ -1,0 +1,194 @@
+/* ============================
+   STORE ORDER DETAIL — BASE
+=============================== */
+
+.store-order-detail-content {
+  display: flex;
+  justify-content: center;
+  padding-block: 2.8rem;
+  width: 100%;
+  min-width: 320px;
+  box-sizing: border-box;
+}
+
+.store-order-detail {
+  width: 100%;
+  max-width: 1100px;
+  background-color: var(--white);
+  border-radius: 12px;
+  border: 2px solid var(--secundary-400);
+  padding: calc(var(--gap-lg) * 1.25);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06); /* Igual al componente anterior */
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-lg);
+  font-family: var(--font-primary);
+  color: var(--black);
+}
+
+/* ============================
+   HEADER
+=============================== */
+
+.store-order-detail__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: var(--gap-sm);
+  border-bottom: 2px solid var(--secundary-400);
+  gap: var(--gap-md);
+}
+
+.store-order-detail__title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.store-order-detail__title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--black);
+}
+
+.store-order-detail__date {
+  font-size: var(--fs-xxs);
+  color: var(--gray-950);
+}
+
+.store-order-detail__status {
+  font-size: var(--fs-xxs);
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.store-order-detail__status--pending {
+  background-color: var(--secundary-600); /* Igualado al componente anterior */
+  color: var(--white);
+}
+
+/* ============================
+   MINI CARDS — CLIENTE + DIRECCIÓN
+=============================== */
+
+.store-order-detail__info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: calc(var(--gap-lg) * 1.2);
+}
+
+.store-order-detail__card {
+  background-color: var(--primary-50); /* Igual al diseño anterior */
+  border: 2px solid var(--secundary-400);
+  border-radius: 10px;
+  padding: var(--gap-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xxs);
+}
+
+.store-order-detail__card-title {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--black);
+  border-bottom: 2px solid var(--secundary-400);
+  padding-bottom: var(--gap-xs);
+  margin-bottom: var(--gap-sm);
+}
+
+.store-order-detail__card-item {
+  font-size: var(--fs-xxs);
+  color: var(--gray-950);
+}
+
+/* ============================
+   PRODUCTOS COMO CARDS
+=============================== */
+.store-order-detail__section-title{
+  font-size: var(--fs-xs);
+  color: var(--black);
+}
+.store-order-detail__products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--gap-md);
+}
+
+.store-order-detail__product-card {
+  background-color: var(--secundary-600); /* Igualado */
+  border: 2px solid var(--secundary-400);
+  border-radius: 10px;
+  padding: var(--gap-md);
+  color: var(--white);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xxs);
+}
+
+.store-order-detail__product-title {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--white);
+}
+
+.store-order-detail__product-item {
+  font-size: var(--fs-xxs);
+  color: var(--white);
+}
+
+.store-order-detail__product-total {
+  border: 2px solid var(--secundary-400);
+  grid-column: 1 / -1;
+  background: var(--secundary-200); /* Igualado */
+  padding: var(--gap-md);
+  border-radius: 8px;
+  text-align: right;
+  font-size: var(--fs-sm);
+  color: var(--black);
+}
+
+/* ============================
+   ACCIONES
+=============================== */
+
+.store-order-detail__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-md);
+}
+
+.store-order-detail__secondary {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.store-order-detail__primary {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ============================
+   RESPONSIVE
+=============================== */
+
+@media (max-width: 900px) {
+  .store-order-detail {
+    padding: var(--gap-lg);
+  }
+
+  .store-order-detail__info {
+    grid-template-columns: 1fr;
+  }
+
+  .store-order-detail__actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .store-order-detail-content {
+    padding-inline: 16px;
+  }
+}

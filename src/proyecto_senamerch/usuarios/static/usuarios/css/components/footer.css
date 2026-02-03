@@ -1,0 +1,139 @@
+.footer-footer {
+  background-color: var(--secundary-950);
+  padding: var(--gap-lg) var(--gap-lg);
+  font-family: var(--font-primary);
+  color: var(--white);
+  border-top: 2px solid var(--secundary-400);
+}
+/* GRID MODIFICADO: 4 columnas + 1 columna pequeña para el logo */
+.footer__wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 0.5fr; /* <== columna pequeña */
+  gap: var(--gap-lg);
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.footer__section { 
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+}
+
+.footer__title {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+}
+
+.footer__subtitle {
+  font-size: var(--fs-xxs);
+  font-weight: 600;
+  color: var(--white);
+}
+
+.footer__description {
+  font-size: var(--fs-xxs);
+  color: var(--white);
+  line-height: 1.4;
+}
+
+.footer__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer__item,
+.footer__link {
+  font-size: var(--fs-xxs);
+  color: var(--white);
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.footer__link:hover {
+  opacity: 1;
+}
+
+.footer__social-icons {
+  display: flex;
+  gap: var(--gap-sm);
+}
+
+.footer__icon img {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.footer__icon:hover img {
+  transform: scale(1.12);
+}
+
+/* ==========================
+   COLUMNA DERECHA DEL LOGO
+   ========================== */
+.footer__image-column {
+  background-color: var(--white); /* Color distinto */
+  display: flex;
+  justify-content: center;   /* Centrado horizontal */
+  align-items: center;       /* Centrado vertical */
+  padding: 1rem;
+  border-radius: 50%;
+  border: 2px solid var(--secundary-400)
+}
+
+.footer__image {
+  width: 70px;
+  height: auto;
+  object-fit: contain;
+}
+
+/* ==========================
+   FOOTER BOTTOM
+   ========================== */
+.footer__bottom {
+  text-align: center;
+  margin-top: var(--gap-lg);
+  padding-top: var(--gap-sm);
+  border-top: 2px solid var(--secundary-400);
+  font-size: var(--fs-xxs);
+  color: var(--white);
+}
+
+/* ==========================
+   RESPONSIVE
+   ========================== */
+@media (max-width: 1024px) {
+  .footer {
+    height: fit-content;
+  }
+
+  /* En tablets → 3 columnas + logo */
+  .footer__wrapper {
+    grid-template-columns: 1fr 1fr 1fr 0.6fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    height: fit-content;
+  }
+
+  /* En celular → todo en columna */
+  .footer__wrapper {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  /* imagen centrada en mobile */
+  .footer__image-column {
+    justify-content: center;
+  }
+
+  .footer__social-icons {
+    justify-content: center;
+  }
+}

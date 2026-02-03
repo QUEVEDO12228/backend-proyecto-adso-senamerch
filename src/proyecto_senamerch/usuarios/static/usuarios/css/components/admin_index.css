@@ -1,0 +1,16 @@
+.content-admin-and-search {
+  display: grid;
+  grid-template-columns: 300px 1fr; 
+  gap: var(--gap-lg);
+  width: 100%;
+  align-items: start;
+}
+@media (max-width: 768px) {
+  .content-admin-and-search {
+    grid-template-columns: 1fr;
+    order: 1;
+  }
+  .seeker{
+    order: 2;
+  }
+}

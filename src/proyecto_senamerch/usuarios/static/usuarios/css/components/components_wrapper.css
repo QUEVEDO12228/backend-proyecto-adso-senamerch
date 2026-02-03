@@ -1,0 +1,15 @@
+.components-wrapper {
+  display: flex;
+  justify-content: center; /* centra horizontalmente */
+  align-items: center; /* alinea la parte superior de los componentes */
+  gap: 2rem;               /* separación de 2rem entre los componentes */
+  margin-top: 2rem;        /* opcional: separa de la parte superior de la página */
+  flex-wrap: wrap;          /* permite que en pantallas pequeñas se apilen */
+}
+@media (max-width: 768px) {
+  .components-wrapper {
+    flex-direction: column; /* apila los componentes verticalmente */
+    align-items: center;    /* centra cada uno horizontalmente */
+    gap: 1.5rem;            /* reduce separación para móviles */
+  }
+}
