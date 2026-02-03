@@ -1,0 +1,187 @@
+  /* >>> SECCIÓN DE CONTENEDOR DE LA IMAGEN DEL CONTACTO*/
+  .contact {
+    position: relative;
+    background: url("/frontend/public/assets/img/img_contact.jpg") no-repeat center center/cover;
+    width: 100%;
+    /* height: 88vh;  */
+    display: flex;
+    /* padding-block: 2rem; */
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-family: var(--font-primary);
+  }
+  /* >>> SECCIÓN DE CONTENIDO DE LA IMAGEN */
+  .contact__overlay {
+    width: 100%;
+    max-width: fit-content;
+    padding-top: var(--gap-lg);
+    padding-bottom: var(--gap-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* >>> SECCIÓN DE CONTENEDOR DEL CONTACTO */
+  .contact__container {
+    border: 2px solid var(--secundary-400);
+    background-color: var(--white);
+    padding: var(--gap-lg);
+    width: fit-content;
+    margin: 0px auto;
+    border-radius: 24px;
+    font-family: var(--font-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Inputs 360px en desktop */
+  .contact__input,
+  .contact__select,
+  .contact__textarea {
+    width: 360px;
+    min-width: 360px;
+    max-width: 360px; 
+}
+
+  .contact__header {
+    text-align: center;
+    margin-bottom: var(--gap-lg);
+  }
+  .contact__title {
+    font-size: var(--fs-sm);
+    font-family: var(--font-primary-bold);
+    color: var(--black);
+    margin-bottom: var(--gap-md);
+  }
+  .contact__subtitle {
+    font-size: var(--fs-xs);
+    font-family: var(--font-primary);
+    color: var(--black);
+  }
+  .contact__form {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-lg);
+  }
+  .contact__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-xxs);
+    width: 100%;
+  }
+  .contact__group--full {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .contact__label {
+    font-size: var(--fs-xxxs);
+    font-family: var(--font-primary-bold);
+    color: var(--black);
+  }
+  .contact__input,
+  .contact__select,
+  .contact__textarea {
+    padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
+    border: 2px solid var(--secundary-400);
+    border-radius: 12px;
+    font-size: var(--fs-xs);
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+    color: var(--gray-600);
+    background-color: var(--white);
+  }
+
+  .contact__textarea {
+    min-height: 12rem;
+    resize: vertical;
+    color: var(--gray-950);
+  }
+
+  .contact__input:focus,
+  .contact__select:focus,
+  .contact__textarea:focus {
+    border-color: var(--secundary-900);
+    box-shadow: 0 0 4px var(--secundary-900);
+  }
+
+  .contact__buttons {
+    display: flex;
+    gap: var(--gap-xxs);
+    flex-wrap: wrap;
+    width: 100%;
+    margin-top: var(--gap-xxs);
+    justify-content: center;
+    grid-column: 1 / -1;
+}
+
+
+  .contact__buttons {
+    justify-content: center;
+  }
+
+  /* ===================================== */
+  /*         RESPONSIVE <1024px            */
+  /* ===================================== */
+  @media (width < 1024px) {
+    .contact {
+      padding-inline: 24px;
+    }
+
+    .contact__wrapper {
+      width: 100%;
+      max-width: 100%;
+      /* margin: 24px auto; */
+      box-sizing: border-box;
+    }
+
+    /* Grid sigue en 2 columnas hasta 1024px */
+    .contact__form {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--gap-md);
+      width: 100%;
+    }
+
+    /* Inputs ahora son fluidos pero mantienen un maximo de 360px */
+    .contact__input,
+    .contact__select,
+    .contact__textarea {
+      width: 100%;       /* Se adapta */
+      max-width: 360px;  /* Pero mantiene el límite */
+      min-width: 0;      /* Permite que reduzca */
+      box-sizing: border-box;
+    }
+  }
+
+  @media (width < 640px) {
+    .contact {
+      width: 100%;
+    }
+    .contact__wrapper {
+      width: 100%;
+    }
+
+    .contact__form {
+      grid-template-columns: 1fr;
+      width: 100%;
+      gap: var(--gap-lg);
+    }
+
+    /* Inputs al 100% */
+    .contact__input,
+    .contact__select,
+    .contact__textarea {
+      width: 100%;
+      min-width: 0;
+      max-width: none;
+    }
+
+    .contact__buttons {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }

@@ -1,0 +1,27 @@
+.content-seeker-and-posts {
+  display: grid;
+  grid-template-columns: auto 1fr; 
+  gap: var(--gap-xxs);
+  width: 100%;
+  align-items: start;
+}
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+@media (max-width: 768px) {
+  .content-seeker-and-posts {
+    grid-template-columns: 1fr;
+  }
+
+  .seeker {
+    order: 1; 
+  }
+  .posts-section {
+    order: 3;
+  }
+  .admin-container{
+    width: 100%;
+  }
+}

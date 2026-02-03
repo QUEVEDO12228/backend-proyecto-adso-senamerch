@@ -1,0 +1,55 @@
+/* ================== NAVBAR ================== */
+.navbar-index {
+  display: flex;
+  justify-content: flex-end;          /* Links a la derecha */
+  align-items: center;
+  width: 100%;
+  min-height: 40px;                   /* altura mínima, pero flexible */
+  background-color: var(--secundary-700);
+  padding: var(--gap-xxs) var(--gap-sm);
+  font-family: var(--font-primary);
+  box-sizing: border-box;
+}
+
+/* Lista en fila */
+.navbar-index__list {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--gap-sm);                 /* separación uniforme entre enlaces */
+}
+
+.navbar-index__link {
+  color: var(--white);
+  text-decoration: none;
+  padding: var(--gap-xs) var(--gap-xxs);
+  font-size: var(--fs-xs);
+  transition: color 0.2s ease;
+}
+
+.navbar-index__link:hover {
+  color: var(--secundary-500);
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 768px) {
+  .navbar-index {
+    justify-content: center;
+    padding: var(--gap-xs);
+    flex-wrap: wrap;                  /* permite que los elementos bajen si no caben */
+  }
+
+  .navbar-index__list {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-xxs);
+    width: 100%;                      /* ocupa todo el ancho */
+  }
+}
+@media (max-width: 640px) {
+  .navbar-index__link {
+    font-size: var(--fs-xs);
+    padding: var(--gap-xxs);
+  }
+}

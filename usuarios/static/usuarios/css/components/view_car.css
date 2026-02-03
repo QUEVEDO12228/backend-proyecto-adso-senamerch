@@ -1,0 +1,29 @@
+.view_car_pay_method {
+  display: flex;
+  justify-content: center;   
+  align-items: center;         
+  width: 100%;
+  box-sizing: border-box;
+} 
+.car-pay-grid {
+  display: grid;
+  grid-template-columns: 70% 30%; 
+  gap: var(--gap-lg);
+  width: 100%;
+  box-sizing: border-box;
+}
+.pay-method-product {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.payment-method-container {
+  width: 90%;
+}
+@media (max-width: 768px) {
+  .car-pay-grid {
+    grid-template-columns: 1fr; 
+    max-width: 100%;
+  }
+}

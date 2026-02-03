@@ -1,0 +1,196 @@
+.product-seller {
+  width: 98%;
+  margin: 2.4rem auto;
+  padding: var(--gap-md);
+  background: var(--white);
+  border: 2px solid var(--secundary-400);
+  border-radius: 8px;
+  color: var(--gray-950);
+  font-family: var(--font-primary);
+}
+
+.product-seller__title {
+  text-align: center;
+  font-size: var(--fs-sm);
+  margin-bottom: var(--gap-md);
+  color: var(--black);
+  font-family: var(--font-primary-semibold);
+}
+
+.product-seller__table {
+  width: 100%;
+  font-size: var(--fs-xs);
+  background-color: var(--white);
+  border: 2px solid var(--secundary-400);
+  box-shadow: 0 2px 6px var(--gray-200);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.product-seller__table-header {
+  background: var(--gray-500);
+  font-weight: bold;
+  padding: var(--gap-xs) var(--gap-xs);
+  border: 2px solid var(--secundary-400);
+  color: var(--gray-950);
+  text-align: center;
+}
+
+.product-seller__table-cell {
+  color: var(--gray-950);
+  border: 2px solid var(--secundary-400);
+  padding: var(--gap-xxs);
+  text-align: center;
+}
+
+.product-seller__secondary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-seller__table-row:nth-child(even) {
+  background-color: var(--gray-200);
+}
+
+
+.product-seller__details-link {
+  color: var(--secundary-700);
+  font-size: var(--fs-xxs);
+  text-decoration: none;
+  transition: color 0.3s;
+  text-align: center;
+}
+.product-seller__details-link:hover {
+  color: var(--secundary-950);
+  text-decoration: underline;
+}
+
+/* =============== RESPONSIVE 768px =============== */
+
+@media (max-width: 768px) {
+  .product-seller {
+    padding: var(--gap-sm);
+    margin: 20px auto;
+  }
+
+  .product-seller__title {
+    font-size: var(--fs-xs);
+  }
+
+  .product-seller__table,
+  .product-seller__table thead,
+  .product-seller__table tbody,
+  .product-seller__table th,
+  .product-seller__table td,
+  .product-seller__table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .product-seller__table thead {
+    display: none;
+  }
+
+  .product-seller__table-row {
+    border: 1px solid var(--gray-300);
+    border-radius: 6px;
+    margin-bottom: var(--gap-sm);
+    background-color: var(--white);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    padding: var(--gap-sm);
+  }
+
+  .product-seller__table-cell {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+    padding: var(--gap-xs) 0;
+    font-size: var(--fs-xxs);
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .product-seller__table-cell:last-child {
+    border-bottom: none;
+  }
+
+  .product-seller__table-cell::before {
+    content: attr(data-label);
+    font-weight: bold;
+    color: var(--primary-950);
+    text-transform: capitalize;
+  }
+}
+
+/* =============== RESPONSIVE 640px =============== */
+
+@media (max-width: 640px) {
+  .product-seller__table-secondary {
+    justify-content: end;
+    text-align: right;
+  }
+}
+
+/* =============== RESPONSIVE 1024px =============== */
+
+@media (max-width: 1024px) {
+  .product-seller {
+    padding: var(--gap-sm);
+    margin: 20px auto;
+  }
+
+  .product-seller__title {
+    font-size: var(--fs-xs);
+  }
+
+  .product-seller__table,
+  .product-seller__table thead,
+  .product-seller__table tbody,
+  .product-seller__table th,
+  .product-seller__table td,
+  .product-seller__table tr {
+    display: block;
+    width: 100%;
+  }
+
+  .product-seller__table thead {
+    display: none;
+  }
+
+  .product-seller__table-row {
+    margin-bottom: var(--gap-sm);
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: var(--gap-sm);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+
+  .product-seller__table-cell {
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    text-align: left;
+    padding: 0.4rem 0;
+    font-size: var(--fs-xxs);
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .product-seller__table-cell:last-child {
+    border-bottom: none;
+  }
+
+  .product-seller__table-cell::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--primary-950);
+    text-transform: capitalize;
+  }
+
+  .product-seller__table-secondary {
+    justify-content: end;
+    text-align: right;
+  }
+}
+
