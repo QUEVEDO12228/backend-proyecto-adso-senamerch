@@ -1,0 +1,192 @@
+.create-store {
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+  /* min-height: 100vh; */
+  padding-block: 2.4rem;
+
+  /* Fondo con imagen */
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.2), 
+      rgba(0, 0, 0, 0.2)
+    ),
+    url("/frontend/public/assets/img/store_seller.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.create-store__wrapper {
+  width: 100%;
+  max-width: fit-content;
+  background-color: var(--white);
+  border-radius: 24px;
+  padding: var(--gap-lg);
+  box-sizing: border-box;
+  border: 2px solid var(--secundary-400);
+  margin: 24px auto;
+  display: flex;
+  flex-direction: column;
+}
+@media (width > 640px) {
+  .create-store__wrapper {
+    margin-inline: var(--gap-lg);
+  }
+  .create-store__wrapper {
+    width: fit-content;
+    padding: var(--gap-lg);
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .create-store__input {
+    width: 360px;
+    max-width: 360px;
+    min-width: 360px;
+  }
+}
+@media (width < 1024px) {
+  .create-store__wrapper {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  .create-store__form {
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-lg);
+  }
+  .create-store__group {
+    width: 100%;
+  }
+  .create-store__input,
+  .create-store__textarea {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .create-store__buttons,
+  .create-store__secondary {
+    width: 100%;
+    max-width: none;
+    flex-wrap: wrap;
+  }
+  .create-store__buttons {
+    justify-content: flex-end;
+  }
+  .create-store__secondary {
+    justify-content: flex-start;
+  }
+}
+.create-store__header {
+  text-align: center;
+  margin-bottom: var(--gap-lg);
+}
+.create-store__title {
+  font-size: var(--fs-sm);
+  font-family: var(--font-primary-bold);
+  color: var(--black);
+  margin-bottom: var(--gap-lg);
+}
+.create-store__subtitle {
+  font-size: var(--fs-xs);
+  font-family: var(--font-primary);
+  color: var(--black);
+}
+.create-store__form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap-lg);
+}
+.create-store__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xxs);
+}
+
+.create-store__group--full {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+.create-store__textarea {
+  padding: var(--padding-top) var(--padding-right)
+          var(--padding-bottom) var(--padding-left);
+  border: 2px solid var(--secundary-400);
+  border-radius: 12px;
+  font-size: var(--fs-xs);
+  font-family: var(--font-primary);
+  color: var(--gray-950);
+  background: var(--white);
+  width: 100%;
+  min-height: 12rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.create-store__label {
+  font-size: var(--fs-xxxs);
+  font-family: var(--font-primary-bold);
+  color: var(--black);
+}
+.create-store__input {
+  padding: var(--padding-top) var(--padding-right)
+          var(--padding-bottom) var(--padding-left);
+  border: 2px solid var(--secundary-400);
+  border-radius: 12px;
+  font-size: var(--fs-xs);
+  font-family: var(--font-primary);
+  color: var(--gray-600);
+  background: var(--white);
+  width: 100%;
+  max-width: 360px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.create-store__input:focus {
+  border-color: var(--secundary-900);
+  box-shadow: 0 0 4px var(--secundary-900);
+}
+.create-store__link {
+  color: var(--secundary-700);
+  font-size: var(--fs-xxs);
+  text-decoration: none;
+  transition: color 0.3s;
+}
+.create-store__link:hover {
+  color: var(--secundary-950);
+  text-decoration: underline;
+}
+.create-store__buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--gap-xxs);
+  margin-top: var(--gap-xxs);
+  grid-column: 2 / 3;
+}
+.create-store__secondary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  grid-column: 1 / 2;
+}
+@media (width < 640px) {
+  .create-store__wrapper {
+    width: 100%;
+    margin: 2.4rem;
+  }
+  .create-store {
+    width: 100%;
+    padding-block: 2rem;
+  }
+  .create-store__form {
+    grid-template-columns: 1fr;
+    gap: var(--gap-lg);
+  }
+  .create-store__buttons,
+  .create-store__secondary {
+    flex-direction: column;
+    align-items: start;
+    grid-column: 1 / -1;
+  }
+}

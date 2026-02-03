@@ -1,0 +1,297 @@
+/* =========================================================
+   CONTENEDOR PRINCIPAL
+========================================================= */
+.store-content {
+  display: flex;
+  justify-content: center;
+  padding-block: 2.4rem;
+  width: 100%;
+  min-width: 320px;
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CONTENEDOR DE PEDIDOS
+========================================================= */
+.store-orders {
+  width: 80%;
+  background-color: var(--white);
+  border-radius: 12px;
+  padding: var(--gap-lg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  font-family: var(--font-primary);
+  border: 2px solid var(--secundary-400);
+}
+
+.store-orders__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  margin-bottom: var(--gap-md);
+}
+
+.store-orders__title {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--black);
+}
+
+/* =========================================================
+   SELECT
+========================================================= */
+.store-orders__filter {
+  padding: var(--padding-top) var(--padding-right);
+  border: 2px solid var(--secundary-400);
+  border-radius: 8px;
+  background-color: var(--secundary-600);
+  font-size: var(--fs-xs);
+  color: var(--white);
+}
+
+/* =========================================================
+   LISTA DE PEDIDOS
+========================================================= */
+.store-orders__list {
+  display: grid;
+  gap: var(--gap-lg);
+}
+
+/* =========================================================
+   ITEM DEL PEDIDO
+========================================================= */
+.store-orders__item {
+  display: grid;
+  background-color: var(--primary-50);
+  border-radius: 12px;
+  padding: var(--gap-lg);
+  border: 2px solid var(--secundary-400);
+
+  grid-template-areas:
+    "id status total"
+    "date status total"
+    "client client client"
+    "address address address"
+    "products products products"
+    "btn btn btn";
+
+  gap: var(--gap-sm);
+}
+
+/* =========================================================
+   INFO PRINCIPAL
+========================================================= */
+.store-orders__id {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--black);
+}
+
+.store-orders__date {
+  font-size: var(--fs-xxs);
+  color: var(--gray-950);
+}
+
+.store-orders__total {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--black);
+}
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+.store-orders__status {
+  font-size: var(--fs-xxs);
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.store-orders__status--pending {
+  background-color: var(--secundary-600);
+  color: var(--white);
+}
+
+.store-orders__status--in-process {
+  background-color: var(--primary-300);
+  color: var(--primary-900);
+}
+
+.store-orders__status--delivered {
+  background-color: var(--secundary-300);
+  color: var(--secundary-950);
+}
+
+/* =========================================================
+   MINI CARDS
+========================================================= */
+.store-orders__card {
+  background-color: var(--primary-50);
+  border: 2px solid var(--secundary-400);
+  border-radius: 10px;
+  padding: var(--gap-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xxs);
+}
+
+.store-orders__card--product {
+  background-color: var(--secundary-600);
+  border: 2px solid var(--secundary-400);
+}
+
+.store-orders__subtitle {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: var(--gap-xxs);
+}
+
+.store-orders__client,
+.store-orders__product-detail {
+  font-size: var(--fs-xxs);
+  color: var(--gray-950);
+}
+.store-orders__client,
+.store-orders__product-detail {
+  font-size: var(--fs-xxs);
+  color: var(--gray-950);
+}
+
+.store-orders__product-name {
+  font-size: var(--fs-xxs);
+  font-weight: 600;
+  color: var(--white);
+}
+.store-orders__product {
+  font-size: var(--fs-xxs);
+  font-weight: 600;
+  color: var(--black);
+}
+
+/* =========================================================
+   GRID PRODUCTS (EXTENDIDO A TODA LA FILA)
+========================================================= */
+.store-orders__products {
+  grid-column: 1 / -1; /* 🔥 ocupa ambas columnas, debajo de dirección */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap-md);
+  margin-top: var(--gap-md);
+  width: 100%;
+}
+
+/* =========================================================
+   BOTÓN
+========================================================= */
+.store-orders__primary {
+  margin-top: var(--gap-md);
+  display: flex;
+  justify-content: center;
+  grid-column: 1 / -1;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+/* ------- MÓVILES PEQUEÑOS ------- */
+@media (max-width: 480px) {
+  .store-orders__products {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------- TABLETS ------- */
+@media (max-width: 768px) {
+  .store-orders__item {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "id"
+      "date"
+      "status"
+      "total"
+      "client"
+      "address"
+      "products"
+      "btn";
+  }
+
+  .store-orders__products {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ------- LAPTOPS / DESKTOP ------- */
+@media (min-width: 1024px) {
+  .store-orders__item {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "id status"
+      "date total"
+      "client address"
+      "products products"
+      "products products"  /* 🔥 fila extra para ocupar hueco bajo dirección */
+      "btn btn";
+  }
+
+  .store-orders__products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ------- DESKTOP GRANDE ------- */
+@media (min-width: 1280px) {
+  .store-orders__products {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* ------- BIG SCREEN ------- */
+@media (min-width: 1536px) {
+  .store-orders__products {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+/* =========================================================
+   FIX PARA CELULARES - MANTENER 24PX DE ESPACIADO
+========================================================= */
+@media (max-width: 640px) {
+
+  /* Contenedor principal: agrega padding lateral */
+  .store-content {
+    padding-inline: var(--gap-lg); /* 24px */
+  }
+
+  /* Contenedor de pedidos: ocupa todo el ancho disponible */
+  .store-orders {
+    width: 100%;
+    padding: var(--gap-lg);
+    box-sizing: border-box;
+  }
+
+  /* Cada card del pedido */
+  .store-orders__item {
+    width: 100%;
+    padding: var(--gap-lg);
+    box-sizing: border-box;
+
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "id"
+      "date"
+      "status"
+      "total"
+      "client"
+      "address"
+      "products"
+      "btn";
+  }
+
+  /* Productos en una sola columna */
+  .store-orders__products {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+}

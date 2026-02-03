@@ -1,0 +1,32 @@
+.mini-card-products {
+  display: flex;
+  align-items: center;
+  background: var(--gray-500);
+  border: 1px solid var(--secundary-900);
+  border-radius: 12px;
+  height: 56px;
+  width: fit-content;
+  padding: 0 16px;
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: 600;
+
+  text-decoration: none;      /* ← no parece link */
+  color: var(--white);        /* ← color normal */
+
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+  margin: var(--gap-xxs);
+}
+
+.mini-card-products:hover {
+  background: var(--secundary-100);
+  transform: translateY(-2px);
+  color: var(--black); 
+}
+
+@media (width < 640px) {
+    .mini-card-products{
+      margin-inline: 6rem;
+    }
+}

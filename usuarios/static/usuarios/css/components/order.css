@@ -1,0 +1,94 @@
+.order {
+  font-family: var(--font-primary);
+  background: var(--primary-100);
+  color: var(--gray-950);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--gap-lg);
+  border: 2px solid var(--secundary-400);
+  border-radius: 12px;
+}
+
+/* ===== TITLES ===== */
+.order__title {
+  text-align: center;
+  font-size: var(--fs-md); /* 32px */
+  font-weight: bold;
+  margin-bottom: var(--gap-lg);
+}
+
+.order__subtitle {
+  text-align: center;
+  font-size: var(--fs-sm); /* 24px */
+  margin: var(--gap-md) 0;
+  color: var(--secundary-800);
+  font-weight: 600;
+}
+
+/* ===== SECTIONS ===== */
+.order__section {
+  margin-bottom: var(--gap-lg);
+  padding-bottom: var(--gap-md);
+  border-bottom: 2px solid var(--secundary-400);
+}
+
+/* ===== TABLE ===== */
+.order__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--gap-sm);
+}
+
+/* Zebra striping */
+.order__table-body tr:nth-child(odd) {
+  background-color: var(--gray-50);
+}
+.order__table-body tr:nth-child(even) {
+  background-color: var(--white);
+}
+
+.order__table-row--header {
+  background: var(--primary-200);
+  font-weight: bold;
+  text-align: center;
+}
+
+.order__table-cell {
+  border: 2px solid var(--secundary-400);
+  padding: var(--gap-xs);
+  text-align: center;
+  font-size: var(--fs-xs); /* 14px */
+}
+
+/* ===== ACTIONS ===== */
+.order__actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: var(--gap-xl);
+  gap: var(--gap-md);
+}
+
+.order__actions .btn {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+}
+
+.order__actions .btn {
+  align-self: flex-start; 
+}
+.order__actions .btn {
+  padding: var(--button-padding-top) var(--button-padding-right) 
+           var(--button-padding-bottom) var(--button-padding-left);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .order__table-cell {
+    font-size: var(--fs-xxxs); /* 12px */
+    padding: var(--gap-xxs);
+  }
+  .order__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+}
