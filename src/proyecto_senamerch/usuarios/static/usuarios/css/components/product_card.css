@@ -1,0 +1,356 @@
+.product-cards__container {
+  display: grid;
+  gap: var(--gap-lg);
+  width: 100%;
+  box-sizing: border-box;
+  margin: var(--gap-md) auto;
+  padding-inline: 24px;
+  justify-content: center;
+  justify-items: center;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px) {
+  .product-cards__container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-lg);
+    padding-inline: var(--gap-lg);
+  }
+}
+@media (min-width: 1024px) {
+  .product-cards__container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gap-lg);
+    padding-inline: var(--gap-lg);
+  }
+}
+@media (min-width: 1280px) {
+  .product-cards__container {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--gap-lg);
+    padding-inline: var(--gap-lg);
+  }
+}
+.product-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;                
+  padding: var(--gap-lg);    
+  background: var(--white);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.12);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  border: solid 2px var(--secundary-500);
+}
+.product-card__header {
+  display: flex;
+  flex-direction: column;
+}
+.product-card__title {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--secundary-600);
+  margin-bottom: var(--gap-sm); 
+}
+.product-card__price {
+  font-size: var(--fs-sm);
+  color: var(--secundary-700);
+  font-weight: 600;
+}
+.product-card__discount{
+  font-size: var(--fs-xxs);
+  color: var(--secundary-600);
+}
+.product-card__store-logo {
+  width: 80px;                  
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--secundary-400);
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
+
+  position: absolute;
+  top: 85px;                   
+  right: 32px;                  
+  z-index: 10;
+}
+.product-card__image-wrapper {
+  width: 100%;
+  height: 180px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: solid 2px var(--secundary-500);
+}
+.product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.product-card__footer {
+  margin-top: var(--gap-md);
+  display: flex;
+  justify-content: space-between;
+}
+.product-card__footer--seller-edit {
+  margin-top: var(--gap-sm);
+  display: flex;
+  justify-content: center;
+}
+.product-card__footer--end{
+  margin-top: var(--gap-md);
+  display: flex;
+  justify-content: flex-end;
+}
+.product-card__profile-store-tooltip {
+  display: flex;
+  align-items: center;  
+  gap: 8px;             
+  position: absolute;
+  bottom: 304px;
+  left: 232px;
+  transform: translateX(-50%);
+  background-color: var(--secundary-950);
+  border: 2px solid var(--secundary-400);
+  color: var(--white);
+  padding: 4px 8px;
+  font-size: var(--fs-xxxs);
+  font-family: var(--font-primary-semibold);
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 20;
+}
+.product-card__profile-store-link{
+    font-size: var(--fs-xs);
+    font-family: var(--font-primary-semibold);
+    color: var(--white);
+    text-decoration: none;
+    /* padding: 8px 8px; */
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+.product-card__profile-store-link:hover .product-card__profile-store-tooltip {
+    opacity: 1;
+}
+.product-card__profile-store-tooltip-icon{
+  height: 16px;
+  width: 16px;
+}
+.product-card__menu {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 30;
+}
+.product-card__menu-btn {
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  line-height: 0;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--secundary-700);
+  transition: background 0.2s ease-in-out;
+}
+.product-card__menu-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+.product-card__menu-dropdown {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  list-style: none;
+  padding: 2px 8px;
+  margin: 0;
+  background: var(--secundary-950);
+  border-radius: 8px;
+  border: 2px solid var(--secundary-400);
+  box-shadow: 0 4px 14px rgba(0,0,0,.18);
+  display: none; 
+  width: 158px;
+}
+.product-card__menu:hover .product-card__menu-dropdown {
+  display: block;
+}
+.product-card__menu-item-icon{
+  height: 16px;
+  width: 16px;
+}
+.product-card__menu-item {
+  display: flex;               /* clave */
+  align-items: center;         /* centra verticalmente */
+  justify-content: space-between; /* separa texto e icono */
+  padding: 4px 4px;
+  color: var(--secundary-100);
+  font-size: var(--fs-xxxs);
+  text-decoration: none;
+  transition: background 0.2s ease-in-out;
+}
+
+/* opcional: por si hace falta ajustar */
+.product-card__icon-menu-item {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.product-card__menu-item:hover {
+  background: var(--primary-600);
+  color: var(--secundary-200);
+}
+/* El link que envuelve la imagen */
+.product-card__image-link {
+  display: block;
+  position: relative;
+}
+
+/* Tooltip de la imagen */
+.product-card__image-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: absolute;
+  bottom: 24px;
+  left: 88px;
+  transform: translateX(-50%);
+  background-color: var(--secundary-950);
+  border: 2px solid var(--secundary-400);
+  color: var(--white);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: var(--fs-xxxs);
+  font-family: var(--font-primary-semibold);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 20;
+}
+.product-card__image-link:hover .product-card__image-tooltip {
+  opacity: 1;
+}
+
+/* Ícono del tooltip */
+.product-card__image-tooltip-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Botón Like */
+.product-card__like-btn {
+  position: absolute;
+  top: 328px;
+  right: 248px; 
+  background: var(--secundary-900);
+  border: none;
+  cursor: pointer;
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-right: 4px;
+  padding-left: 4px;
+  border-radius: 50%;
+  transition: background 0.2s ease-in-out;
+  z-index: 35;
+}
+
+.product-card__like-btn:hover {
+  background: var(--secundary-500);
+}
+
+.product-card__like-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.1));
+}
+.product-card__like-btn--active {
+  background: var(--secundary-500);
+  border: solid 2px var(--secundary-950)
+} 
+/* Estado activo del like */
+.product-card__like-btn--active .product-card__like-icon {
+  transform: scale(1.1);
+}
+.product-card__like-btn--dislike {
+  position: absolute;
+  top: 328px;
+  right: 204px;
+  background: var(--tertiary-900);
+  border: none;
+  cursor: pointer;
+  padding-top: 4px;
+  padding-bottom: 2px;
+  padding-right: 4px;
+  padding-left: 4px;
+  border-radius: 50%;
+  transition: background 0.2s ease-in-out;
+  z-index: 35;
+}
+.product-card__like-btn--dislike:hover {
+  background: var(--tertiary-600);
+}
+.product-card__like-icon--dislike {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.1));
+}
+.product-card__like-btn--active--dislike .product-card__like-icon--dislike {
+  transform: scale(1.1);
+}
+.product-card__like-btn--active--dislike {
+  background: var(--tertiary-500);
+  border: solid 2px var(--tertiary-950)
+} 
+/* Tooltip general para los botones */
+.product-card__like-tooltip,
+.product-card__dislike-tooltip {
+  position: absolute;
+  top: 110%;                 /* aparece debajo del botón */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--secundary-950);
+  border: 2px solid var(--secundary-400);
+  color: var(--white);
+  font-size: var(--fs-xxxs);
+  font-family: var(--font-primary-semibold);
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 40;
+}
+
+/* Mostrar tooltip al pasar el mouse */
+.product-card__like-btn:hover .product-card__like-tooltip,
+.product-card__like-btn--dislike:hover .product-card__dislike-tooltip {
+  opacity: 1;
+}
+
+ @media (width < 640px) {
+  .product-card__profile-store-tooltip {
+    position: absolute;
+    bottom: 304px; 
+    left: 188px;
+  }
+  .product-card__like-btn {
+    position: absolute;
+    top: 328px;
+    right: 210px; 
+  }
+  .product-card__like-btn--dislike {
+    position: absolute;
+    top: 328px;
+    right: 172px;
+  }
+  .product-card__profile-store-tooltip {  
+    position: absolute;
+    bottom: 304px;
+    left: 304px;
+  }
+}

@@ -1,0 +1,34 @@
+.search-category-grid {
+  display: grid;
+  grid-template-columns: 40% 60%;   /* buscador | categorías */
+  align-items: center;
+  gap: 1rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.search-bar-container {
+  width: 100%;
+}
+
+.navbar-product-category-container {
+  white-space: nowrap;
+}
+/* 📱 Responsive - móviles */
+@media (max-width: 768px) {
+  .search-category-grid {
+    grid-template-columns: 1fr; /* una sola columna */
+    gap: 0.75rem;
+  }
+
+  .nav {
+    width: 100%;
+  }
+
+  .navbar-product-category-container {
+    justify-self: start;
+    width: 100%;
+  }
+}
+
+

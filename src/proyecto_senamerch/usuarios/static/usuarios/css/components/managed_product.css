@@ -1,0 +1,176 @@
+.product-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin: var(--gap-lg) auto;
+  padding: 2rem var(--gap-lg);
+  width: min(1300px, calc(100% - (var(--gap-lg) * 2)));
+  background-color: var(--white);
+  border: 2px solid var(--secundary-400);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-primary);
+  color: var(--gray-950);
+  gap: var(--gap-lg);
+}
+.product-detail__header {
+  margin-bottom: var(--gap-xs);
+}
+.product-detail__title {
+  font-size: var(--fs-sm);
+  font-family: var(--font-primary-semibold);
+  color: var(--black);
+  margin-bottom: var(--gap-xs);
+}
+.product-detail__subtitle {
+  font-size: var(--fs-xs);
+  color: var(--gray-700);
+  max-width: 70ch;
+  overflow-wrap: break-word;
+}
+.product-detail__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-lg);
+  width: 100%;
+  justify-items: center;
+}
+@media (min-width: 640px) {
+  .product-detail__grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  }
+}
+@media (min-width: 1280px) {
+  .product-detail__grid {
+    grid-template-columns: repeat(2, 1fr);
+    align-items: flex-start;
+    justify-content: center;
+  }
+}
+.product-detail__card {
+  background-color: var(--white);
+  border-radius: 1.2rem;
+  border: 2px solid var(--secundary-400);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: var(--gap-md);
+  width: 100%;
+  height: fit-content;
+  max-width: 600px;
+  transition: transform 0.2s ease;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+.product-detail__card:hover {
+  transform: translateY(-4px);
+}
+.product-detail__card-title {
+  font-size: var(--fs-xs);
+  font-family: var(--font-primary-semibold);
+  color: var(--gray-900);
+  border-bottom: 2px solid var(--secundary-400);
+  padding-bottom: var(--gap-xs);
+  margin-bottom: var(--gap-sm);
+}
+.product-detail__card-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-md);
+}
+@media (min-width: 768px) {
+  .product-detail__card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+.product-detail__info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+}
+.product-detail__item {
+  display: flex;
+  flex-direction: column;
+}
+.product-detail__label {
+  font-size: var(--fs-xxs);
+  font-family: var(--font-primary-semibold);
+  color: var(--gray-900);
+}
+.product-detail__text {
+  font-size: var(--fs-xs);
+  font-family: var(--font-secondary);
+  color: var(--gray-700);
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.product-detail__text--status {
+  font-weight: 700;
+  color: var(--secundary-700);
+}
+.product-detail__media {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.product-detail__image {
+  width: 150px;
+  height: 150px;
+  border-radius: 0.8rem;
+  border: 2px solid var(--secundary-400);
+  object-fit: cover;
+  margin-top: var(--gap-xs);
+}
+.product-detail__section--actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--gap-md);
+  padding-block: var(--gap-md);
+  border-top: 2px solid var(--secundary-400);
+  width: 100%;
+}
+.product-detail__section-title {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: var(--fs-xs);
+  font-family: var(--font-primary-semibold);
+  color: var(--black);
+}
+.product-detail__actions-secondary,
+.product-detail__actions-primary {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+@media (min-width: 1024px) {
+  .product-detail__section--actions {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+  .product-detail__section-title {
+    grid-column: 1 / 3;
+  }
+  .product-detail__actions-secondary {
+    justify-content: flex-start;
+  }
+  .product-detail__actions-primary {
+    justify-content: flex-end;
+  }
+}
+/* === ESTADO: DESHABILITAR (advertencia) === */
+.btn--warning {
+  background-color: var(--tertiary-600);
+  color: var(--white);
+}
+.btn--warning:hover {
+  background-color: var(--tertiary-700);
+}
+
+/* === ESTADO: HABILITAR (éxito) === */
+.btn--success {
+  background-color: var(--secundary-900);
+  color: var(--white);
+}
+.btn--success:hover {
+  background-color: var(--secundary-700);
+}

@@ -1,0 +1,160 @@
+.address-store-form {
+  display: flex;
+  box-sizing: border-box;
+  padding-block: 2.4rem;
+  overflow: hidden;
+  min-height: 100%;
+}
+.address-store-form__wrapper {
+  border: 2px solid var(--secundary-400);
+  background-color: var(--white);
+  padding: var(--gap-lg);
+  width: 100%;
+  border-radius: 8px;
+  font-family: var(--font-primary);
+  display: flex;
+  flex-direction: column;
+  margin: 24px;
+  box-sizing: border-box;
+}
+@media (width > 640px) {
+  .address-store-form {
+    margin-inline: var(--gap-lg);
+  }
+  .address-store-form__wrapper {
+    width: fit-content;
+    padding: var(--gap-lg);
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+  .address-store-form__input {
+    width: 360px;
+    max-width: 360px;
+    min-width: 360px;
+  }
+}
+@media (width < 1024px) {
+  .address-store-form__wrapper {
+    width: 100%;
+    max-width: fit-content;
+    margin: 0 auto;
+  }
+  .address-store-form__form {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--gap-lg);
+  }
+  .address-store-form__group {
+    width: 100%;
+  }
+  .address-store-form__input {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .address-store-form__buttons {
+    width: 100%;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: var(--gap-xxs);
+  }
+  .address-store-form__secondary {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+.address-store-form__header {
+  text-align: center;
+  margin-bottom: var(--gap-lg);
+}
+.address-store-form__title {
+  font-size: var(--fs-sm);
+  font-family: var(--font-primary-bold);
+  color: var(--black);
+  margin-bottom: var(--gap-lg);
+}
+.address-store-form__subtitle {
+  font-size: var(--fs-xs);
+  font-family: var(--font-primary);
+  color: var(--black);
+}
+.address-store-form__form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap-lg);
+}
+.address-store-form__group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--gap-xxs);
+  width: 100%;
+}
+.address-store-form__group--full {
+  grid-column: 1 / -1;
+}
+.address-store-form__label {
+  font-size: var(--fs-xxxs);
+  font-family: var(--font-primary-bold);
+  color: var(--black);
+}
+.address-store-form__input {
+  padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
+  border: 2px solid var(--secundary-400);
+  border-radius: 8px;
+  font-size: var(--fs-xs);
+  outline: none;
+  transition: border 0.3s, box-shadow 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--gray-600);
+  background-color: var(--white);
+}
+
+.address-store-form__input:focus {
+  border-color: var(--secundary-900);
+  box-shadow: 0 0 4px var(--secundary-900);
+}
+.address-store-form__link {
+  color: var(--secundary-700);
+  font-size: var(--fs-xxs);
+  text-decoration: none;
+  transition: color 0.3s;
+  text-align: center;
+}
+.address-store-form__link:hover {
+  color: var(--secundary-950);
+  text-decoration: underline;
+}
+.address-store-form__buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--gap-xxs);
+  margin-top: var(--gap-xxs);
+}
+
+.address-store-form__secondary {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+@media (width < 640px) {
+  .address-store-form {
+    width: 100%;
+    padding-block: 2.4rem;
+  }
+  .address-store-form__wrapper {
+    width: 100%;
+    margin: 2.4rem;
+  }
+  .address-store-form__form {
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: var(--gap-lg);
+  }
+  .address-store-form__buttons {
+    flex-direction: column;
+    align-items: start;
+  }
+}

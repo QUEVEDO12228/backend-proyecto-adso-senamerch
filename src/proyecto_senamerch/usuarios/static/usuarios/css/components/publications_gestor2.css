@@ -1,0 +1,192 @@
+.create-post {
+  display: flex;
+  box-sizing: border-box;
+  overflow: hidden;
+  /* min-height: 100vh; */
+  padding-block: 2.4rem;
+
+  /* Fondo con imagen */
+  background-image:
+    linear-gradient(
+      rgba(0, 0, 0, 0.2), 
+      rgba(0, 0, 0, 0.2)
+    ),
+    url("/frontend/public/assets/img/hortalizas-portada.png");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.create-post__wrapper {
+  border: 2px solid var(--secundary-400);
+  background-color: var(--white);
+  padding: var(--gap-lg);
+  width: fit-content;
+  margin: 0px auto;
+  border-radius:24px;
+  font-family: var(--font-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Inputs 360px en desktop */
+.create-post__input,
+.create-post__select,
+.create-post__textarea {
+  width: 360px;
+  min-width: 360px;
+  max-width: 360px;
+}
+
+.create-post__header {
+  text-align: center;
+  margin-bottom: var(--gap-lg);
+}
+
+.create-post__title {
+  font-size: var(--fs-sm);
+  font-family: var(--font-primary-bold);
+  color: var(--black);
+  margin-bottom: var(--gap-md);
+}
+
+.create-post__subtitle {
+  font-size: var(--fs-xs);
+  font-family: var(--font-primary);
+  color: var(--black);
+}
+
+.create-post__form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--gap-lg);
+}
+
+.create-post__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xxs);
+  width: 100%;
+}
+
+.create-post__group--full {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.create-post__label {
+  font-size: var(--fs-xxxs);
+  font-family: var(--font-primary-bold);
+  color: var(--black);
+}
+
+.create-post__input,
+.create-post__select,
+.create-post__textarea {
+  padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
+  border: 2px solid var(--secundary-400);
+  max-height: 56px;
+  border-radius: 12px;
+  font-size: var(--fs-xs);
+  outline: none;
+  transition: border 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+  color: var(--gray-600);
+  background-color: var(--white);
+}
+
+.create-post__textarea {
+  min-height: 12rem;
+  resize: vertical;
+  color: var(--gray-950);
+}
+
+.create-post__input:focus,
+.create-post__select:focus,
+.create-post__textarea:focus {
+  border-color: var(--secundary-900);
+  box-shadow: 0 0 4px var(--secundary-900);
+}
+
+.create-post__buttons,
+.create-post__secondary {
+  display: flex;
+  gap: var(--gap-xxs);
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: var(--gap-xxs);
+}
+
+.create-post__buttons {
+  justify-content: flex-end;
+}
+
+.create-post__secondary {
+  justify-content: flex-start;
+}
+/* ===================================== */
+/*         RESPONSIVE <1024px            */
+/* ===================================== */
+@media (width < 1024px) {
+  .create-post {
+    padding-inline: 24px;
+  }
+
+  .create-post__wrapper {
+    width: 100%;
+    max-width: 100%;
+    /* margin: 24px auto; */
+    box-sizing: border-box;
+  }
+
+  /* Grid sigue en 2 columnas hasta 1024px */
+  .create-post__form {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap-md);
+    width: 100%;
+  }
+
+  /* Inputs ahora son fluidos pero mantienen un maximo de 360px */
+  .create-post__input,
+  .create-post__select,
+  .create-post__textarea {
+    width: 100%;       /* Se adapta */
+    max-width: 360px;  /* Pero mantiene el límite */
+    min-width: 0;      /* Permite que reduzca */
+    box-sizing: border-box;
+  }
+}
+
+@media (width < 640px) {
+  .create-post {
+    width: 100%;
+  }
+  .create-post__wrapper {
+    width: 100%;
+  }
+
+  .create-post__form {
+    grid-template-columns: 1fr;
+    width: 100%;
+    gap: var(--gap-lg);
+  }
+
+  /* Inputs al 100% */
+  .create-post__input,
+  .create-post__select,
+  .create-post__textarea {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .create-post__buttons {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

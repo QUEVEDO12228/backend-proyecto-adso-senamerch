@@ -1,0 +1,105 @@
+.comments-users-sidebar {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 360px;
+  max-width: 90%;
+  height: 100vh;
+  z-index: 100;
+  transition: left 0.3s ease-in-out;
+  background: var(--secundary-900);
+  border: solid 2px var(--secundary-400);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  padding: var(--gap-lg);
+  z-index: 1000;
+}
+.comments-users-sidebar__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--gap-md);
+}
+.comments-users-sidebar__title {
+  font-size: var(--fs-sm);
+  color: var(--white);
+  font-family: var(--font-primary-semibold);
+}
+.comments-users-sidebar__close-btn {
+  background: transparent;
+  border: none;
+  color: var(--white);
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.comments-users-sidebar__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xxs);
+}
+.comments-users-sidebar__label {
+  font-size: var(--fs-xxxs);
+  color: var(--secundary-100);
+}
+.comments-users-sidebar__textarea {
+  min-height: 140px;
+  min-width: 300px;
+  background: var(--white);
+  border: 2px solid var(--secundary-400);
+  border-radius: 8px;
+  padding: var(--padding-top) var(--padding-right);
+  font-size: var(--fs-xxs);
+  color: var(--secundary-950);
+  resize: none;
+}
+.comments-users-sidebar__actions {
+  display: flex;
+  justify-content: center;  
+  align-items: center;       
+  margin-top: auto;
+  margin-bottom: 2.4rem;
+}
+
+.comments-users-sidebar--active {
+  left: 0;
+}
+.comments-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s ease;
+  z-index: 998;
+}
+.comments-overlay--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.comments-users-sidebar--active {
+  left: 0;
+}
+.comments-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 90;
+}
+.comments-overlay--active {
+  opacity: 1;
+  pointer-events: all;
+}
+@media (width < 640px) {
+    .comments-users-sidebar {
+        width: 100%;
+        min-width: 100%;
+    }
+    .comments-users-sidebar__textarea {
+        min-width: 100%;
+    }
+}

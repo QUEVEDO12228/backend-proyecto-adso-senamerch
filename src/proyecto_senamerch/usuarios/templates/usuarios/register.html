@@ -1,0 +1,40 @@
+<section class="register">
+  <div class="register__wrapper">
+    <header class="register__header">
+      <h1 class="register__title">Completa los datos para crear tu cuenta</h1>
+      <p class="register__subtitle">
+        Este formulario es para registrar<br> tu tienda en <strong>SENA MERCH</strong>.
+        Con tu perfil podrás publicar productos y gestionar tus ventas fácilmente.
+      </p>
+    </header>
+
+    <form class="register__form">
+
+      <div class="register__group">
+        <label class="register__label">Nombre</label>
+        <input class="register__input" type="text" placeholder="Tu nombre" required>
+      </div>
+
+      <div class="register__group">
+        <label class="register__label">Teléfono</label>
+        <input type="tel" class="register__input" value="+57 300 000 0000" required>
+      </div>
+
+      <div class="register__group">
+        <label class="register__label">Correo electrónico</label>
+        <input class="register__input" type="email" placeholder="correo@ejemplo.com" required>
+      </div>
+
+      <div class="register__group">
+        <label class="register__label">Dirección</label>
+        <a href="/frontend/public/views/add_adress.html" class="register__link">Agregar dirección</a>
+        <small class="register__text">Todo estará más cerca de ti.</small>
+      </div>
+
+      <button type="submit" class="btn btn--primary register__action-continue">
+        Siguiente
+        <img src="/frontend/public/assets/icons/continue.svg" alt="" class="btn__icon">
+      </button>
+    </form>
+  </div>
+</section>
