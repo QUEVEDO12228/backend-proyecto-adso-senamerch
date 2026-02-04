@@ -13,14 +13,33 @@
       Ingrésalo a continuación para continuar con el proceso.
     </p>
 
-    <form class="verify__form" method="post">
+    <!-- 🔔 MENSAJES -->
+    {% if messages %}
+      <div class="verify__messages">
+        {% for message in messages %}
+          <p class="verify__error">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form class="verify__form" method="post" onsubmit="return combineCode()">
       {% csrf_token %}
 
       <div class="verify__fields">
         {% for i in "123456" %}
-          <input type="text" maxlength="1" class="verify__input" required>
+          <input 
+            type="text"
+            maxlength="1"
+            class="verify__input"
+            inputmode="numeric"
+            pattern="[0-9]"
+            required
+          >
         {% endfor %}
       </div>
+
+      <!-- Código real que Django leerá -->
+      <input type="hidden" name="code" id="fullCode">
 
       <div class="verify__button">
         <button type="submit" class="btn btn--primary verify__submit">
@@ -31,9 +50,31 @@
     </form>
 
     <a href="{% url 'forgot_password' %}" class="verify__link">
-      
       Reenviar código
     </a>
   </div>
 </section>
+
+<script>
+function combineCode() {
+  const inputs = document.querySelectorAll('.verify__input');
+  let code = '';
+
+  for (let input of inputs) {
+    if (!/^[0-9]$/.test(input.value)) {
+      alert('El código debe contener solo números');
+      return false;
+    }
+    code += input.value;
+  }
+
+  if (code.length !== 6) {
+    alert('Debes ingresar los 6 dígitos del código');
+    return false;
+  }
+
+  document.getElementById('fullCode').value = code;
+  return true;
+}
+</script>
 {% endblock %}
