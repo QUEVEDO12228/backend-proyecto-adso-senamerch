@@ -1,0 +1,82 @@
+{% extends 'index_contact.html' %}
+{% load static %} 
+{% block title %}Contáctanos{% endblock %}
+
+{% block content %}
+<section class="contact">
+  <div class="contact__overlay">
+    <div class="contact__container">
+
+      <header class="contact__header">
+        <h2 class="contact__title">Contáctanos</h2>
+        <p class="contact__subtitle">
+          En <strong>SENA MERCH</strong> queremos escucharte.<br>
+          Si tienes preguntas, sugerencias o deseas más información,<br>
+          escríbenos y te responderemos lo más pronto posible.
+        </p>
+      </header>
+
+      <form class="contact__form" method="POST">
+        {% csrf_token %}
+
+        <div class="contact__group">
+          <label class="contact__label">Nombre</label>
+          <input
+            type="text"
+            name="name"
+            class="contact__input"
+            placeholder="Tu nombre completo"
+            required
+          >
+        </div>
+
+        <div class="contact__group">
+          <label class="contact__label">Correo electrónico</label>
+          <input
+            type="email"
+            name="email"
+            class="contact__input"
+            placeholder="tunombre@correo.com"
+            required
+          >
+        </div>
+
+        <div class="contact__group">
+          <label class="contact__label">Tipo de consulta</label>
+          <select name="query_type" class="contact__input" required>
+            <option value="">Selecciona...</option>
+            <option value="general">Consulta general</option>
+            <option value="soporte">Soporte</option>
+            <option value="sugerencia">Sugerencia</option>
+            <option value="ventas">Ventas</option>
+          </select>
+        </div>
+
+        <div class="contact__group">
+          <label class="contact__label">Mensaje</label>
+          <textarea
+            name="message"
+            rows="5"
+            class="contact__textarea"
+            placeholder="Escribe tu mensaje aquí..."
+            required
+          ></textarea>
+        </div>
+
+        <div class="contact__buttons">
+          <button type="submit" class="btn btn--primary contact__continue">
+            Enviar mensaje
+            <img
+              src="{% static 'assets/icons/continue.svg' %}"
+              class="btn__icon"
+              alt=""
+            >
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
