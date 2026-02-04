@@ -35,37 +35,17 @@
 
   <div class="navbar_product_category__actions">
 
-    {% if user.is_authenticated %}
 
-      <!-- CUANDO ESTÁ LOGUEADO -->
-      <a href="#"
-         class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-        <img src="{% static 'assets/icons/user.svg' %}"
-             class="navbar_product_category__icon"
-             alt="">
-        <span class="navbar_product_category__tooltip">Mi perfil</span>
-      </a>
+    <a href="{% url 'register' %}"
+      class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/register.svg' %}"
+            class="navbar_product_category__icon"
+            alt="">
+      <span class="navbar_product_category__tooltip">Registrarse</span>
+    </a>
 
-      <a href="#"
-         class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-        <img src="{% static 'assets/icons/logout.svg' %}"
-             class="navbar_product_category__icon"
-             alt="">
-        <span class="navbar_product_category__tooltip">Cerrar sesión</span>
-      </a>
 
-    {% else %}
-
-      <!-- CUANDO NO ESTÁ LOGUEADO -->
-      <a href="{% url 'register' %}"
-         class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-        <img src="{% static 'assets/icons/register.svg' %}"
-             class="navbar_product_category__icon"
-             alt="">
-        <span class="navbar_product_category__tooltip">Registrarse</span>
-      </a>
-
-    {% endif %}
+    
 
     <!-- SIEMPRE VISIBLE -->
     <a href="{% url 'contact' %}"
