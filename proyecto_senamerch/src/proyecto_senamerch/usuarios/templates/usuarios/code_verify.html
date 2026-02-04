@@ -1,0 +1,39 @@
+{% extends 'password_recovery.html' %}
+{% load static %}
+
+{% block title %}Verificar código{% endblock %}
+
+{% block content %}
+<section class="verify">
+  <div class="verify__container">
+    <h1 class="verify__title">Verifica tu identidad</h1>
+
+    <p class="verify__text">
+      Hemos enviado un código de 6 dígitos a tu correo electrónico.<br>
+      Ingrésalo a continuación para continuar con el proceso.
+    </p>
+
+    <form class="verify__form" method="post">
+      {% csrf_token %}
+
+      <div class="verify__fields">
+        {% for i in "123456" %}
+          <input type="text" maxlength="1" class="verify__input" required>
+        {% endfor %}
+      </div>
+
+      <div class="verify__button">
+        <button type="submit" class="btn btn--primary verify__submit">
+          Enviar código
+          <img src="{% static 'assets/icons/continue.svg' %}" class="btn__icon" alt="">
+        </button>
+      </div>
+    </form>
+
+    <a href="{% url 'forgot_password' %}" class="verify__link">
+      
+      Reenviar código
+    </a>
+  </div>
+</section>
+{% endblock %}
