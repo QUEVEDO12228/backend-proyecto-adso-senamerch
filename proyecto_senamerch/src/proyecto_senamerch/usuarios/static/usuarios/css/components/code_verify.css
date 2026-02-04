@@ -5,13 +5,8 @@
   /* min-height: 100vh; */
   padding-block: 2.4rem;
 
-  /* Fondo con imagen */
-  background-image:
-    linear-gradient(
-      rgba(0, 0, 0, 0.2), 
-      rgba(0, 0, 0, 0.2)
-    ),
-    url("/frontend/public/assets/img/img_contact.jpg");
+  background: url('/static/assets/img/img_contact.jpg') no-repeat center
+    center/cover;
 
   background-size: cover;
   background-position: center;

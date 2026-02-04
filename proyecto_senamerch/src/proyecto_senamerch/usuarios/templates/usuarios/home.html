@@ -1,0 +1,12 @@
+{% extends 'index_home.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="home-products">
+  {% for product in products %}
+    {% include 'usuarios/cards_home.html' %}
+  {% endfor %}
+</section>
+
+{% endblock %}

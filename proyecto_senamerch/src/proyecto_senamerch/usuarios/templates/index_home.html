@@ -3,16 +3,16 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}Registro | SenaMerch{% endblock %}</title>
+  <title>Inicio | SenaMerch</title>
   <link rel="stylesheet" href="{% static 'usuarios/css/main.css' %}">
 </head>
 <body>
 
-  {% include 'components/navbar_register.html' %}
+  {% include 'components/navbar_home.html' %}
+  {% include 'components/hero_home.html' %}
 
   <main class="main-content">
-    {% block content %}
-    {% endblock %}
+    {% block content %}{% endblock %}
   </main>
 
   {% include 'components/footer.html' %}
