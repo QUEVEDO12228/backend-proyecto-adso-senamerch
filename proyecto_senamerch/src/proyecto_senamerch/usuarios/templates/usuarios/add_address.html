@@ -1,0 +1,82 @@
+{% extends 'index_register.html' %}
+{% load static %}
+
+{% block title %}Agregar Dirección{% endblock %}
+
+{% block content %}
+<section class="address-store-form">
+  <div class="address-store-form__wrapper">
+
+    <header class="address-store-form__header">
+      <h2 class="address-store-form__title">Añade tu dirección</h2>
+      <p class="address-store-form__subtitle">
+        Completa la información para registrar tu dirección en
+        <strong>SENA MERCH</strong>.
+      </p>
+    </header>
+
+    <form class="address-store-form__form" method="post">
+      {% csrf_token %}
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Barrio</label>
+        <input
+          type="text"
+          name="neighborhood"
+          class="address-store-form__input"
+          placeholder="Ingresa tu barrio"
+          required
+        />
+      </div>
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Número de dirección</label>
+        <input
+          type="text"
+          name="address_number"
+          class="address-store-form__input"
+          placeholder="Ej: #25A - 45"
+          required
+        />
+      </div>
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Tipo de vía</label>
+        <input
+          type="text"
+          name="road_type"
+          class="address-store-form__input"
+          placeholder="Ej: Calle, Carrera, Avenida"
+        />
+      </div>
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Código postal</label>
+        <input
+          type="text"
+          name="postal_code"
+          class="address-store-form__input"
+          placeholder="Ej: 110111"
+        />
+      </div>
+
+      <!-- VOLVER -->
+      <div class="address-store-form__secondary">
+        <a href="{% url 'register' %}" class="btn-secundary btn-secundary-style">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}" class="btn-secundary__icon">
+        </a>
+      </div>
+
+      <!-- SIGUIENTE -->
+      <div class="address-store-form__buttons">
+        <button type="submit" class="btn btn--primary address-store-form__continue">
+          Siguiente
+          <img src="{% static 'assets/icons/continue.svg' %}" class="btn__icon">
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>
+{% endblock %}

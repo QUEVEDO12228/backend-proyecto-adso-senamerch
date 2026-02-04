@@ -16,13 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import redirect
-
-def home(request):
-    return redirect('login')
 
 urlpatterns = [
-    path('', home, name='home'),   # 🔑 AQUÍ ESTABA EL ERROR
     path('admin/', admin.site.urls),
+
+    # TODA la app usuarios
     path('', include('usuarios.urls')),
 ]

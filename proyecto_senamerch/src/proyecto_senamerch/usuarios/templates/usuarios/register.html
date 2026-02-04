@@ -4,55 +4,68 @@
 {% block title %}Registro{% endblock %}
 
 {% block content %}
-
 <section class="register">
   <div class="register__wrapper">
     <header class="register__header">
       <h1 class="register__title">Completa los datos para crear tu cuenta</h1>
       <p class="register__subtitle">
-        Este formulario es para registrar<br> tu tienda en <strong>SENA MERCH</strong>.
+        Este formulario es para registrar<br />
+        tu tienda en <strong>SENA MERCH</strong>. Con tu perfil podrás publicar
+        productos y gestionar tus ventas fácilmente.
       </p>
     </header>
 
-    <!-- MENSAJES -->
-    {% if messages %}
-      <div class="register__messages">
-        {% for message in messages %}
-          <p class="register__error">{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <form method="post" class="register__form">
+    <form class="register__form" method="post">
       {% csrf_token %}
 
       <div class="register__group">
         <label class="register__label">Nombre</label>
-        <input class="register__input" type="text" name="name" required>
+        <input
+          class="register__input"
+          type="text"
+          name="name"
+          placeholder="Tu nombre"
+          required
+        />
       </div>
 
       <div class="register__group">
         <label class="register__label">Teléfono</label>
-        <input class="register__input" type="tel" name="phone" placeholder="+57 3000000000" required>
+        <input
+          type="tel"
+          name="phone"
+          class="register__input"
+          value="+57 300 000 0000"
+          required
+        />
       </div>
 
       <div class="register__group">
         <label class="register__label">Correo electrónico</label>
-        <input class="register__input" type="email" name="email" required>
+        <input
+          class="register__input"
+          type="email"
+          name="email"
+          placeholder="correo@ejemplo.com"
+          required
+        />
       </div>
 
       <div class="register__group">
-        <label class="register__label">Contraseña</label>
-        <input class="register__input" type="password" name="password" required minlength="8">
-      </div>
-
-      <div class="register__group">
-        <label class="register__label">Confirmar contraseña</label>
-        <input class="register__input" type="password" name="password_confirm" required minlength="8">
+        <label class="register__label">Dirección</label>
+        <a href="{% url 'add_address' %}" class="register__link">
+          Agregar dirección
+        </a>
+        <small class="register__text">Todo estará más cerca de ti.</small>
       </div>
 
       <button type="submit" class="btn btn--primary register__action-continue">
-        Crear cuenta
+        Siguiente
+        <img
+          src="{% static 'assets/icons/continue.svg' %}"
+          alt=""
+          class="btn__icon"
+        />
       </button>
     </form>
   </div>

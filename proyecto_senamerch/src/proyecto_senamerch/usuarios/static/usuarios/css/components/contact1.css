@@ -1,16 +1,15 @@
-  /* >>> SECCIÓN DE CONTENEDOR DE LA IMAGEN DEL CONTACTO*/
-  .contact {
-    position: relative;
-    background: url("/frontend/public/assets/img/img_contact.jpg") no-repeat center center/cover;
-    width: 100%;
-    /* height: 88vh;  */
-    display: flex;
-    /* padding-block: 2rem; */
-    align-items: center;
-    justify-content: center;
-    color: var(--white);
-    font-family: var(--font-primary);
-  }
+/* >>> SECCIÓN DE CONTENEDOR DE LA IMAGEN DEL CONTACTO */
+.contact {
+  position: relative;
+  background: url("/static/assets/img/img_contact.jpg") no-repeat center center/cover;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-family: var(--font-primary);
+}
+
   /* >>> SECCIÓN DE CONTENIDO DE LA IMAGEN */
   .contact__overlay {
     width: 100%;
