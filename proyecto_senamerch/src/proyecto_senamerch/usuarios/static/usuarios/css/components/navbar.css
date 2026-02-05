@@ -5,7 +5,6 @@
   align-items: center;
   width: 100%;
   min-height: 40px;                   /* altura mínima, pero flexible */
-  background-color: var(--secundary-700);
   padding: var(--gap-xxs) var(--gap-sm);
   font-family: var(--font-primary);
   box-sizing: border-box;

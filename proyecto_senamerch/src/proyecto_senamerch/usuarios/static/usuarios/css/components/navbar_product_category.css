@@ -73,15 +73,15 @@
     margin-left: 2.4rem;
 
 }
-.navbar_product_category__letter--1 { color: var(--white); }
+.navbar_product_category__letter--1 { color: var(--secundary-300); }
 .navbar_product_category__letter--2 { color: var(--white); }
-.navbar_product_category__letter--3 { color: var(--white); }
+.navbar_product_category__letter--3 { color: var(--secundary-300); }
 .navbar_product_category__letter--4 { color: var(--white); }
-.navbar_product_category__letter--5 { color: var(--white); }
+.navbar_product_category__letter--5 { color: var(--secundary-300); }
 .navbar_product_category__letter--6 { color: var(--white); }
-.navbar_product_category__letter--7 { color: var(--white); }
+.navbar_product_category__letter--7 { color: var(--secundary-300); }
 .navbar_product_category__letter--8 { color: var(--white); }
-.navbar_product_category__letter--9 { color: var(--white); }
+.navbar_product_category__letter--9 { color: var(--secundary-300); }
 .navbar_product_category__actions {
     display: flex;
     align-items: center;
@@ -130,7 +130,7 @@
     object-fit: contain;
     margin-left: 2px; 
     margin-right: 4px; 
-    vertical-align: -8px;
+    vertical-align: -4px;
 }
 .navbar_product_category__icon-tittle {
     width: 32px;
