@@ -1,6 +1,6 @@
 .hero {
   position: relative;
-  background-image: url(/frontend/public/assets/img/img_contact.jpg);
+  background: url("/static/assets/img/img_contact.jpg") no-repeat center center/cover;
   background-size: cover;
   background-position: center;
   min-height: 40vh;

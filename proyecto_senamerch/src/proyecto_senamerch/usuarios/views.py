@@ -45,8 +45,30 @@ from django.contrib.auth.hashers import make_password
 # =========================
 # LOGIN
 # =========================
+# views.py
+
 def home_view(request):
-    return render(request, 'index_home.html')
+    products = [
+        {
+            "name": "Tomates Chonto",
+            "price": "4.500",
+            "discount": "4",
+            "image": "usuarios/assets/img/tomato_image.png",
+            "store_logo": "usuarios/assets/img/store_seller.jpg",
+            "store_name": "Verduras La Huerta",
+        },
+        {
+            "name": "Papa Pastusa",
+            "price": "2.300",
+            "discount": "6",
+            "image": "usuarios/assets/img/potato_image.png",
+            "store_logo": "usuarios/assets/img/store_seller.jpg",
+            "store_name": "Campo Andino",
+        },
+        # agrega todos los productos aquí
+    ]
+    
+    return render(request, 'usuarios/home.html', {'products': products})
 
 
 def login_view(request):
