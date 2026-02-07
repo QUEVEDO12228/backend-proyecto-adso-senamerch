@@ -1,0 +1,124 @@
+{% load static %}
+
+<section class="user-profile">
+  <div class="user-profile__container">
+    <h1 class="user-profile__title">Mi Perfil</h1>
+
+    <div class="user-profile__grid">
+
+      <!-- === Caja 1: Información Personal === -->
+      <div class="user-profile__card">
+        <h2 class="user-profile__subtitle">Información del usuario</h2>
+
+        <div class="user-profile__info">
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Nombre:</span>
+            <p class="user-profile__text">
+              {{ request.user.get_full_name|default:request.user.username }}
+            </p>
+          </div>
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Correo electrónico:</span>
+            <p class="user-profile__text">
+              {{ request.user.email }}
+            </p>
+          </div>
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Teléfono:</span>
+            <p class="user-profile__text">
+              {{ profile.phone|default:"No registrado" }}
+            </p>
+          </div>
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Contraseña:</span>
+            <p class="user-profile__text">
+              ******** (oculta por seguridad)
+            </p>
+          </div>
+
+          <div class="user-profile__item user-profile__item--image">
+            <span class="user-profile__label">Imagen de perfil:</span>
+
+            <img
+              src="{{ profile.image.url }}"
+              alt="Portada de perfil del usuario"
+              class="user-profile__image"
+            >
+          </div>
+
+        </div>
+      </div>
+
+      <!-- === Caja 2: Dirección === -->
+      <div class="user-profile__card">
+        <h2 class="user-profile__subtitle">Dirección</h2>
+
+        <div class="user-profile__info">
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Barrio:</span>
+            <p class="user-profile__text">
+              {{ profile.neighborhood|default:"—" }}
+            </p>
+          </div>
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Número de dirección:</span>
+            <p class="user-profile__text">
+              {{ profile.address_number|default:"—" }}
+            </p>
+          </div>
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Tipo de vía:</span>
+            <p class="user-profile__text">
+              {{ profile.road_type|default:"—" }}
+            </p>
+          </div>
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Código postal:</span>
+            <p class="user-profile__text">
+              {{ profile.postal_code|default:"—" }}
+            </p>
+          </div>
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Departamento:</span>
+            <p class="user-profile__text">
+              {{ profile.department|default:"—" }}
+            </p>
+          </div>
+
+          <div class="user-profile__item">
+            <span class="user-profile__label">Municipio:</span>
+            <p class="user-profile__text">
+              {{ profile.city|default:"—" }}
+            </p>
+          </div>
+
+          <div class="user-profile__item user-profile__item--full">
+            <span class="user-profile__label">Información adicional:</span>
+            <p class="user-profile__text">
+              {{ profile.extra_info|default:"—" }}
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- === Acciones === -->
+      <div class="user-profile__actions-primary">
+        <a href="{% url 'edit_profile_client' %}" class="btn btn--primary user-profile__send">
+          Editar datos
+          <img src="{% static 'assets/icons/edit.svg' %}" alt="Icono editar" class="btn__icon user-profile__icon">
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>

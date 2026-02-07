@@ -1,0 +1,56 @@
+{% extends 'index_home_client.html' %}
+
+{% block content %}
+
+<section class="create-store">
+  <div class="create-store__wrapper">
+    <header class="create-store__header">
+      <h1 class="create-store__title">Crear tienda</h1>
+      <p class="create-store__subtitle">
+        Completa el formulario para registrar tu tienda en <strong>SENA MERCH</strong>.<br>
+        Con tu perfil podrás publicar productos y gestionar tus ventas fácilmente.
+      </p>
+    </header>
+
+    <form method="post" class="create-store__form">
+      {% csrf_token %}
+
+      <div class="create-store__group">
+        <label class="create-store__label">Dirección de la tienda</label>
+        <a href="#" class="create-store__link">Agregar dirección</a>
+      </div>
+
+      <div class="create-store__group">
+        <label class="create-store__label">Imagen de portada</label>
+        <input type="file" name="cover" class="create-store__input" accept="image/*">
+      </div>
+
+      <div class="create-store__group">
+        <label class="create-store__label">Descripción</label>
+        <textarea name="description"
+                  class="create-store__textarea"
+                  rows="4"
+                  placeholder="Escribe una breve descripción..."
+                  required></textarea>
+      </div>
+
+      <div class="create-store__actions">
+          <div class="create-store__action-left">
+            <a href="{% url 'create_store' %}"
+              class="btn-secundary btn-secundary-style">
+              Volver
+            </a>
+          </div>
+
+          <div class="create-store__action-right">
+            <button type="submit" class="btn btn--primary">
+              Crear tienda
+            </button>
+          </div>
+        </div>
+
+    </form>
+  </div>
+</section>
+
+{% endblock %}

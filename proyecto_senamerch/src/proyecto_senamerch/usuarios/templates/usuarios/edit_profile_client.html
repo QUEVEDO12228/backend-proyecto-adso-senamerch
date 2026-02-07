@@ -1,0 +1,96 @@
+{% extends "index_home_client.html" %}
+{% load static %}
+
+{% block content %}
+<section class="edit-profile-user">
+  <div class="edit-profile-user__wrapper">
+
+    <!-- Header -->
+    <header class="edit-profile-user__header">
+      <h1 class="edit-profile-user__title">Editar perfil</h1>
+      <p class="edit-profile-user__subtitle">
+        Actualiza tu información personal y mantén tu cuenta al día.
+      </p>
+    </header>
+
+    <!-- Form -->
+    <form class="edit-profile-user__form"
+      method="POST"
+      action="{% url 'edit_profile_client' %}"
+      enctype="multipart/form-data">
+      {% csrf_token %}
+
+
+      <!-- Foto de perfil -->
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Imagen de portada</label>
+        <input
+          type="file"
+          name="cover_image"
+          class="edit-profile-user__input"
+          accept="image/*">
+      </div>
+
+      <!-- Dirección -->
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Dirección</label>
+        <a href="{% url 'add_address' %}" class="edit-profile-user__link">
+          Agregar dirección
+        </a>
+        <span class="edit-profile-user__label">
+          Si tuviste un error puedes corregir tu dirección
+        </span>
+      </div>
+
+      <!-- Correo -->
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Correo electrónico</label>
+        <input
+          type="email"
+          name="email"
+          class="edit-profile-user__input"
+          value="{{ request.user.email }}">
+      </div>
+
+      <!-- Nombre -->
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Nombre</label>
+        <input
+          type="text"
+          name="name"
+          class="edit-profile-user__input"
+          value="{{ request.user.first_name }}">
+      </div>
+
+      <!-- Botón secundario -->
+      <!-- Botón secundario -->
+      <div class="edit-profile-user__secondary">
+        <a href="{% url 'profile' %}"
+          class="btn-secundary btn-secundary-style edit-profile-user__cancel">
+          Volver
+          <img
+            src="{% static 'assets/icons/return.svg' %}"
+            alt=""
+            class="btn-secundary__icon"
+            aria-hidden="true">
+        </a>
+      </div>
+
+      <!-- Botón principal -->
+      <div class="edit-profile-user__buttons">
+        <button
+          type="submit"
+          class="btn btn--primary edit-profile-user__submit">
+          Siguiente
+          <img
+            src="{% static 'assets/icons/continue.svg' %}"
+            alt=""
+            class="btn__icon edit-profile-user__icon">
+        </button>
+      </div>
+
+
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -156,19 +156,19 @@
   color: var(--secundary-950);
   text-decoration: underline;
 }
-.create-store__buttons {
-  display: flex;
-  justify-content: flex-end;
+.create-store__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 👈 dos cajas */
+  grid-column: 1 / -1; /* ocupa todo el ancho del form */
   align-items: center;
-  gap: var(--gap-xxs);
-  margin-top: var(--gap-xxs);
-  grid-column: 2 / 3;
 }
-.create-store__secondary {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  grid-column: 1 / 2;
+
+.create-store__action-left {
+  justify-self: start; /* ⬅️ izquierda */
+}
+
+.create-store__action-right {
+  justify-self: end;   /* ➡️ derecha */
 }
 @media (width < 640px) {
   .create-store__wrapper {
