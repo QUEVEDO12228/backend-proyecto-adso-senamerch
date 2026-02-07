@@ -1,0 +1,94 @@
+{% extends "index_home_client.html" %}
+{% load static %}
+
+{% block content %}
+<section class="edit-profile-user">
+  <div class="edit-profile-user__wrapper">
+
+    <!-- Header -->
+    <header class="edit-profile-user__header">
+      <h1 class="edit-profile-user__title">Editar perfil</h1>
+      <p class="edit-profile-user__subtitle">
+        Actualiza tu información personal y mantén tu cuenta al día.
+      </p>
+    </header>
+
+    <!-- Form -->
+    <form class="edit-profile-user__form" method="POST">
+      {% csrf_token %}
+
+      <!-- Tipo de usuario -->
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Tipo de usuario</label>
+        <input
+          type="text"
+          class="edit-profile-user__input edit-profile-user__input--readonly"
+          value="Cliente"
+          readonly>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Teléfono</label>
+        <input
+          type="tel"
+          name="phone"
+          class="edit-profile-user__input"
+          value="{{ user.profile.phone }}"
+          required>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Escribe tu contraseña</label>
+        <div class="edit-profile-user__password-wrapper">
+          <input
+            type="password"
+            name="password"
+            class="edit-profile-user__input edit-profile-user__input--password"
+            required>
+        </div>
+      </div>
+
+      <!-- Confirmar contraseña -->
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Confirma tu contraseña</label>
+        <div class="edit-profile-user__password-wrapper">
+          <input
+            type="password"
+            name="password_confirm"
+            class="edit-profile-user__input edit-profile-user__input--password"
+            required>
+        </div>
+      </div>
+
+      <!-- Botón secundario -->
+      <div class="edit-profile-user__secondary">
+        <a href="{% url 'edit_profile_client' %}"
+           class="btn-secundary btn-secundary-style edit-profile-user__cancel">
+          Volver
+          <img
+            src="{% static 'assets/icons/return.svg' %}"
+            alt=""
+            class="btn-secundary__icon"
+            aria-hidden="true">
+        </a>
+      </div>
+
+      <!-- Botón principal -->
+      <div class="edit-profile-user__buttons">
+        <button
+          type="submit"
+          class="btn btn--primary edit-profile-user__submit">
+          Guardar cambios
+          <img
+            src="{% static 'assets/icons/save.svg' %}"
+            alt=""
+            class="btn__icon edit-profile-user__icon">
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>
+{% endblock %}

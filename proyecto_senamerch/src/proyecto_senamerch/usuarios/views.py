@@ -41,7 +41,11 @@ from django.conf import settings
 from django.contrib.auth.hashers import make_password  
 # Encripta contraseñas antes de guardarlas en la base de datos
 
+from django.shortcuts import render, redirect
 
+from django.contrib.auth import logout
+
+from .models import Profile
 # =========================
 # LOGIN
 # =========================
@@ -72,18 +76,15 @@ def home_view(request):
 
 
 def login_view(request):
-    # Variable que indica si el formulario fue enviado
     context = {'form_submitted': False}
 
-    # Si el usuario envió el formulario
     if request.method == 'POST':
         context['form_submitted'] = True
 
-        # Obtener datos del formulario
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
 
-        # Verificar campos vacíos
+        # Validar campos vacíos
         if not email or not password:
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'usuarios/login.html', context)
@@ -95,10 +96,9 @@ def login_view(request):
             messages.error(request, 'Ingresa un correo electrónico válido.')
             return render(request, 'usuarios/login.html', context)
 
-        # Autenticar usuario con Django
+        # Autenticación
         user = authenticate(request, username=email, password=password)
 
-        # Si no existe el usuario o la contraseña es incorrecta
         if user is None:
             messages.error(
                 request,
@@ -109,10 +109,9 @@ def login_view(request):
         # Iniciar sesión
         login(request, user)
 
-        # Redirigir al inicio
-        return redirect('home')
+        # 🔁 REDIRECCIÓN CORRECTA (HOME CLIENTE)
+        return redirect('home_client')
 
-    # Mostrar página de login
     return render(request, 'usuarios/login.html', context)
 
 
@@ -468,4 +467,82 @@ def add_address_step_2(request):
 
     return render(request, 'usuarios/add_address2.html')
 
+def home_client_view(request):
+    products = [
+        {
+            "name": "Tomates Chonto",
+            "price": 4500,
+            "discount": 4,
+            "image": "tomato_image.png",
+            "store_logo": "store_seller.jpg",
+            "store_name": "Verduras La Huerta",
+        },
+        {
+            "name": "Papa Pastusa",
+            "price": 2300,
+            "discount": 6,
+            "image": "potato_image.png",
+            "store_logo": "store_seller.jpg",
+            "store_name": "Campo Andino",
+        },
+    ]
 
+    return render(request, 'usuarios/home_client.html', {
+        'products': products
+    })
+
+def client_orders_view(request):
+    return render(request, 'usuarios/client_orders.html')
+
+def create_store_view(request):
+    if request.method == 'POST':
+        request.session['store_step1'] = request.POST
+        return redirect('create_store_step_2')
+
+    return render(request, 'usuarios/create_store.html')
+
+
+def create_store_step_2_view(request):
+    if request.method == 'POST':
+        step1 = request.session.get('store_step1')
+
+        # 👇 Aquí luego guardas en BD
+        # Store.objects.create(
+        #     name=step1['name'],
+        #     email=step1['email'],
+        #     phone=step1['phone'],
+        #     category=step1['category'],
+        #     description=request.POST['description'],
+        #     image=request.FILES.get('image'),
+        # )
+
+        request.session.pop('store_step1', None)
+        return redirect('profile')
+
+    return render(request, 'usuarios/create_store2.html')
+
+
+def profile_view(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    return render(request, 'index_profile_user.html', {
+        'profile': profile
+    })
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')
+
+def edit_profile_client(request):
+    if request.method == "POST":
+        # Aquí luego guardas email, nombre, imagen, etc
+        return redirect('edit_profile_client2')
+
+    return render(request, 'usuarios/edit_profile_client.html')
+
+def edit_profile_client2(request):
+    if request.method == "POST":
+        # Aquí luego guardas teléfono y contraseña
+        return redirect('profile')  # o donde vuelva el usuario
+
+    return render(request, 'usuarios/edit_profile_client2.html')

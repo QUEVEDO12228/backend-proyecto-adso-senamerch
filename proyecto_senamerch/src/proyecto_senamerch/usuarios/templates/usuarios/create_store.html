@@ -1,0 +1,66 @@
+{% extends 'index_home_client.html' %}
+
+{% block content %}
+
+<section class="create-store-one">
+  <div class="create-store-one__wrapper">
+    <header class="create-store-one__header">
+      <h1 class="create-store-one__title">Crear Tienda</h1>
+      <p class="create-store-one__subtitle">
+        Este formulario es para registrar<br>
+        tu tienda en <strong>SENA MERCH</strong>.
+        Con tu perfil podrás publicar productos y gestionar tus ventas fácilmente.
+      </p>
+    </header>
+
+    <form method="post" class="create-store-one__form">
+
+      {% csrf_token %}
+
+      <div class="create-store-one__group">
+        <label class="create-store-one__label">Nombre de la tienda</label>
+        <input type="text" name="name" class="create-store-one__input"
+               placeholder="Ejemplo: Frutas La Esperanza" required>
+      </div>
+
+      <div class="create-store-one__group">
+        <label class="create-store-one__label">Correo electrónico</label>
+        <input type="email" name="email" class="create-store-one__input"
+               placeholder="correo@tienda.com" required>
+      </div>
+
+      <div class="create-store-one__group">
+        <label class="create-store-one__label">Teléfono</label>
+        <input type="tel" name="phone" class="create-store-one__input"
+               placeholder="+57 300 000 0000" required>
+      </div>
+
+      <div class="create-store-one__group">
+        <label class="create-store-one__label">Categoría</label>
+        <select name="category" class="create-store-one__input" required>
+          <option value="">Selecciona una categoría</option>
+          <option value="Frutas">Frutas</option>
+          <option value="Verduras">Verduras</option>
+          <option value="Lácteos">Lácteos</option>
+          <option value="Granos">Granos</option>
+          <option value="Todas">Todas</option>
+        </select>
+      </div>
+
+      <div class="create-store-one__secondary">
+        <a href="{% url 'home_client' %}"
+           class="btn-secundary btn-secundary-style create-store-one__gestor">
+          Volver
+        </a>
+      </div>
+
+      <div class="create-store-one__buttons">
+        <button type="submit" class="btn btn--primary create-store-one__continue">
+          Siguiente
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+{% endblock %}
