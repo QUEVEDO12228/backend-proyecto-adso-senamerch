@@ -22,38 +22,38 @@ from .views import (
 )
 
 urlpatterns = [
-    # 🌐 HOME PÚBLICO
+    # HOME PÚBLICO
     path('', home_view, name='home'),
 
-    # 🔐 AUTH
+    # AUTH
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
 
     path('register/', register_view, name='register'),
     path('register2/', register_step_2, name='register2'),
 
-    # 📍 DIRECCIÓN
+    # DIRECCIÓN
     path('add-address/', add_address_view, name='add_address'),
     path('add-address-2/', add_address_step_2, name='add_address2'),
 
-    # 📞 CONTACTO
+    # CONTACTO
     path('contact/', contact_view, name='contact'),
 
-    # 🔑 RECUPERACIÓN
+    # RECUPERACIÓN
     path('forgot-password/', forgot_password_view, name='forgot_password'),
     path('verify-code/', code_verify_view, name='code_verify'),
 
-    # 🏠 HOME CLIENTE
+    # HOME CLIENTE
     path('home/', home_client_view, name='home_client'),
 
-    # 📦 NAVBAR / CLIENTE
+    # NAVBAR / CLIENTE
     path('orders/', client_orders_view, name='client_orders'),
 
-    # 🏪 CREAR TIENDA (PASOS)
+    # CREAR TIENDA (PASOS)
     path('create-store/', create_store_view, name='create_store'),
     path('create-store/step-2/', create_store_step_2_view, name='create_store_step_2'),
 
-    # 👤 PERFIL
+    # PERFIL
     path('profile/', profile_view, name='profile'),
     path('edit_profile/', edit_profile_client, name='edit_profile_client'),
     path('edit_profile2', edit_profile_client2, name='edit_profile_client2'),
