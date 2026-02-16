@@ -13,55 +13,28 @@
       </a>
     </div>  
 
-    <!-- Línea negra -->
     <div class="navbar_separator"></div>
 
     <div class="navbar_product_category__logo--left">
       <h1 class="navbar_product_category__title--SenaMerch">
-        <span class="navbar_product_category__letter navbar_product_category__letter--1">S</span>
-        <span class="navbar_product_category__letter navbar_product_category__letter--2">e</span>
-        <span class="navbar_product_category__letter navbar_product_category__letter--3">n</span>
-        <span class="navbar_product_category__letter navbar_product_category__letter--4">a</span>
-        <span class="navbar_product_category__letter navbar_product_category__letter--5">M</span>
-        <span class="navbar_product_category__letter navbar_product_category__letter--6">e</span>
-        <span class="navbar_product_category__letter navbar_product_category__letter--7">r</span>
-        <span class="navbar_product_category__letter navbar_product_category__letter--8">c</span>
-        <span class="navbar_product_category__letter navbar_product_category__letter--9">h</span>
-        <img
-          src="{% static 'assets/icons/wheat.svg' %}"
-          alt=""
-          class="navbar_product_category__icon"
-        >
+        SenaMerch
       </h1>
     </div>
   </div>
 
-  <!-- 🔍 Barra de búsqueda -->
+  <!-- 🔍 BUSCADOR -->
   <div class="search-bar--navbar navbar_product_category__search-bar">
-
-    <button class="search-bar__button" aria-label="Buscar">
-      <span class="search-bar__icon navbar_product_category__icon-search">
-        <img src="{% static 'assets/icons/icon_search.svg' %}" alt="Buscar">
-      </span>
-    </button>
-
     <input
       type="text"
       class="search-bar__input navbar_product_category__input-search"
-      placeholder="Busca un productos o tiendas"
+      placeholder="Busca productos o tiendas"
     >
-
-    <button class="search-bar__button" aria-label="Cancelar búsqueda">
-      <span class="search-bar__icon search-bar__icon--close navbar_product_category__icon-close">
-        <img src="{% static 'assets/icons/icon_cancel.svg' %}" alt="Cancelar">
-      </span>
-    </button>
-
   </div>
 
-  <!-- ⚙️ Acciones -->
+  <!-- ⚙️ ACCIONES -->
   <div class="navbar_product_category__actions">
 
+    <!-- PEDIDOS -->
     <a
       href="{% url 'client_orders' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
@@ -71,9 +44,10 @@
         class="navbar_product_category__icon"
         alt=""
       >
-      <span class="navbar_product_category__tooltip">Pedidos</span>
     </a>
 
+    <!-- ⭐ CREAR TIENDA SOLO SI NO TIENE -->
+    {% if request.user.is_authenticated and request.user.tiendas.count == 0 %}
     <a
       href="{% url 'create_store' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
@@ -85,7 +59,9 @@
       >
       <span class="navbar_product_category__tooltip">Crear tienda</span>
     </a>
+    {% endif %}
 
+    <!-- LOGOUT -->
     <a
       href="{% url 'logout' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
@@ -95,9 +71,9 @@
         class="navbar_product_category__icon"
         alt=""
       >
-      <span class="navbar_product_category__tooltip">Salir</span>
     </a>
 
+    <!-- PERFIL -->
     <a
       href="{% url 'profile' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
@@ -107,7 +83,6 @@
         class="navbar_product_category__icon"
         alt=""
       >
-      <span class="navbar_product_category__tooltip">Perfil</span>
     </a>
 
   </div>
