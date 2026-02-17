@@ -4,11 +4,9 @@
   overflow: hidden;
   padding-block: 2.4rem;
   background-image:
-    linear-gradient(
-      rgba(0, 0, 0, 0.2), 
-      rgba(0, 0, 0, 0.2)
-    ),
-    url("/static/assets/img/img_contact.jpg");
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    url("/static/assets/img/store_seller.jpg");
+
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

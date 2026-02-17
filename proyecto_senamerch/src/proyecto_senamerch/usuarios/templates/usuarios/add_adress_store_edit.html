@@ -1,0 +1,80 @@
+<section class="address-store-form">
+  <div class="address-store-form__wrapper">
+
+    <!-- Encabezado -->
+    <header class="address-store-form__header">
+      <h2 class="address-store-form__title">Editar dirección de la tienda</h2>
+      <p class="address-store-form__subtitle">
+        Actualiza la información de ubicación de tu tienda en <strong>SENA MERCH</strong>.<br>
+        Mantener estos datos correctos ayuda a tus clientes a conocer la dirección exacta
+        para entregas y contactos.
+      </p>
+    </header>
+
+    <!-- FORMULARIO -->
+    <form class="address-store-form__form">
+
+      <!-- Barrio -->
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Barrio</label>
+        <input 
+          type="text"
+          placeholder="Ingresa el barrio"
+          class="address-store-form__input"
+          required
+        >
+      </div>
+
+      <!-- Número de dirección -->
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Número de dirección</label>
+        <input 
+          type="text"
+          placeholder="Ej: #25A - 45"
+          class="address-store-form__input"
+          required
+        >
+      </div>
+
+      <!-- Tipo de vía -->
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Tipo de vía</label>
+        <input 
+          type="text"
+          placeholder="Ej: Calle, Carrera, Avenida"
+          class="address-store-form__input"
+        >
+      </div>
+
+      <!-- Código postal -->
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Código postal</label>
+        <input 
+          type="text"
+          placeholder="Ej: 110111"
+          class="address-store-form__input"
+        >
+      </div>
+
+      <!-- Botón Volver -->
+      <div class="address-store-form__secondary">
+        <button
+          type="button"
+          class="btn-secundary btn-secundary-style"
+        >
+          Volver
+          <img src="/frontend/public/assets/icons/return.svg" class="btn-secundary__icon">
+        </button>
+      </div>
+
+      <!-- Botón Siguiente -->
+      <div class="address-store-form__buttons">
+        <button type="submit" class="btn btn--primary">
+          Siguiente
+          <img src="/frontend/public/assets/icons/continue.svg" class="btn__icon">
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>

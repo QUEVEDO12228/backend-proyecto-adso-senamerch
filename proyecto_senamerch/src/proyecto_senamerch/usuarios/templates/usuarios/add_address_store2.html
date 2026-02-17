@@ -1,0 +1,78 @@
+{% extends 'index_home_client.html' %}
+
+{% block content %}
+
+<section class="address-store-form">
+  <div class="address-store-form__wrapper">
+
+    <header class="address-store-form__header">
+      <h2 class="address-store-form__title">
+        Completa la dirección de tu tienda
+      </h2>
+      <p class="address-store-form__subtitle">
+        Ingresa los datos restantes para registrar correctamente la dirección
+        de tu tienda en <strong>SENA MERCH</strong>.
+      </p>
+    </header>
+
+    <form 
+      method="POST"
+      action="{% url 'create_store_step_2' %}"
+      class="address-store-form__form"
+    >
+      {% csrf_token %}
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Departamento</label>
+        <input 
+          type="text"
+          name="department"
+          placeholder="Ej: Cundinamarca"
+          class="address-store-form__input"
+          required
+        >
+      </div>
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Municipio</label>
+        <input 
+          type="text"
+          name="city"
+          placeholder="Ej: Bogotá"
+          class="address-store-form__input"
+          required
+        >
+      </div>
+
+      <div class="address-store-form__group address-store-form__group--full">
+        <label class="address-store-form__label">Información adicional</label>
+        <input 
+          type="text"
+          name="additional_info"
+          placeholder="Apartamento, interior, referencias, etc."
+          class="address-store-form__input"
+        >
+      </div>
+
+      <!-- BOTÓN VOLVER -->
+      <div class="address-store-form__secondary">
+        <a href="{% url 'add_address_store' %}"
+           class="btn-secundary btn-secundary-style">
+          Volver
+        </a>
+      </div>
+
+      <!-- BOTÓN GUARDAR -->
+      <div class="address-store-form__buttons">
+        <button type="submit" class="btn btn--primary">
+          Guardar
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</section>
+
+{% endblock %}
+  

@@ -75,44 +75,44 @@ def home_view(request):
     return render(request, 'usuarios/home.html', {'products': products})
 
 
-def login_view(request):
-    context = {'form_submitted': False}
+    def login_view(request):
+        context = {'form_submitted': False}
 
-    if request.method == 'POST':
-        context['form_submitted'] = True
+        if request.method == 'POST':
+            context['form_submitted'] = True
 
-        email = request.POST.get('email', '').strip()
-        password = request.POST.get('password', '').strip()
+            email = request.POST.get('email', '').strip()
+            password = request.POST.get('password', '').strip()
 
-        # Validar campos vacíos
-        if not email or not password:
-            messages.error(request, 'Todos los campos son obligatorios.')
-            return render(request, 'usuarios/login.html', context)
+            # Validar campos vacíos
+            if not email or not password:
+                messages.error(request, 'Todos los campos son obligatorios.')
+                return render(request, 'usuarios/login.html', context)
 
-        # Validar formato de correo
-        try:
-            validate_email(email)
-        except ValidationError:
-            messages.error(request, 'Ingresa un correo electrónico válido.')
-            return render(request, 'usuarios/login.html', context)
+            # Validar formato de correo
+            try:
+                validate_email(email)
+            except ValidationError:
+                messages.error(request, 'Ingresa un correo electrónico válido.')
+                return render(request, 'usuarios/login.html', context)
 
-        # Autenticación
-        user = authenticate(request, username=email, password=password)
+            # Autenticación
+            user = authenticate(request, username=email, password=password)
 
-        if user is None:
-            messages.error(
-                request,
-                'Correo o contraseña incorrectos. ¿Aún no tienes cuenta? Regístrate.'
-            )
-            return render(request, 'usuarios/login.html', context)
+            if user is None:
+                messages.error(
+                    request,
+                    'Correo o contraseña incorrectos. ¿Aún no tienes cuenta? Regístrate.'
+                )
+                return render(request, 'usuarios/login.html', context)
 
-        # Iniciar sesión
-        login(request, user)
+            # Iniciar sesión
+            login(request, user)
 
-        # 🔁 REDIRECCIÓN CORRECTA (HOME CLIENTE)
-        return redirect('home_client')
+            # 🔁 REDIRECCIÓN CORRECTA (HOME CLIENTE)
+            return redirect('home_client')
 
-    return render(request, 'usuarios/login.html', context)
+        return render(request, 'usuarios/login.html', context)
 
 
 # =========================
@@ -503,24 +503,14 @@ def create_store_view(request):
 
 
 def create_store_step_2_view(request):
-    if request.method == 'POST':
-        step1 = request.session.get('store_step1')
+    if request.method == "POST":
+        department = request.POST.get("department")
+        city = request.POST.get("city")
+        additional_info = request.POST.get("additional_info")
 
-        # 👇 Aquí luego guardas en BD
-        # Store.objects.create(
-        #     name=step1['name'],
-        #     email=step1['email'],
-        #     phone=step1['phone'],
-        #     category=step1['category'],
-        #     description=request.POST['description'],
-        #     image=request.FILES.get('image'),
-        # )
-
-        request.session.pop('store_step1', None)
-        return redirect('profile')
+        # Aquí luego puedes guardar en sesión o BD
 
     return render(request, 'usuarios/create_store2.html')
-
 
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -546,3 +536,15 @@ def edit_profile_client2(request):
         return redirect('profile')  # o donde vuelva el usuario
 
     return render(request, 'usuarios/edit_profile_client2.html')
+
+def add_address_store(request):
+    return render(request, 'usuarios/add_adress_store.html')
+
+
+def add_address_store2(request):
+    return render(request, 'usuarios/add_address_store2.html')
+
+
+
+
+

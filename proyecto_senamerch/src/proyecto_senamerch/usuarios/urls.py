@@ -19,6 +19,9 @@ from .views import (
     logout_view,
     edit_profile_client,
     edit_profile_client2,
+    add_address_store,    
+    add_address_store2,
+
 )
 
 urlpatterns = [
@@ -57,6 +60,10 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
     path('edit_profile/', edit_profile_client, name='edit_profile_client'),
     path('edit_profile2', edit_profile_client2, name='edit_profile_client2'),
+    path('add_address_store/', add_address_store, name='add_address_store'),
+    path('add_address_store2/', add_address_store2, name='add_address_store2'),
+
+
 
 ]
 
