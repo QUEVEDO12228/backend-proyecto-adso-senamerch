@@ -75,44 +75,44 @@ def home_view(request):
     return render(request, 'usuarios/home.html', {'products': products})
 
 
-def login_view(request):
-    context = {'form_submitted': False}
+    def login_view(request):
+        context = {'form_submitted': False}
 
-    if request.method == 'POST':
-        context['form_submitted'] = True
+        if request.method == 'POST':
+            context['form_submitted'] = True
 
-        email = request.POST.get('email', '').strip()
-        password = request.POST.get('password', '').strip()
+            email = request.POST.get('email', '').strip()
+            password = request.POST.get('password', '').strip()
 
-        # Validar campos vacíos
-        if not email or not password:
-            messages.error(request, 'Todos los campos son obligatorios.')
-            return render(request, 'usuarios/login.html', context)
+            # Validar campos vacíos
+            if not email or not password:
+                messages.error(request, 'Todos los campos son obligatorios.')
+                return render(request, 'usuarios/login.html', context)
 
-        # Validar formato de correo
-        try:
-            validate_email(email)
-        except ValidationError:
-            messages.error(request, 'Ingresa un correo electrónico válido.')
-            return render(request, 'usuarios/login.html', context)
+            # Validar formato de correo
+            try:
+                validate_email(email)
+            except ValidationError:
+                messages.error(request, 'Ingresa un correo electrónico válido.')
+                return render(request, 'usuarios/login.html', context)
 
-        # Autenticación
-        user = authenticate(request, username=email, password=password)
+            # Autenticación
+            user = authenticate(request, username=email, password=password)
 
-        if user is None:
-            messages.error(
-                request,
-                'Correo o contraseña incorrectos. ¿Aún no tienes cuenta? Regístrate.'
-            )
-            return render(request, 'usuarios/login.html', context)
+            if user is None:
+                messages.error(
+                    request,
+                    'Correo o contraseña incorrectos. ¿Aún no tienes cuenta? Regístrate.'
+                )
+                return render(request, 'usuarios/login.html', context)
 
-        # Iniciar sesión
-        login(request, user)
+            # Iniciar sesión
+            login(request, user)
 
-        # 🔁 REDIRECCIÓN CORRECTA (HOME CLIENTE)
-        return redirect('home_client')
+            # 🔁 REDIRECCIÓN CORRECTA (HOME CLIENTE)
+            return redirect('home_client')
 
-    return render(request, 'usuarios/login.html', context)
+        return render(request, 'usuarios/login.html', context)
 
 
 # =========================
