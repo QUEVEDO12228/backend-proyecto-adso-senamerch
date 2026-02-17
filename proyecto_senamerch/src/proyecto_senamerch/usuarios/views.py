@@ -503,24 +503,14 @@ def create_store_view(request):
 
 
 def create_store_step_2_view(request):
-    if request.method == 'POST':
-        step1 = request.session.get('store_step1')
+    if request.method == "POST":
+        department = request.POST.get("department")
+        city = request.POST.get("city")
+        additional_info = request.POST.get("additional_info")
 
-        # 👇 Aquí luego guardas en BD
-        # Store.objects.create(
-        #     name=step1['name'],
-        #     email=step1['email'],
-        #     phone=step1['phone'],
-        #     category=step1['category'],
-        #     description=request.POST['description'],
-        #     image=request.FILES.get('image'),
-        # )
-
-        request.session.pop('store_step1', None)
-        return redirect('profile')
+        # Aquí luego puedes guardar en sesión o BD
 
     return render(request, 'usuarios/create_store2.html')
-
 
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -546,3 +536,15 @@ def edit_profile_client2(request):
         return redirect('profile')  # o donde vuelva el usuario
 
     return render(request, 'usuarios/edit_profile_client2.html')
+
+def add_address_store(request):
+    return render(request, 'usuarios/add_adress_store.html')
+
+
+def add_address_store2(request):
+    return render(request, 'usuarios/add_address_store2.html')
+
+
+
+
+

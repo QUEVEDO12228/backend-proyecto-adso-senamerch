@@ -1,0 +1,65 @@
+<section class="address-store-form">
+  <div class="address-store-form__wrapper">
+
+    <header class="address-store-form__header">
+      <h2 class="address-store-form__title">Finaliza la edición de la dirección de tu tienda</h2>
+      <p class="address-store-form__subtitle">
+        Completa la información para actualizar la dirección<br>
+        de tu tienda en <strong>SENA MERCH</strong>.
+        Con tu perfil podrás publicar productos y gestionar tus ventas fácilmente.
+      </p>
+    </header>
+
+    <!-- FORMULARIO CON GRID -->
+    <form class="address-store-form__form">
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Departamento</label>
+        <input 
+          type="text"
+          name="department"
+          placeholder="Ej: Cundinamarca"
+          class="address-store-form__input"
+        >
+      </div>
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Municipio</label>
+        <input 
+          type="text"
+          name="city"
+          placeholder="Ej: Bogotá"
+          class="address-store-form__input"
+        >
+      </div>
+
+      <div class="address-store-form__group address-store-form__group--full">
+        <label class="address-store-form__label">Información adicional</label>
+        <input 
+          type="text"
+          name="additional-info"
+          placeholder="Apartamento, interior, referencias, etc."
+          class="address-store-form__input"
+        >
+      </div>
+
+      <!-- Botón Volver -->
+      <div class="address-store-form__secondary">
+        <button class="btn-secundary btn-secundary-style address-store-form__return" >
+          Volver
+          <img src="/frontend/public/assets/icons/return.svg" class="btn-secundary__icon">
+        </button>
+      </div>
+
+      <!-- Botón Guardar -->
+      <div class="address-store-form__buttons">
+        <button type="submit" class="btn btn--primary">
+          Guardar
+          <img src="/frontend/public/assets/icons/save.svg" class="btn__icon">
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</section>
