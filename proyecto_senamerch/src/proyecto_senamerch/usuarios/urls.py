@@ -7,6 +7,7 @@ from .views import (
     login_view,
     register_view,
     register_step_2,
+    reset_password_view,
     add_address_view,
     add_address_step_2,
     contact_view,
@@ -19,52 +20,72 @@ from .views import (
     logout_view,
     edit_profile_client,
     edit_profile_client2,
-    add_address_store,    
+    add_address_store,
     add_address_store2,
-
 )
 
 urlpatterns = [
+
+    # =========================
     # HOME PÚBLICO
+    # =========================
     path('', home_view, name='home'),
 
-    # AUTH
+    # =========================
+    # AUTENTICACIÓN
+    # =========================
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
 
     path('register/', register_view, name='register'),
-    path('register2/', register_step_2, name='register2'),
+    path('register/step-2/', register_step_2, name='register_step_2'),
 
-    # DIRECCIÓN
-    path('add-address/', add_address_view, name='add_address'),
-    path('add-address-2/', add_address_step_2, name='add_address2'),
-
-    # CONTACTO
-    path('contact/', contact_view, name='contact'),
-
-    # RECUPERACIÓN
+    # =========================
+    # RECUPERACIÓN DE CONTRASEÑA
+    # =========================
     path('forgot-password/', forgot_password_view, name='forgot_password'),
     path('verify-code/', code_verify_view, name='code_verify'),
+    path('reset-password/', reset_password_view, name='reset_password'),
 
+    # =========================
+    # DIRECCIÓN CLIENTE
+    # =========================
+    path('add-address/', add_address_view, name='add_address'),
+    path('add-address/step-2/', add_address_step_2, name='add_address_step_2'),
+
+    # =========================
+    # CONTACTO
+    # =========================
+    path('contact/', contact_view, name='contact'),
+
+    # =========================
     # HOME CLIENTE
+    # =========================
     path('home/', home_client_view, name='home_client'),
 
-    # NAVBAR / CLIENTE
+    # =========================
+    # PEDIDOS CLIENTE
+    # =========================
     path('orders/', client_orders_view, name='client_orders'),
 
-    # CREAR TIENDA (PASOS)
+    # =========================
+    # CREAR TIENDA
+    # =========================
     path('create-store/', create_store_view, name='create_store'),
     path('create-store/step-2/', create_store_step_2_view, name='create_store_step_2'),
 
+    # =========================
     # PERFIL
+    # =========================
     path('profile/', profile_view, name='profile'),
-    path('edit_profile/', edit_profile_client, name='edit_profile_client'),
-    path('edit_profile2', edit_profile_client2, name='edit_profile_client2'),
-    path('add_address_store/', add_address_store, name='add_address_store'),
-    path('add_address_store2/', add_address_store2, name='add_address_store2'),
+    path('edit-profile/', edit_profile_client, name='edit_profile_client'),
+    path('edit-profile-2/', edit_profile_client2, name='edit_profile_client2'),
 
-
-
+    # =========================
+    # DIRECCIÓN TIENDA
+    # =========================
+    path('store/add-address/', add_address_store, name='add_address_store'),
+    path('store/add-address/step-2/', add_address_store2, name='add_address_store2'),
 ]
 
 if settings.DEBUG:
