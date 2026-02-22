@@ -4,10 +4,10 @@
 
   <div class="navbar_left_group">
       <div class="navbar_product_category__actions--left">
-          <a href="{% url 'tiendas:home_seller' %}" class="navbar_product_category__link-image">
+          <a href="{% url 'home' %}" class="navbar_product_category__link-image">
             <img src="{% static 'assets/img/sena-logo.png' %}" 
                  class="navbar_product_category__img" 
-                 alt="">
+                 alt="Sena Logo">
           </a>
       </div>  
 
@@ -24,49 +24,48 @@
           <span class="navbar_product_category__letter navbar_product_category__letter--7">r</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--8">c</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--9">h</span>
+
           <img src="{% static 'assets/icons/wheat.svg' %}" 
-               alt="" 
+               alt="Icono trigo" 
                class="navbar_product_category__icon">
         </h1>
       </div>
   </div>
 
+  <div class="search-bar">
+
+    <button class="search-bar__button" aria-label="Buscar">
+      <span class="search-bar__icon">
+        <img src="{% static 'assets/icons/icon_search.svg' %}" 
+             alt="Buscar" />
+      </span>
+    </button>
+
+    <input 
+      type="text" 
+      class="search-bar__input" 
+      placeholder="Busca productos o tiendas" 
+    />
+
+    <button class="search-bar__button" aria-label="Cancelar búsqueda">
+      <span class="search-bar__icon search-bar__icon--close">
+        <img src="{% static 'assets/icons/icon_cancel.svg' %}" 
+             alt="Cancelar" />
+      </span>
+    </button>
+
+  </div>
+
   <div class="navbar_product_category__actions">
 
-    <!-- Pedidos de la tienda -->
-    <a href="{% url 'tiendas:store_orders' %}" 
+    <a href="{% url 'tiendas:profile_store_seller' %}""
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/orders_stores.svg' %}" 
-           class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Pedidos Tienda</span>
-    </a>
 
-    <!-- Mis pedidos -->
-    <a href="#" 
-       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/orders_users.svg' %}" 
+      <img src="{% static 'assets/icons/return.svg' %}" 
            class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Mis Pedidos</span>
-    </a>
+           alt="Volver">
 
-    <!-- Catálogo -->
-    <a href="{% url 'tiendas:seller_catalog' %}" 
-       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/catalog.svg' %}" 
-           class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Catálogo</span>
-    </a>
-
-    <!-- Salir -->
-    <a href="{% url 'logout' %}" 
-       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/exit.svg' %}" 
-           class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Salir</span>
+      <span class="navbar_product_category__tooltip">Volver</span>
     </a>
 
   </div>

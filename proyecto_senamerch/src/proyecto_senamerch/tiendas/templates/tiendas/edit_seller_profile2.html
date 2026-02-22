@@ -1,0 +1,88 @@
+{% extends 'index_home_store_seller.html' %}
+{% load static %}
+
+{% block content %}
+<section class="edit-profile-admin"> 
+  <div class="edit-profile-admin__wrapper">
+    <header class="edit-profile-admin__header">
+      <h1 class="edit-profile-admin__title">Editar perfil Vendedor</h1>
+      <p class="edit-profile-admin__subtitle">
+        Este formulario te permite editar los datos del perfil del Vendedor.
+      </p>
+    </header>
+
+    <form method="POST"
+      action="{% url 'tiendas:edit_seller_profile2' %}"
+      class="edit-profile-admin__form">
+    {% csrf_token %}
+
+      <div class="edit-profile-admin__group">
+        <label class="edit-profile-admin__label">Tipo de usuario</label>
+        <input
+          type="text"
+          class="edit-profile-admin__input edit-profile-admin__input--readonly"
+          value="Administrador del sistema"
+          readonly
+        />
+      </div>
+      <div class="edit-profile-admin__group">
+        <label class="edit-profile-admin__label">Dirección</label>
+        <a href="#"
+          class="edit-profile-admin__link">
+          Editar dirección
+        </a>
+        <small class="edit-profile-admin__text">Todo estará más cerca de ti.</small>
+      </div>
+      <!-- add_adress_seller_edit -->
+      <div class="edit-profile-admin__group">
+        <label class="edit-profile-admin__label">Edita tu contraseña</label>
+        <div class="edit-profile-admin__password-wrapper">
+          <input
+            name="password"
+            type="password"
+            class="edit-profile-admin__input edit-profile-admin__input--password"
+            required />
+          <button type="button" class="edit-profile-admin__toggle-password">Mostrar</button>
+        </div>
+      </div>
+
+      <div class="edit-profile-admin__group">
+        <label class="edit-profile-admin__label">Confirma tu contraseña</label>
+        <div class="edit-profile-admin__password-wrapper">
+          <input
+            name="confirm_password"
+            type="password"
+            class="edit-profile-admin__input edit-profile-admin__input--password"
+            required />
+          <button type="button" class="edit-profile-admin__toggle-password">Mostrar</button>
+        </div>
+      </div>
+
+      <div class="edit-profile-admin__secondary">
+        <a href="{% url 'tiendas:profile_store_seller' %}"
+          class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}"
+              class="btn-secundary__icon">
+        </a>
+      </div>
+
+      <div class="edit-profile-admin__buttons">
+        <button
+          type="submit"
+          class="btn btn--primary edit-profile-admin__submit"
+          aria-label="Guardar datos del administrador"
+        >
+          Guardar datos
+          <img
+            src="/frontend/public/assets/icons/save.svg"
+            alt=""
+            class="btn__icon edit-profile-admin__icon"
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

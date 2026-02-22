@@ -1,0 +1,81 @@
+{% extends 'index_home_store_seller.html' %}
+{% load static %}
+
+{% block content %}
+<section class="edit-profile-admin"> 
+  <div class="edit-profile-admin__wrapper">
+    <header class="edit-profile-admin__header">
+      <h1 class="edit-profile-admin__title">Editar perfil Vendedor</h1>
+      <p class="edit-profile-admin__subtitle">
+        Este formulario te permite editar los datos del perfil del Vendedor.
+      </p>
+    </header>
+
+    <form method="POST"
+      action="{% url 'tiendas:edit_seller_profile' %}"
+      enctype="multipart/form-data"
+      class="edit-profile-admin__form">
+    {% csrf_token %}
+      <div class="edit-profile-admin__group">
+          <label class="edit-profile-admin__label">Foto de perfil</label>
+          <input type="email"
+            name="email"
+            value="{{ request.user.email }}"
+            class="edit-profile-admin__input"
+            required />
+      </div>
+    
+      <div class="edit-profile-admin__group">
+        <label class="edit-profile-admin__label">Correo electrónico</label>
+        <input type="email"
+            name="email"
+            value="{{ request.user.email }}"
+            class="edit-profile-admin__input"
+            required />
+      </div>
+
+      <div class="edit-profile-admin__group">
+        <label class="edit-profile-admin__label">Nombre</label>
+        <input type="text"
+          name="first_name"
+          value="{{ request.user.first_name }}"
+          class="edit-profile-admin__input"
+          required />
+      </div>
+
+      <div class="edit-profile-admin__group">
+        <label class="edit-profile-admin__label">Teléfono</label>
+        <input type="tel" class="edit-profile-admin__input" value="+57 300 000 0000" required>
+      </div>
+      <div class="edit-profile-admin__secondary">
+        <a href="{% url 'tiendas:profile_store_seller' %}"
+          class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
+          Volver
+          <img
+            src="{% static 'assets/icons/return.svg' %}"
+            alt=""
+            class="btn-secundary__icon"
+            aria-hidden="true"
+          />
+        </a>
+      </div>
+
+      <div class="edit-profile-admin__buttons">
+        <button
+          type="submit"
+          class="btn btn--primary edit-profile-admin__submit"
+          aria-label="Guardar datos del administrador"
+        >
+          Siguiente
+          <img
+            src="/frontend/public/assets/icons/continue.svg"
+            alt=""
+            class="btn__icon edit-profile-admin__icon"
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -27,6 +27,35 @@ urlpatterns = [
 
     path('catalogo/', views.seller_catalog, name='seller_catalog'),
     path('producto/<int:id>/', views.view_description_product_seller, name='view_description_product_seller'),
+    # =================================
+    # EDITAR PERFIL VENDEDOR
+    # =================================
+    path(
+        'perfil-vendedor/editar/',
+        views.edit_seller_profile,
+        name='edit_seller_profile'
+    ),
+
+    path(
+        'perfil-vendedor/editar/step-2/',
+        views.edit_seller_profile2,
+        name='edit_seller_profile2'
+    ),
+
+    # =================================
+    # EDITAR TIENDA
+    # =================================
+    path(
+        'tienda/editar/',
+        views.edit_store_seller,
+        name='edit_store_seller'
+    ),
+
+    path(
+        'tienda/editar/step-2/',
+        views.edit_store_seller2,
+        name='edit_store_seller2'
+    ),
 ]
 
 if settings.DEBUG:

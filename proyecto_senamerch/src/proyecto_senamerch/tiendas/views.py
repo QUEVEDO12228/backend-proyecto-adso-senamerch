@@ -128,67 +128,18 @@ def add_address_store2(request):
 @login_required
 def profile_store_seller(request):
 
-    tienda = Tienda.objects.get(propietario=request.user)
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+
+    if not tienda:
+        messages.warning(request, "Primero debes crear una tienda.")
+        return redirect('tiendas:create_store')
 
     return render(request, 'tiendas/profile_store_seller.html', {
         'tienda': tienda
     })
-from django.shortcuts import render
 
 def store_orders(request):
-
-    orders = [
-        {
-            "id": 235,
-            "date": "25/10/2025",
-            "status": "Pendiente",
-            "status_class": "pending",
-            "total": 150000,
-            "client": {
-                "name": "Juan Pérez",
-                "email": "JuanPerez12@gmail.com",
-                "phone": "3102873825",
-            },
-            "address": {
-                "neighborhood": "Buenos Aires",
-                "street": "10 #34-36",
-                "road_type": "Carrera",
-                "postal_code": "101010101",
-                "department": "Antioquia",
-                "city": "Medellín",
-            },
-            "products": [
-                {"name": "Tomate chonto", "quantity": "4 kg", "price": 24000},
-                {"name": "Papa pastusa", "quantity": "3 kg", "price": 18000},
-            ]
-        },
-        {
-            "id": 236,
-            "date": "28/10/2025",
-            "status": "En proceso",
-            "status_class": "pending",
-            "total": 98500,
-            "client": {
-                "name": "Carlos Ruiz",
-                "email": "carlosR@gmail.com",
-                "phone": "3159902211",
-            },
-            "address": {
-                "neighborhood": "La Floresta",
-                "street": "Calle 54 # 67",
-                "road_type": "Calle",
-                "postal_code": "050030",
-                "department": "Antioquia",
-                "city": "Medellín",
-            },
-            "products": [
-                {"name": "Aguacate hass", "quantity": "2 kg", "price": 16000},
-                {"name": "Banano", "quantity": "6 unidades", "price": 5500},
-            ]
-        }
-    ]
-
-    return render(request, 'tiendas/store_orders.html', {"orders": orders})
+    return render(request, 'tiendas/seller_catalog.html')
 
 def seller_catalog(request):
     return render(request, 'tiendas/seller_catalog.html')
@@ -201,3 +152,124 @@ def view_description_product_seller(request, id):
         "product_id": id
     }
     return render(request, 'tiendas/view_description_product_seller.html', context)
+
+@login_required
+def edit_seller_profile(request):
+
+    if request.method == "POST":
+
+        # Guardamos datos temporales en sesión
+        request.session['edit_user_data'] = {
+            "email": request.POST.get("email"),
+            "first_name": request.POST.get("first_name"),
+        }
+
+        return redirect('tiendas:edit_seller_profile2')
+
+    return render(request, 'tiendas/edit_seller_profile.html')
+
+# ==========================================
+# EDITAR TIENDA - PASO 2
+# ==========================================
+from django.contrib.auth import update_session_auth_hash
+
+@login_required
+def edit_seller_profile2(request):
+
+    data = request.session.get('edit_user_data')
+
+    if not data:
+        return redirect('tiendas:edit_seller_profile')
+
+    if request.method == "POST":
+
+        user = request.user
+
+        # Guardar datos básicos
+        user.email = data["email"]
+        user.first_name = data["first_name"]
+
+        # Guardar contraseña si existe
+        password = request.POST.get("password")
+        confirm = request.POST.get("confirm_password")
+
+        if password and confirm:
+            if password != confirm:
+                messages.error(request, "Las contraseñas no coinciden.")
+                return redirect('tiendas:edit_seller_profile2')
+
+            user.set_password(password)
+            update_session_auth_hash(request, user)
+
+        user.save()
+
+        request.session.pop('edit_user_data')
+
+        messages.success(request, "Perfil actualizado correctamente.")
+
+        return redirect('tiendas:profile_store_seller')
+
+    return render(request, 'tiendas/edit_seller_profile2.html')
+
+# ==========================================
+# EDITAR TIENDA - PASO 1
+# ==========================================
+@login_required
+def edit_store_seller(request):
+
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+
+    if not tienda:
+        return redirect('tiendas:profile_store_seller')
+
+    if request.method == "POST":
+
+        request.session['edit_store_data'] = {
+            "nombre": request.POST.get("nombre"),
+            "email": request.POST.get("email"),
+            "telefono": request.POST.get("telefono"),
+            "categoria": request.POST.get("categoria"),
+        }
+
+        return redirect('tiendas:edit_store_seller2')
+
+    return render(request, 'tiendas/edit_store_seller.html', {
+        'tienda': tienda
+    })
+
+
+# ==========================================
+# EDITAR TIENDA - PASO 2
+# ==========================================
+@login_required
+def edit_store_seller2(request):
+
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+
+    data = request.session.get('edit_store_data')
+
+    if not tienda or not data:
+        return redirect('tiendas:edit_store_seller')
+
+    if request.method == "POST":
+
+        tienda.nombre = data["nombre"]
+        tienda.email = data["email"]
+        tienda.telefono = data["telefono"]
+        tienda.categoria = data["categoria"]
+        tienda.descripcion = request.POST.get("descripcion")
+
+        if request.FILES.get("imagen"):
+            tienda.imagen_portada = request.FILES.get("imagen")
+
+        tienda.save()
+
+        request.session.pop('edit_store_data')
+
+        messages.success(request, "Tienda actualizada correctamente.")
+
+        return redirect('tiendas:profile_store_seller')
+
+    return render(request, 'tiendas/edit_store_seller2.html', {
+        'tienda': tienda
+    })
