@@ -1,0 +1,109 @@
+{% load static %}
+
+<article class="product-card">
+
+  <!-- Menú tres puntos -->
+  <div class="product-card__actions">
+
+    <!-- Botón Like -->
+    <button class="product-card__like-btn" aria-label="Me gusta">
+      <img 
+        src="{% static 'assets/icons/heart.svg' %}" 
+        alt="Icono me gusta"
+        class="product-card__like-icon"
+      />
+      <span class="product-card__like-tooltip">
+        Me gusta
+      </span>
+    </button>
+
+    <!-- Botón Dislike -->
+    <button class="product-card__like-btn--dislike" aria-label="No me gusta">
+      <img 
+        src="{% static 'assets/icons/heart-off.svg' %}" 
+        alt="Icono no me gusta"
+        class="product-card__like-icon--dislike"
+      />
+      <span class="product-card__dislike-tooltip">
+        No me gusta
+      </span>
+    </button>
+
+    <!-- Menú tres puntos -->
+    <div class="product-card__menu">
+      <button class="product-card__menu-btn">⋮</button>
+
+      <ul class="product-card__menu-dropdown">
+        <li>
+          <a href="{% url 'login' %}" class="product-card__menu-item">
+            Dejar un comentario
+            <img 
+              src="{% static 'assets/icons/contact.svg' %}" 
+              alt="Icono contacto"
+              class="product-card__menu-item-icon"
+            />
+          </a>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Header: nombre y precio -->
+  <div class="product-card__header">
+    <h2 class="product-card__title">{{ name }}</h2>
+    <p class="product-card__price">$ {{ price }} / kilo</p>
+    <p class="product-card__discount">{{ discount }} % de descuento</p>
+  </div>
+
+  <!-- Foto redonda de la tienda -->
+  <a href="{% url 'login' %}" class="product-card__profile-store-link">
+    <img 
+      src="{{ store_logo }}"
+      alt="Logo de la tienda {{ store_name }}"
+      class="product-card__store-logo"
+    />
+    <span class="product-card__profile-store-tooltip">
+      Visitar Tienda
+      <img 
+        src="{% static 'assets/icons/store_profile.svg' %}" 
+        alt="Icono tienda"
+        class="product-card__profile-store-tooltip-icon"
+      />
+    </span>
+  </a>
+
+  <!-- Imagen grande del producto -->
+  <a href="{% url 'login' %}" class="product-card__image-link">
+    <div class="product-card__image-wrapper">
+      <img 
+        src="{{ image }}"
+        alt="Imagen de {{ name }}"
+        class="product-card__image"
+      />
+    </div>
+
+    <!-- Tooltip -->
+    <span class="product-card__image-tooltip">
+      Visualizar Producto
+      <img 
+        src="{% static 'assets/icons/eye.svg' %}"
+        alt="Icono visualizar"
+        class="product-card__image-tooltip-icon"
+      />
+    </span>
+  </a>
+
+  <!-- Botones -->
+  <div class="product-card__footer--end">
+    <button type="button" class="btn btn--primary product-card__pay">
+      Comprar
+      <img 
+        src="{% static 'assets/icons/cash-button.svg' %}"
+        alt="Icono Comprar"
+        class="btn__icon product-card__icon"
+      />
+    </button>
+  </div>
+
+</article>

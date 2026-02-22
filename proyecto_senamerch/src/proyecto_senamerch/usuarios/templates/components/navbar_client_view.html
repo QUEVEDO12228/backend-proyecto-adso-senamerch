@@ -49,7 +49,7 @@
     <!-- ⭐ CREAR TIENDA SOLO SI NO TIENE -->
     {% if request.user.is_authenticated and request.user.tiendas.count == 0 %}
     <a
-      href="{% url 'create_store' %}"
+      href="{% url 'tiendas:create_store' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
     >
       <img

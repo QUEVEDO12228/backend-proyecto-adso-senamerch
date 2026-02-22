@@ -1,0 +1,111 @@
+{% load static %}
+
+<nav class="navbar_product_category">
+
+  <div class="navbar_left_group">
+      <div class="navbar_product_category__actions--left">
+          <a href="{% url 'home_client' %}" class="navbar_product_category__link-image">
+            <img src="{% static 'assets/img/sena-logo.png' %}" 
+                 class="navbar_product_category__img" 
+                 alt="">
+          </a>
+      </div>  
+
+      <div class="navbar_separator"></div>
+
+      <div class="navbar_product_category__logo--left">
+        <h1 class="navbar_product_category__title--SenaMerch">
+          <span class="navbar_product_category__letter navbar_product_category__letter--1">S</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--2">e</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--3">n</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--4">a</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--5">M</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--6">e</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--7">r</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--8">c</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--9">h</span>
+          <img src="{% static 'assets/icons/wheat.svg' %}" 
+               alt="" 
+               class="navbar_product_category__icon">
+        </h1>
+      </div>
+  </div>
+
+  <div class="navbar_product_category__actions">
+
+    {% if request.user.is_authenticated %}
+
+        {% if request.user.tiendas.exists %}
+
+            <!-- 🔹 PEDIDOS DE LA TIENDA -->
+            <a href="{% url 'tiendas:store_orders' %}" 
+               class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+              <img src="{% static 'assets/icons/orders_stores.svg' %}" 
+                   class="navbar_product_category__icon" alt="">
+              <span class="navbar_product_category__tooltip">Pedidos Tienda</span>
+            </a>
+
+            <!-- 🔹 MIS PEDIDOS COMO USUARIO -->
+            <a href="{% url 'client_orders' %}" 
+               class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+              <img src="{% static 'assets/icons/orders_users.svg' %}" 
+                   class="navbar_product_category__icon" alt="">
+              <span class="navbar_product_category__tooltip">Mis Pedidos</span>
+            </a>
+
+            <!-- 🔹 CATÁLOGO VENDEDOR -->
+            <a href="{% url 'tiendas:seller_catalog' %}" 
+               class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+              <img src="{% static 'assets/icons/catalog.svg' %}" 
+                   class="navbar_product_category__icon" alt="">
+              <span class="navbar_product_category__tooltip">Catálogo</span>
+            </a>
+
+            <!-- 🔹 PERFIL VENDEDOR -->
+            <a href="{% url 'tiendas:profile_store_seller' %}" 
+               class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+              <img src="{% static 'assets/icons/profile_user.svg' %}" 
+                   class="navbar_product_category__icon" alt="">
+              <span class="navbar_product_category__tooltip">Perfil Tienda</span>
+            </a>
+
+        {% else %}
+
+            <!-- 🔹 SOLO USUARIO NORMAL -->
+            <a href="{% url 'client_orders' %}" 
+               class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+              <img src="{% static 'assets/icons/orders_users.svg' %}" 
+                   class="navbar_product_category__icon" alt="">
+              <span class="navbar_product_category__tooltip">Mis Pedidos</span>
+            </a>
+
+            <!-- 🔹 CREAR TIENDA -->
+            <a href="{% url 'tiendas:create_store' %}" 
+               class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+              <img src="{% static 'assets/icons/create_store.svg' %}" 
+                   class="navbar_product_category__icon" alt="">
+              <span class="navbar_product_category__tooltip">Crear Tienda</span>
+            </a>
+
+            <!-- 🔹 PERFIL NORMAL -->
+            <a href="{% url 'profile' %}" 
+               class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+              <img src="{% static 'assets/icons/profile_user.svg' %}" 
+                   class="navbar_product_category__icon" alt="">
+              <span class="navbar_product_category__tooltip">Perfil</span>
+            </a>
+
+        {% endif %}
+
+        <!-- 🔹 LOGOUT -->
+        <a href="{% url 'logout' %}" 
+           class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+          <img src="{% static 'assets/icons/exit.svg' %}" 
+               class="navbar_product_category__icon" alt="">
+          <span class="navbar_product_category__tooltip">Salir</span>
+        </a>
+
+    {% endif %}
+
+  </div>
+</nav>
