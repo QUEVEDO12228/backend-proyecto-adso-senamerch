@@ -1,5 +1,5 @@
 import re
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
@@ -272,4 +272,21 @@ def edit_store_seller2(request):
 
     return render(request, 'tiendas/edit_store_seller2.html', {
         'tienda': tienda
+    })
+
+def store_address_view(request):
+    tienda = get_object_or_404(Tienda, propietario=request.user)
+
+    return render(request, 'tiendas/store_admin_form.html', {
+        'tienda': tienda,
+        'direccion': tienda
+    })
+
+
+def seller_address_view(request):
+    tienda = get_object_or_404(Tienda, propietario=request.user)
+
+    return render(request, 'tiendas/seller_profile_address.html', {
+        'tienda': tienda,
+        'direccion': tienda
     })

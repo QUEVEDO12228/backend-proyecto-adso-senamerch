@@ -65,7 +65,7 @@
         </div>
 
         <div class="store-profile__field">
-          <a href="{% url 'tiendas:add_address_store' %}">
+          <a href="{% url 'tiendas:store_address' %}">
             <span class="store-profile__link">
               Ver dirección
             </span>
@@ -149,6 +149,14 @@
           <span class="store-profile__value">
             ************
           </span>
+        </div>
+        
+        <div class="store-profile__field">
+          <a href="{% url 'tiendas:seller_address' %}">
+            <span class="store-profile__link">
+              Ver dirección
+            </span>
+          </a>
         </div>
 
       </div>
