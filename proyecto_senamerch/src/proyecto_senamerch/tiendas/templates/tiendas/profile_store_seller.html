@@ -1,0 +1,180 @@
+{% extends 'index_profile_store_seller.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="store-profile-wrapper">
+
+  <!-- ============================= -->
+  <!-- PANEL DE TIENDA -->
+  <!-- ============================= -->
+  <section class="store-profile">
+    <section class="store-profile__card">
+
+      <!-- Encabezado -->
+      <div class="store-profile__header">
+        <div class="store-profile__avatar">
+          {% if tienda.imagen_portada %}
+            <img src="{{ tienda.imagen_portada.url }}" 
+                 alt="{{ tienda.nombre }}">
+          {% else %}
+            <img src="{% static 'img/store_default.jpg' %}" 
+                 alt="Imagen por defecto">
+          {% endif %}
+        </div>
+
+        <div class="store-profile__info">
+          <h1 class="store-profile__name">
+            {{ tienda.nombre }}
+          </h1>
+          <p class="store-profile__category">
+            {{ tienda.categoria }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Información -->
+      <div class="store-profile__details">
+
+        <div class="store-profile__field">
+          <span class="store-profile__label">Correo electrónico:</span>
+          <span class="store-profile__value">
+            {{ tienda.email }}
+          </span>
+        </div>
+
+        <div class="store-profile__field">
+          <span class="store-profile__label">Teléfono:</span>
+          <span class="store-profile__value">
+            {{ tienda.telefono }}
+          </span>
+        </div>
+
+        <div class="store-profile__field">
+          <span class="store-profile__label">Categoría:</span>
+          <span class="store-profile__value">
+            {{ tienda.categoria }}
+          </span>
+        </div>
+
+        <div class="store-profile__field">
+          <span class="store-profile__label">Descripción:</span>
+          <span class="store-profile__value">
+            {{ tienda.descripcion|default:"Sin descripción registrada." }}
+          </span>
+        </div>
+
+        <div class="store-profile__field">
+          <a href="{% url 'tiendas:store_address' %}">
+            <span class="store-profile__link">
+              Ver dirección
+            </span>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Acciones -->
+      <div class="store-profile__actions-grid">
+
+        <div class="store-profile__actions-secondary">
+          <button class="btn btn--warning store-profile__suspend">
+            Deshabilitar Tienda
+            <img src="{% static 'assets/icons/off.svg' %}" 
+                 class="btn__icon" />
+          </button>
+        </div>
+      
+        <div class="store-profile__actions-primary">
+          <a href="{% url 'tiendas:edit_store_seller' %}" 
+             class="btn btn--primary store-profile__submit--store">
+            Editar datos
+            <img src="{% static 'assets/icons/edit.svg' %}" 
+                 class="btn__icon store-profile__icon">
+          </a>
+        </div>
+
+      </div>
+
+    </section>
+  </section>
+
+  <!-- ============================= -->
+  <!-- PANEL DEL USUARIO (VENDEDOR) -->
+  <!-- ============================= -->
+  <section class="store-profile">
+    <section class="store-profile__card">
+
+      <div class="store-profile__header">
+        <div class="store-profile__avatar">
+          <img src="{% static 'img/admin_profile.png' %}" 
+               alt="Foto del usuario">
+        </div>
+
+        <div class="store-profile__info">
+          <h1 class="store-profile__name">
+            @{{ request.user.username }}
+          </h1>
+          <p class="store-profile__role">
+            Vendedor
+          </p>
+        </div>
+      </div>
+
+      <div class="store-profile__details">
+
+        <div class="store-profile__field">
+          <span class="store-profile__label">Correo electrónico:</span>
+          <span class="store-profile__value">
+            {{ request.user.email }}
+          </span>
+        </div>
+
+        <div class="store-profile__field">
+          <span class="store-profile__label">Nombre:</span>
+          <span class="store-profile__value">
+            {{ request.user.get_full_name|default:"No registrado" }}
+          </span>
+        </div>
+
+        <div class="store-profile__field">
+          <span class="store-profile__label">Usuario:</span>
+          <span class="store-profile__value">
+            {{ request.user.username }}
+          </span>
+        </div>
+
+        <div class="store-profile__field">
+          <span class="store-profile__label">Contraseña:</span>
+          <span class="store-profile__value">
+            ************
+          </span>
+        </div>
+        
+        <div class="store-profile__field">
+          <a href="{% url 'tiendas:seller_address' %}">
+            <span class="store-profile__link">
+              Ver dirección
+            </span>
+          </a>
+        </div>
+
+      </div>
+
+      <div class="store-profile__actions-grid--seller">
+        <div class="store-profile__actions-primary">
+          <a href="{% url 'tiendas:edit_seller_profile' %}" 
+             class="btn btn--primary store-profile__submit--seller">
+            Editar datos
+            <img src="{% static 'assets/icons/edit.svg' %}" 
+                 class="btn__icon store-profile__icon">
+          </a>
+        </div>
+      </div>
+
+    </section>
+  </section>
+
+</section>
+
+{% endblock %}

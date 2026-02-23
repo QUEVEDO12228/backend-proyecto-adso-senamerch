@@ -46,6 +46,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import logout
 
 from .models import Profile
+
+from tiendas.models import Tienda
 # =========================
 # LOGIN
 # =========================
@@ -75,6 +77,8 @@ def home_view(request):
     return render(request, 'usuarios/home.html', {'products': products})
 
 
+from tiendas.models import Tienda
+
 def login_view(request):
     context = {'form_submitted': False}
 
@@ -84,33 +88,35 @@ def login_view(request):
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
 
-        # Validar campos vacíos
         if not email or not password:
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'usuarios/login.html', context)
 
-        # Validar formato de correo
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Ingresa un correo electrónico válido.')
             return render(request, 'usuarios/login.html', context)
 
-        # Autenticación
         user = authenticate(request, username=email, password=password)
 
         if user is None:
             messages.error(
                 request,
-                'Correo o contraseña incorrectos. ¿Aún no tienes cuenta? Regístrate.'
+                'Correo o contraseña incorrectos.'
             )
             return render(request, 'usuarios/login.html', context)
 
-        # Iniciar sesión
+        # 🔐 Login correcto
         login(request, user)
 
-        # 🔁 REDIRECCIÓN CORRECTA (HOME CLIENTE)
-        return redirect('home_client')
+        # 🔥 Verificar si tiene tienda
+        tiene_tienda = Tienda.objects.filter(propietario=user).exists()
+
+        if tiene_tienda:
+            return redirect('tiendas:home_seller')   # 👈 CAMBIO AQUÍ
+        else:
+            return redirect('home_client')
 
     return render(request, 'usuarios/login.html', context)
 
@@ -494,30 +500,14 @@ def home_client_view(request):
 def client_orders_view(request):
     return render(request, 'usuarios/client_orders.html')
 
-def create_store_view(request):
-    if request.method == 'POST':
-        request.session['store_step1'] = request.POST
-        return redirect('create_store_step_2')
-
-    return render(request, 'usuarios/create_store.html')
-
-
-def create_store_step_2_view(request):
-    if request.method == "POST":
-        department = request.POST.get("department")
-        city = request.POST.get("city")
-        additional_info = request.POST.get("additional_info")
-
-        # Aquí luego puedes guardar en sesión o BD
-
-    return render(request, 'usuarios/create_store2.html')
-
 def profile_view(request):
-    profile, created = Profile.objects.get_or_create(user=request.user)
 
-    return render(request, 'index_profile_user.html', {
-        'profile': profile
-    })
+    tiene_tienda = Tienda.objects.filter(propietario=request.user).exists()
+
+    if tiene_tienda:
+        return redirect('tiendas:profile_store_seller')
+
+    return render(request, 'usuarios/profile.html')
 
 def logout_view(request):
     logout(request)

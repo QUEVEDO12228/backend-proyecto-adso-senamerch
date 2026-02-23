@@ -1,0 +1,89 @@
+{% extends 'index_home_store_seller.html' %}
+{% load static %}
+
+{% block content %}
+<section class="edit-store-seller-one">
+  <div class="edit-store-seller-one__wrapper">
+
+    <!-- HEADER -->
+    <header class="edit-store-seller-one__header">
+      <h1 class="edit-store-seller-one__title">Editar datos de la tienda</h1>
+      <p class="edit-store-seller-one__subtitle">
+        Este formulario es para editar<br> tu tienda en <strong>SENA MERCH</strong>.
+        Aquí puedes actualizar tus datos cuando lo necesites.
+      </p>
+    </header>
+
+    <!-- FORMULARIO -->
+    <form method="POST"
+        action="{% url 'tiendas:edit_store_seller' %}"
+        class="edit-store-seller-one__form">
+    {% csrf_token %}
+
+      <!-- Nombre de la tienda -->
+      <div class="edit-store-seller-one__group">
+        <label class="edit-store-seller-one__label">Nombre de la tienda</label>
+        <input type="text"
+          name="nombre"
+          value="{{ tienda.nombre }}"
+          class="edit-store-seller-one__input"
+          required>
+      </div>
+
+      <!-- Correo -->
+      <div class="edit-store-seller-one__group">
+        <label class="edit-store-seller-one__label">Correo electrónico</label>
+        <input type="email"
+        name="email"
+        value="{{ tienda.email }}"
+        class="edit-store-seller-one__input"
+        required>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="edit-store-seller-one__group">
+        <label class="edit-store-seller-one__label">Teléfono</label>
+        <input type="tel"
+        name="telefono"
+        value="{{ tienda.telefono }}"
+        class="edit-store-seller-one__input"
+        required>
+      </div>
+
+      <!-- Categoría -->
+      <div class="edit-store-seller-one__group">
+        <label class="edit-store-seller-one__label">Categoría</label>
+        <select name="categoria" class="edit-store-seller-one__input" required>
+          <option value="">Selecciona una categoría</option>
+          <option value="Frutas" {% if tienda.categoria == "Frutas" %}selected{% endif %}>Frutas</option>
+          <option value="Verduras" {% if tienda.categoria == "Verduras" %}selected{% endif %}>Verduras</option>
+          <option value="Lácteos" {% if tienda.categoria == "Lácteos" %}selected{% endif %}>Lácteos</option>
+          <option value="Granos" {% if tienda.categoria == "Granos" %}selected{% endif %}>Granos</option>
+          <option value="Todas" {% if tienda.categoria == "Todas" %}selected{% endif %}>Todas</option>
+        </select>
+      </div>
+
+      <!-- Sección secundaria -->
+      <div class="edit-store-seller-one__secondary">
+        <a href="{% url 'tiendas:profile_store_seller' %}"
+          class="btn-secundary btn-secundary-style edit-store-seller-one__cancel">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}"
+              class="btn-secundary__icon">
+        </a>
+      </div>
+
+      <!-- Botones -->
+      <div class="edit-store-seller-one__buttons">
+        <button type="submit"
+                class="btn btn--primary edit-store-seller-one__continue">
+          Siguiente
+          <img src="{% static 'assets/icons/continue.svg' %}"
+              class="btn__icon">
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>
+{% endblock %}

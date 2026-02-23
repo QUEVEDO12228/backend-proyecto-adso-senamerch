@@ -61,7 +61,7 @@ ROOT_URLCONF = 'senamerch_proyecto.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # ← ESTA LÍNEA ES CLAVE
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,11 +69,13 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                # 👇 ESTE ES EL QUE AGREGAS
+                'tiendas.context_processors.tienda_context',
             ],
         },
     },
 ]
-
 
 WSGI_APPLICATION = 'senamerch_proyecto.wsgi.application'
 

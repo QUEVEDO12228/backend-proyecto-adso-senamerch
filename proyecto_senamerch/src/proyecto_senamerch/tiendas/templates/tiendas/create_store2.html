@@ -1,4 +1,4 @@
-{% extends 'index_home_client.html' %}
+{% extends 'index_create_store.html' %}
 
 {% block content %}
 
@@ -17,7 +17,7 @@
 
       <div class="create-store__group">
         <label class="create-store__label">Dirección de la tienda</label>
-        <a href="{% url 'add_address_store' %}"   
+        <a href="{% url 'tiendas:add_address_store' %}"
         class="create-store__link">
         Agregar dirección
       </a>
@@ -39,7 +39,7 @@
 
       <div class="create-store__actions">
           <div class="create-store__action-left">
-            <a href="{% url 'create_store' %}"
+            <a href="{% url 'tiendas:create_store' %}"
               class="btn-secundary btn-secundary-style">
               Volver
             </a>

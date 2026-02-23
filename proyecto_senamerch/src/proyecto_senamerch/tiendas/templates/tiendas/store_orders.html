@@ -1,0 +1,67 @@
+<div class="store-orders__list">
+
+  {% for order in orders %}
+
+  <article class="store-orders__item">
+
+    <h3 class="store-orders__id">Pedido #{{ order.id }}</h3>
+    <p class="store-orders__date">
+      <strong>Fecha:</strong> {{ order.date }}
+    </p>
+
+    <div class="store-orders__status store-orders__status--{{ order.status_class }}">
+      {{ order.status }}
+    </div>
+
+    <div class="store-orders__total">
+      Total: <strong>$ {{ order.total }}</strong>
+    </div>
+
+    <!-- CLIENTE -->
+    <div class="store-orders__card store-orders__card--client">
+      <h3 class="store-orders__subtitle">Información del cliente</h3>
+
+      <p><strong>Nombre:</strong> {{ order.client.name }}</p>
+      <p><strong>Correo:</strong> {{ order.client.email }}</p>
+      <p><strong>Teléfono:</strong> {{ order.client.phone }}</p>
+    </div>
+
+    <!-- DIRECCIÓN -->
+    <div class="store-orders__card store-orders__card--address">
+      <h3 class="store-orders__subtitle">Dirección del cliente</h3>
+
+      <p><strong>Barrio:</strong> {{ order.address.neighborhood }}</p>
+      <p><strong>Dirección:</strong> {{ order.address.street }}</p>
+      <p><strong>Tipo de vía:</strong> {{ order.address.road_type }}</p>
+      <p><strong>Código postal:</strong> {{ order.address.postal_code }}</p>
+      <p><strong>Departamento:</strong> {{ order.address.department }}</p>
+      <p><strong>Municipio:</strong> {{ order.address.city }}</p>
+    </div>
+
+    <!-- PRODUCTOS -->
+    <div class="store-orders__products">
+      <h3>Productos del pedido</h3>
+
+      {% for product in order.products %}
+      <div class="store-orders__card store-orders__card--product">
+        <p><strong>{{ product.name }}</strong></p>
+        <p>Cantidad: {{ product.quantity }}</p>
+        <p>Precio: $ {{ product.price }}</p>
+      </div>
+      {% endfor %}
+
+    </div>
+
+    <div class="store-orders__primary">
+      <button type="button" class="btn btn--primary store-orders__delivery">
+        Realizar
+      </button>
+    </div>
+
+  </article>
+
+  {% empty %}
+    <p>No hay pedidos aún.</p>
+  {% endfor %}
+
+</div>

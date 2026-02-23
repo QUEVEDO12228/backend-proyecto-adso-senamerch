@@ -14,14 +14,10 @@ from .views import (
     forgot_password_view,
     code_verify_view,
     client_orders_view,
-    create_store_view,
-    create_store_step_2_view,
     profile_view,
     logout_view,
     edit_profile_client,
     edit_profile_client2,
-    add_address_store,
-    add_address_store2,
 )
 
 urlpatterns = [
@@ -69,23 +65,11 @@ urlpatterns = [
     path('orders/', client_orders_view, name='client_orders'),
 
     # =========================
-    # CREAR TIENDA
-    # =========================
-    path('create-store/', create_store_view, name='create_store'),
-    path('create-store/step-2/', create_store_step_2_view, name='create_store_step_2'),
-
-    # =========================
     # PERFIL
     # =========================
     path('profile/', profile_view, name='profile'),
     path('edit-profile/', edit_profile_client, name='edit_profile_client'),
     path('edit-profile-2/', edit_profile_client2, name='edit_profile_client2'),
-
-    # =========================
-    # DIRECCIÓN TIENDA
-    # =========================
-    path('store/add-address/', add_address_store, name='add_address_store'),
-    path('store/add-address/step-2/', add_address_store2, name='add_address_store2'),
 ]
 
 if settings.DEBUG:

@@ -1,0 +1,76 @@
+{% extends 'index_profile_store_seller.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="admin-profile">
+  <section class="admin-profile__card">
+
+    <div class="admin-profile__header">
+      <div class="admin-profile__avatar">
+        <img src="{% static 'img/admin_profile.png' %}">
+      </div>
+
+      <div class="admin-profile__info">
+        <h1 class="admin-profile__name">Dirección del vendedor</h1>
+        <p class="admin-profile__role">@{{ request.user.username }}</p>
+      </div>
+    </div>
+
+    <div class="admin-profile__details">
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Barrio:</span>
+        <span class="admin-profile__value">{{ direccion.barrio }}</span>
+      </div>
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Tipo de vía:</span>
+        <span class="admin-profile__value">{{ direccion.tipo_via }}</span>
+      </div>
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Departamento:</span>
+        <span class="admin-profile__value">{{ direccion.departamento }}</span>
+      </div>
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Municipio:</span>
+        <span class="admin-profile__value">{{ direccion.municipio }}</span>
+      </div>
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Código postal:</span>
+        <span class="admin-profile__value">{{ direccion.codigo_postal }}</span>
+      </div>
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Información adicional:</span>
+        <span class="admin-profile__value">
+          {{ direccion.informacion_adicional|default:"No registrada" }}
+        </span>
+      </div>
+
+    </div>
+
+    <div class="admin-profile__actions-grid">
+      <div class="admin-profile__actions-secondary">
+        <a href="{% url 'tiendas:profile_store_seller' %}" 
+           class="btn-secundary btn-secundary-style">
+          Volver
+          <img
+            src="{% static 'assets/icons/return.svg' %}"
+            alt=""
+            class="btn-secundary__icon"
+            aria-hidden="true"
+          />
+        </a>
+      </div>
+    </div>
+
+  </section>
+</section>
+
+
+
+{% endblock %}

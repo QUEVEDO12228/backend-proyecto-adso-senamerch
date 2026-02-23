@@ -52,3 +52,10 @@
 .btn--warning:hover {
   background-color: var(--tertiary-700);
 }
+.btn,
+.btn:link,
+.btn:visited,
+.btn:hover,
+.btn:active {
+  text-decoration: none;
+}
