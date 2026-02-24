@@ -142,7 +142,10 @@ def store_orders(request):
     return render(request, 'tiendas/seller_catalog.html')
 
 def seller_catalog(request):
-    return render(request, 'tiendas/seller_catalog.html')
+    productos = Producto.objects.filter(tienda__propietario=request.user)
+    return render(request, 'tiendas/seller_card.html', {
+        'productos': productos
+    })
 
 
 
