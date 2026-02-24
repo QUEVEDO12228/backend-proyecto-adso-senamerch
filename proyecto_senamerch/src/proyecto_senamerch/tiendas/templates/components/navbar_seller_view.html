@@ -43,13 +43,16 @@
       <span class="navbar_product_category__tooltip">Pedidos Tienda</span>
     </a>
 
-    <a href="{% url 'tiendas:seller_catalog' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+    <!-- <a href="{% url 'tiendas:seller_catalog' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/catalog.svg' %}" class="navbar_product_category__icon" alt="">
       <span class="navbar_product_category__tooltip">Catálogo</span>
-    </a>
+    </a> -->
 
-    <a href="#" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/add_product.svg' %}" class="navbar_product_category__icon" alt="">
+    <a href="{% url 'productos:create_product' %}" 
+      class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/add_product.png' %}" 
+          class="navbar_product_category__icon" 
+          alt="">
       <span class="navbar_product_category__tooltip">Añadir Productos</span>
     </a>
 

@@ -1,0 +1,63 @@
+{% extends "index_create_product.html" %}
+{% block content %}
+
+<section class="create-post">
+  <div class="create-post__wrapper">
+
+    <header class="create-post__header">
+      <h1 class="create-post__title">Agrega las características del producto</h1>
+      <p class="create-post__subtitle">
+        Este formulario es para registrar tu producto.
+      </p>
+    </header>
+
+    <form method="POST" action="{% url 'productos:create_product_step3' %}" class="create-post__form">
+      {% csrf_token %}
+
+      <!-- Descripción -->
+      <div class="create-post__group">
+        <label class="create-post__label">Descripción producto</label>
+        <textarea 
+          name="description"
+          class="create-post__textarea"
+          placeholder="Describe brevemente el producto..."
+          required
+        ></textarea>
+      </div>
+
+      <!-- Tipo envío -->
+      <div class="create-post__group">
+        <label class="create-post__label">Tipo de envío</label>
+        <select name="shipping_type" class="create-post__input" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="contraentrega">Sí, solo envío contraentrega</option>
+        </select>
+      </div>
+
+      <!-- Categoría -->
+      <div class="create-post__group">
+        <label class="create-post__label">Categoría</label>
+        <select name="category_extra" class="create-post__input" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="frutas">Frutas</option>
+          <option value="verduras">Verduras</option>
+          <option value="lacteos">Lácteos</option>
+          <option value="granos">Granos</option>
+          <option value="ornamentales">Ornamentales</option>
+          <option value="cereales">Cereales</option>
+          <option value="oleaginosas">Oleaginosas</option>
+        </select>
+      </div>
+
+      <div class="create-post__buttons">
+        <button type="submit" class="btn btn--primary">
+          Siguiente
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</section>
+
+{% endblock %}

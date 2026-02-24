@@ -49,7 +49,7 @@
 @import url('./components/profile_user.css');
 @import url('./components/index.css');
 @import url('./components/contact1.css');
-@import url('./components/create_store.css');
+@import url('./components/create_product.css');
 @import url('./components/admin.css');
 @import url('./components/store_orders.css');
 @import url('./components/store_order_detail.css');
@@ -66,7 +66,7 @@
 @import url('./components/create_store2.css');
 @import url('./components/edit_store_seller2.css');
 @import url('./components/publications_gestor2.css');
-@import url('./components/publications_gestor.css');
+@import url('./components/create_product2.css');
 @import url('./components/edit_post2.css');
 @import url('./components/admin_profile.css');
 @import url('./components/edit_admin_profile.css');

@@ -1,0 +1,104 @@
+{% extends "index_create_product.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="create-product-post-one">
+  <div class="create-product-post-one__wrapper">
+    
+    <header class="create-product-post-one__header">
+      <h1 class="create-product-post-one__title">Crear Producto</h1>
+      <p class="create-product-post-one__subtitle">
+        Este formulario es para registrar<br> tu producto en <strong>SENA MERCH</strong>.
+        Podrás publicarlo y gestionarlo fácilmente.
+      </p>
+    </header>
+
+    <!-- IMPORTANTE -->
+    <form method="POST" action="{% url 'productos:create_product' %}"  class="create-post__form">
+      {% csrf_token %}
+
+      <!-- Nombre -->
+      <div class="create-product-post-one__group">
+        <label class="create-product-post-one__label">Nombre del producto</label>
+        <input 
+          type="text"
+          name="name"
+          class="create-product-post-one__input"
+          placeholder="Ej: Tomate del Valle"
+          required
+        >
+      </div>
+
+      <!-- Precio -->
+      <div class="create-product-post-one__group">
+        <label class="create-product-post-one__label">Precio</label>
+        <input 
+          type="number"
+          name="price"
+          class="create-product-post-one__input"
+          placeholder="Ej: 3000"
+          min="0"
+          required
+        >
+      </div>
+
+      <!-- Categoría -->
+      <div class="create-product-post-one__group">
+        <label class="create-product-post-one__label">Categoría</label>
+        <select name="category" class="create-product-post-one__input" required>
+          <option value="" selected disabled>Selecciona una categoría</option>
+          <option value="frutas">Frutas</option>
+          <option value="verduras">Verduras</option>
+          <option value="carnes">Carnes</option>
+          <option value="bebidas">Bebidas</option>
+          <option value="otros">Otros</option>
+        </select>
+      </div>
+
+      <!-- Unidad -->
+      <div class="create-product-post-one__group">
+        <label class="create-product-post-one__label">Precio * Unidad de medida</label>
+        <select name="unit" class="create-product-post-one__input" required>
+          <option value="" selected disabled>Selecciona una Unidad</option>
+          <option value="kg">kg</option>
+          <option value="lb">lb</option>
+          <option value="unidad">unidad</option>
+          <option value="litro">litro</option>
+          <option value="mililitro">mililitro</option>
+        </select>
+      </div>
+
+      <div class="create-product-post-one__secondary">
+        <a
+          href="{% url 'tiendas:seller_catalog' %}"
+          class="btn-secundary btn-secundary-style create-product-post-one__cancel"
+          aria-label="Cancelar edición"
+        >
+          Cancelar
+          <img
+            src="{% static 'assets/icons/cancel.svg' %}"
+            alt=""
+            class="btn-secundary__icon"
+            aria-hidden="true"
+          />
+        </a>
+      </div>
+
+      <div class="create-product-post-one__buttons">
+        <button type="submit" class="btn btn--primary">
+          Siguiente
+          <img
+            src="{% static 'assets/icons/get_into.svg' %}" 
+            alt="Icono ingresar"
+            class="btn__icon login__btn-icon"
+          >
+        </button>
+        
+      </div>
+
+    </form>
+  </div>
+</section>
+
+{% endblock %}

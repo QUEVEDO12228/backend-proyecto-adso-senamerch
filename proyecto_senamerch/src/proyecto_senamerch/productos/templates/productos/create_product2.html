@@ -1,0 +1,64 @@
+{% extends "index_create_product.html" %}
+{% block content %}
+
+<section class="create-post">
+  <div class="create-post__wrapper">
+
+    <header class="create-post__header">
+      <h1 class="create-post__title">
+        Continúa con la información del producto
+      </h1>
+      <p class="create-post__subtitle">
+        Completa esta información adicional para que los compradores conozcan mejor tu producto.
+      </p>
+    </header>
+
+    <form method="POST" action="{% url 'productos:create_product_step2' %}" class="create-post__form">
+      {% csrf_token %}
+      <div class="create-post__group">
+        <label class="create-post__label">Unidad de medida</label>
+        <select name="product_type" class="create-post__input" required>
+          <option value="" selected disabled>Selecciona una unidad</option>
+          <option value="solido">Solido</option>
+          <option value="liquido">Liquido</option>
+        </select>
+      </div>
+
+      <div class="create-post__group">
+        <label class="create-post__label">Descuento (%)</label>
+        <input type="number" name="discount" class="create-post__input" min="0" max="100">
+      </div>
+
+      <div class="create-post__group">
+        <label class="create-post__label">Fecha de caducidad</label>
+        <input type="date" name="expiration_date" class="create-post__input" required>
+      </div>
+
+      <div class="create-post__group">
+        <label class="create-post__label">Metodo de pago</label>
+        <select name="payment_method" class="create-post__input" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="efectivo">Efectivo</option>
+        </select>
+      </div>
+
+      <!-- Botón volver -->
+      <div class="create-post__secondary">
+        <a href="{% url 'productos:create_product_step2' %}" class="btn-secundary btn-secundary-style">
+          Volver
+        </a>
+      </div>
+
+      <!-- Botón siguiente -->
+      <div class="create-post__buttons">
+        <button type="submit" class="btn btn--primary">
+          Siguiente
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</section>
+
+{% endblock %}
