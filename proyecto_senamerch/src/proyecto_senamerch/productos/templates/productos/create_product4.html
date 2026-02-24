@@ -1,0 +1,105 @@
+{% extends "index_create_product.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="main-image-upload">
+  <div class="image-upload">
+
+    <h2 class="image-upload__title">Termina de crear el producto</h2>
+    <p class="image-upload__subtitle">
+      Sube hasta 6 imágenes para completar la presentación de tu producto.
+    </p>
+
+    <!-- FORM ENVUELVE TODO EL CONTENIDO INTERNO -->
+    <form method="POST"
+          action="{% url 'productos:create_product_step4' %}"
+          enctype="multipart/form-data">
+
+      {% csrf_token %}
+
+      <div class="image-upload__content">
+        
+        <div class="image-upload__sidebar">
+          
+          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+            <span class="image-upload__add-text">Agregar</span>
+            <input type="file" name="image1" accept="image/*" class="image-upload__input">
+          </div>
+
+          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+            <span class="image-upload__add-text">Agregar</span>
+            <input type="file" name="image2" accept="image/*" class="image-upload__input">
+          </div>
+
+          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+            <span class="image-upload__add-text">Agregar</span>
+            <input type="file" name="image3" accept="image/*" class="image-upload__input">
+          </div>
+
+          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+            <span class="image-upload__add-text">Agregar</span>
+            <input type="file" name="image4" accept="image/*" class="image-upload__input">
+          </div>
+
+          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+            <span class="image-upload__add-text">Agregar</span>
+            <input type="file" name="image5" accept="image/*" class="image-upload__input">
+          </div>
+
+          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+            <span class="image-upload__add-text">Agregar</span>
+            <input type="file" name="image6" accept="image/*" class="image-upload__input">
+          </div>
+
+        </div>
+
+        <div class="image-upload__viewer">
+          <div class="image-upload__preview image-upload__preview--empty">
+            <span class="image-upload__preview-text">Vista previa</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ACCIONES DEL FORMULARIO -->
+     <div class="image-upload__actions">
+
+        <!-- Botón secundario -->
+        <button
+            type="button"
+            class="btn-secundary btn-secundary-style image-upload__cancel"
+            aria-label="Volver sin crear producto"
+        >
+            Volver
+            <img
+                src="{% static 'assets/icons/return.svg' %}"
+                alt=""
+                class="btn-secundary__icon"
+                aria-hidden="true"
+            />
+        </button>
+
+        <!-- Botón principal -->
+        <button
+            type="submit"
+            class="btn btn--primary image-upload__submit"
+            aria-label="Crear nuevo producto"
+        >
+            Crear producto
+            <img
+                src="{% static 'assets/icons/create_product.svg' %}"
+                alt=""
+                class="btn__icon"
+                aria-hidden="true"
+            />
+        </button>
+
+     </div>
+
+    </form>
+
+  </div>
+</section>
+
+{% endblock %}
