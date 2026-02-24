@@ -1,6 +1,13 @@
 .hero-store-seller {
   position: relative;
-  background-image: url(/frontend/public/assets/img/store_seller.jpg);
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    url("/static/assets/img/store_seller.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
   background-position: center;
   background-size: cover;
   text-align: center;

@@ -1,0 +1,76 @@
+{% extends "index_catalog_products_seller.html" %}
+{% load static %}
+
+{% block main_content %}
+
+{% for producto in productos %}
+<article class="product-card">
+
+  <div class="product-card__actions">
+    <div class="product-card__menu">
+      <button class="product-card__menu-btn">⋮</button>
+
+      <ul class="product-card__menu-dropdown">
+        <li>
+          <a href="#" class="product-card__menu-item">
+            Dejar un comentario
+            <img src="{% static 'assets/icons/contact.svg' %}"
+                 class="product-card__menu-item-icon"
+                 alt="">
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="product-card__header">
+    <h2 class="product-card__title">{{ producto.nombre }}</h2>
+    <p class="product-card__price">$ {{ producto.precio }} / kilo</p>
+    <p class="product-card__discount">{{ producto.descuento }} % de descuento</p>
+  </div>
+
+  <a href="{% url 'tiendas:profile_store_seller' %}"
+     class="product-card__profile-store-link">
+    <img src="{{ producto.tienda.logo.url }}"
+         alt="Logo {{ producto.tienda.nombre }}"
+         class="product-card__store-logo">
+
+    <span class="product-card__profile-store-tooltip">
+      Perfil Tienda
+      <img src="{% static 'assets/icons/store_profile.svg' %}"
+           class="product-card__profile-store-tooltip-icon"
+           alt="">
+    </span>
+  </a>
+
+  <a href="{% url 'productos:detail' producto.id %}" class="product-card__image-link">
+    <div class="product-card__image-wrapper">
+      <img src="{{ producto.imagen.url }}"
+           alt="{{ producto.nombre }}"
+           class="product-card__image">
+    </div>
+
+    <span class="product-card__image-tooltip">
+      Visualizar Producto
+      <img src="{% static 'assets/icons/eye.svg' %}"
+           class="product-card__image-tooltip-icon"
+           alt="">
+    </span>
+  </a>
+
+  <div class="product-card__footer--seller-edit">
+    <a href="{% url 'productos:update' producto.id %}"
+       class="btn-secundary btn-secundary-style">
+      Editar
+      <img src="{% static 'assets/icons/edit.svg' %}"
+           class="btn-secundary__icon"
+           alt="">
+    </a>
+  </div>
+
+</article>
+{% empty %}
+<p>No hay productos registrados.</p>
+{% endfor %}
+
+{% endblock %}
