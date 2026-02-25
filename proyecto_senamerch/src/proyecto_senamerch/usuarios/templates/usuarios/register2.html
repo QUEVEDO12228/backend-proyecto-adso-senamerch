@@ -19,6 +19,7 @@
     <form method="post" class="register__form" enctype="multipart/form-data">
       {% csrf_token %}
 
+      <!-- IMAGEN -->
       <div class="register__group">
         <label class="register__label">Imagen de portada</label>
         <input
@@ -29,6 +30,7 @@
         >
       </div>
 
+      <!-- PASSWORD -->
       <div class="register__group">
         <label class="register__label">Crea tu contraseña</label>
         <div class="register__password-wrapper">
@@ -36,15 +38,16 @@
             class="register__input register__input--password"
             type="password"
             name="password"
+            id="password"
             autocomplete="new-password"
             required
           >
-          <button type="button" class="register__toggle-password">
-            Mostrar
-          </button>
+          <button type="button" class="register__toggle-password">Mostrar</button>
         </div>
+        <small id="passError" class="error-text"></small>
       </div>
 
+      <!-- CONFIRM PASSWORD -->
       <div class="register__group">
         <label class="register__label">Confirma tu contraseña</label>
         <div class="register__password-wrapper">
@@ -52,20 +55,19 @@
             class="register__input register__input--password"
             type="password"
             name="confirm_password"
+            id="confirm"
             autocomplete="new-password"
             required
           >
-          <button type="button" class="register__toggle-password">
-            Mostrar
-          </button>
+          <button type="button" class="register__toggle-password">Mostrar</button>
         </div>
+        <small id="confirmError" class="error-text"></small>
       </div>
 
-      <!-- CONTENEDOR DE BOTONES -->
+      <!-- BOTONES -->
       <div class="register__actions">
 
         <a
-          type="button"
           href="{% url 'register' %}"
           class="btn-secundary btn-secundary-style register__action-return"
         >
@@ -94,4 +96,78 @@
 
   </div>
 </section>
+
+<script>
+// ELEMENTOS
+const pass = document.getElementById('password');
+const confirm = document.getElementById('confirm');
+const toggles = document.querySelectorAll('.register__toggle-password');
+
+// 🔥 MOSTRAR / OCULTAR PASSWORD
+toggles.forEach((btn, index) => {
+  btn.addEventListener('click', () => {
+    const input = index === 0 ? pass : confirm;
+
+    if (input.type === "password") {
+      input.type = "text";
+      btn.textContent = "Ocultar";
+    } else {
+      input.type = "password";
+      btn.textContent = "Mostrar";
+    }
+  });
+});
+
+// 🔥 VALIDACIÓN PASSWORD
+pass.addEventListener('input', () => {
+  const value = pass.value;
+
+  const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.#_\-]).{8,}$/;
+
+  if (!regex.test(value)) {
+    document.getElementById('passError').textContent =
+      "Debe tener mayúscula, minúscula, número, símbolo y mínimo 8 caracteres";
+  } else {
+    document.getElementById('passError').textContent = "";
+  }
+});
+
+// 🔥 VALIDACIÓN CONFIRMAR
+confirm.addEventListener('input', () => {
+  if (pass.value !== confirm.value) {
+    document.getElementById('confirmError').textContent = "Las contraseñas no coinciden";
+  } else {
+    document.getElementById('confirmError').textContent = "";
+  }
+});
+
+// 🔥 VALIDACIÓN FINAL
+document.querySelector('form').addEventListener('submit', function(e) {
+
+  let valid = true;
+
+  const regex = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.#_\-]).{8,}$/;
+
+  if (!regex.test(pass.value)) {
+    document.getElementById('passError').textContent = "Contraseña insegura";
+    valid = false;
+  }
+
+  if (pass.value !== confirm.value) {
+    document.getElementById('confirmError').textContent = "No coinciden";
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+
+});
+</script>
+
+{% if success %}
+<script>
+  alert("Cuenta creada correctamente");
+  window.location.href = "{% url 'login' %}";
+</script>
+{% endif %}
+
 {% endblock %}

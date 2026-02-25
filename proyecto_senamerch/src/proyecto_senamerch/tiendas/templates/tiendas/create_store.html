@@ -13,28 +13,52 @@
       </p>
     </header>
 
-    <form method="post" class="create-store-one__form">
+    <!-- 🔥 MENSAJES -->
+    {% if messages %}
+      <div class="create-store-one__messages">
+        {% for message in messages %}
+          <p class="{% if message.tags == 'error' %}error-text{% else %}success-text{% endif %}">
+            {{ message }}
+          </p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" class="create-store-one__form" id="storeForm">
 
       {% csrf_token %}
 
+      <!-- NOMBRE -->
       <div class="create-store-one__group">
         <label class="create-store-one__label">Nombre de la tienda</label>
         <input type="text" name="name" class="create-store-one__input"
-               placeholder="Ejemplo: Frutas La Esperanza" required>
+               placeholder="Ejemplo: Frutas La Esperanza"
+               value="{{ request.session.store_data.name|default:'' }}"
+               required>
+        <small id="nameError" class="error-text"></small>
       </div>
 
+      <!-- EMAIL -->
       <div class="create-store-one__group">
         <label class="create-store-one__label">Correo electrónico</label>
         <input type="email" name="email" class="create-store-one__input"
-               placeholder="correo@tienda.com" required>
+               placeholder="correo@tienda.com"
+               value="{{ request.session.store_data.email|default:'' }}"
+               required>
+        <small id="emailError" class="error-text"></small>
       </div>
 
+      <!-- TELÉFONO -->
       <div class="create-store-one__group">
         <label class="create-store-one__label">Teléfono</label>
         <input type="tel" name="phone" class="create-store-one__input"
-               placeholder="+57 300 000 0000" required>
+               placeholder="+57 300 000 0000"
+               value="{{ request.session.store_data.phone|default:'' }}"
+               required>
+        <small id="phoneError" class="error-text"></small>
       </div>
 
+      <!-- CATEGORÍA -->
       <div class="create-store-one__group">
         <label class="create-store-one__label">Categoría</label>
         <select name="category" class="create-store-one__input" required>
@@ -45,6 +69,7 @@
           <option value="Granos">Granos</option>
           <option value="Todas">Todas</option>
         </select>
+        <small id="categoryError" class="error-text"></small>
       </div>
 
       <div class="create-store-one__secondary">
@@ -62,5 +87,50 @@
     </form>
   </div>
 </section>
+
+<!-- 🔥 VALIDACIONES JS -->
+<script>
+const form = document.getElementById('storeForm');
+
+form.addEventListener('submit', function(e){
+
+  let valid = true;
+
+  const name = form.name.value.trim();
+  const email = form.email.value.trim();
+  const phone = form.phone.value.replace(/\s/g,'');
+  const category = form.category.value;
+
+  // RESET
+  document.querySelectorAll('.error-text').forEach(e => e.textContent = '');
+
+  // NOMBRE
+  if (name.length < 3) {
+    document.getElementById('nameError').textContent = "Mínimo 3 caracteres";
+    valid = false;
+  }
+
+  // EMAIL
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('emailError').textContent = "Correo inválido";
+    valid = false;
+  }
+
+  // TELÉFONO
+  if (!/^(\+57)?[0-9]{10}$/.test(phone)) {
+    document.getElementById('phoneError').textContent = "Teléfono inválido";
+    valid = false;
+  }
+
+  // CATEGORÍA
+  if (!category) {
+    document.getElementById('categoryError').textContent = "Selecciona una categoría";
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+
+});
+</script>
 
 {% endblock %}

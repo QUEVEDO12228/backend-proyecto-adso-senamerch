@@ -107,14 +107,14 @@ def login_view(request):
             )
             return render(request, 'usuarios/login.html', context)
 
-        # 🔐 Login correcto
+        # Login correcto
         login(request, user)
 
-        # 🔥 Verificar si tiene tienda
+        # Verificar si tiene tienda
         tiene_tienda = Tienda.objects.filter(propietario=user).exists()
 
         if tiene_tienda:
-            return redirect('tiendas:home_seller')   # 👈 CAMBIO AQUÍ
+            return redirect('tiendas:home_seller')   # CAMBIO AQUÍ
         else:
             return redirect('home_client')
 
@@ -125,100 +125,212 @@ def login_view(request):
 # REGISTRO
 # =========================
 
+import re
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
+from .models import Address
+
+
+# ======================================
+# REGISTRO PASO 1
+# ======================================
+
 def register_view(request):
+
+    # 🔥 LIMPIAR SI ENTRA AL REGISTRO NUEVO
+    if request.method == 'GET' and not request.GET.get('from_address'):
+        request.session.pop('address_full', None)
+        request.session.pop('address_step_1', None)
+        request.session.pop('register_temp', None)
+
+    data = request.session.get('register_temp', {})
+
     if request.method == 'POST':
 
         name = request.POST.get('name', '').strip()
         phone = request.POST.get('phone', '').strip()
         email = request.POST.get('email', '').strip().lower()
 
-        # Validar campos obligatorios
+        # 🔥 GUARDAR SIEMPRE (para no perder datos)
+        request.session['register_temp'] = {
+            'name': name,
+            'phone': phone,
+            'email': email
+        }
+        request.session.modified = True
+
+        # VALIDACIONES
         if not all([name, phone, email]):
             messages.error(request, 'Todos los campos son obligatorios.')
             return redirect('register')
 
-        # Validar nombre
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,}$', name):
-            messages.error(request, 'El nombre debe tener al menos 3 letras.')
+            messages.error(request, 'Nombre inválido.')
             return redirect('register')
 
-        # Validar teléfono
         phone_clean = phone.replace(' ', '').replace('-', '')
-        if not re.match(r'^(\+57)?[0-9]{10}$', phone_clean):
-            messages.error(request, 'Número de teléfono inválido.')
+        if not re.match(r'^[0-9]{10}$', phone_clean):
+            messages.error(request, 'Teléfono inválido.')
             return redirect('register')
 
-        # Validar email
         try:
             validate_email(email)
         except ValidationError:
-            messages.error(request, 'Correo electrónico inválido.')
+            messages.error(request, 'Correo inválido.')
             return redirect('register')
 
-        # Verificar si ya existe
         if User.objects.filter(username=email).exists():
-            messages.error(request, 'Este correo ya está registrado.')
+            messages.error(request, 'Correo ya registrado.')
             return redirect('register')
 
-        # 👉 GUARDAR EN SESIÓN
+        # VALIDAR DIRECCIÓN
+        if not request.session.get('address_full'):
+            messages.error(request, 'Debes agregar una dirección antes de continuar.')
+            return redirect('register')
+
+        # GUARDAR DEFINITIVO
         request.session['register_name'] = name
         request.session['register_phone'] = phone_clean
         request.session['register_email'] = email
 
-        # 👉 IR AL PASO 2
-        return redirect('register2')
+        return redirect('register_step_2')
 
-    return render(request, 'usuarios/register.html')
+    return render(request, 'usuarios/register.html', {'data': data})
 
+
+# ======================================
+# REGISTRO PASO 2
+# ======================================
 def register_step_2(request):
+
     if request.method == 'POST':
 
-        password = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
+        password = request.POST.get('password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
 
-        if not all([password, confirm_password]):
+        if not password or not confirm_password:
             messages.error(request, 'Debes completar ambos campos.')
-            return redirect('register2')
+            return redirect('register_step_2')
 
         if password != confirm_password:
             messages.error(request, 'Las contraseñas no coinciden.')
-            return redirect('register2')
+            return redirect('register_step_2')
 
-        if (
-            len(password) < 8 or
-            not re.search(r'[A-Z]', password) or
-            not re.search(r'[0-9]', password)
-        ):
+        if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.#_\-]).{8,}$', password):
             messages.error(
                 request,
-                'La contraseña debe tener mínimo 8 caracteres, una mayúscula y un número.'
+                'Debe tener mínimo 8 caracteres, mayúscula, minúscula, número y símbolo.'
             )
-            return redirect('register2')
+            return redirect('register_step_2')
 
-        # 👉 DATOS DEL PASO 1
         name = request.session.get('register_name')
         email = request.session.get('register_email')
+        address = request.session.get('address_full')
 
-        if not name or not email:
-            messages.error(request, 'La sesión expiró. Intenta nuevamente.')
+        if not name or not email or not address:
+            messages.error(request, 'La sesión expiró.')
             return redirect('register')
 
-        # 👉 CREAR USUARIO
-        User.objects.create_user(
+        user = User.objects.create_user(
             username=email,
             email=email,
             password=password,
             first_name=name
         )
 
-        # 👉 LIMPIAR SESIÓN
-        request.session.flush()
+        Address.objects.create(
+            user=user,
+            neighborhood=address.get('neighborhood'),
+            address_number=address.get('address_number'),
+            road_type=address.get('road_type'),
+            postal_code=address.get('postal_code'),
+            department=address.get('department'),
+            city=address.get('city'),
+            extra_info=address.get('additional_info')
+        )
 
-        messages.success(request, 'Cuenta creada correctamente. Inicia sesión.')
-        return redirect('login')
+        # LIMPIAR SESIÓN
+        request.session.pop('register_name', None)
+        request.session.pop('register_email', None)
+        request.session.pop('address_full', None)
+
+        # 🔥 AQUÍ ESTÁ EL CAMBIO
+        return render(request, 'usuarios/register2.html', {
+            'success': True
+        })
 
     return render(request, 'usuarios/register2.html')
 
+
+# ======================================
+# DIRECCIÓN PASO 1
+# ======================================
+
+def add_address_view(request):
+
+    if request.method == 'POST':
+
+        neighborhood = request.POST.get('neighborhood', '').strip()
+        address_number = request.POST.get('address_number', '').strip()
+        road_type = request.POST.get('road_type', '').strip()
+        postal_code = request.POST.get('postal_code', '').strip()
+
+        if not neighborhood or not address_number:
+            messages.error(request, 'Barrio y dirección obligatorios.')
+            return redirect('add_address')
+
+        request.session['address_step_1'] = {
+            'neighborhood': neighborhood,
+            'address_number': address_number,
+            'road_type': road_type,
+            'postal_code': postal_code,
+        }
+        request.session.modified = True
+
+        return redirect('add_address_step_2')
+
+    return render(request, 'usuarios/add_address.html')
+
+
+# ======================================
+# DIRECCIÓN PASO 2
+# ======================================
+
+def add_address_step_2(request):
+
+    step_1 = request.session.get('address_step_1')
+
+    if not step_1:
+        messages.error(request, 'Debes completar el paso anterior.')
+        return redirect('add_address')
+
+    if request.method == 'POST':
+
+        department = request.POST.get('department', '').strip()
+        city = request.POST.get('city', '').strip()
+        additional_info = request.POST.get('additional_info', '').strip()
+
+        if not department or not city:
+            messages.error(request, 'Datos incompletos.')
+            return redirect('add_address_step_2')
+
+        request.session['address_full'] = {
+            **step_1,
+            'department': department,
+            'city': city,
+            'additional_info': additional_info
+        }
+        request.session.modified = True
+
+        request.session.pop('address_step_1', None)
+
+        # 🔥 VOLVER SIN BORRAR DATOS
+        return redirect('/register?from_address=1')
+
+    return render(request, 'usuarios/add_address2.html')
 
 # =========================
 # RECUPERAR CONTRASEÑA
@@ -408,70 +520,6 @@ def contact_view(request):
         return redirect('contact')
 
     return render(request, 'usuarios/contact.html')
-
-# =========================
-# DIRECCIÓN
-# =========================
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-
-def add_address_view(request):
-    if request.method == 'POST':
-
-        neighborhood = request.POST.get('neighborhood', '').strip()
-        address_number = request.POST.get('address_number', '').strip()
-        road_type = request.POST.get('road_type', '').strip()
-        postal_code = request.POST.get('postal_code', '').strip()
-
-        if not neighborhood or not address_number:
-            messages.error(request, 'Barrio y dirección son obligatorios.')
-            return redirect('add_address')
-
-        # 👉 GUARDAR PASO 1 EN SESIÓN
-        request.session['address_step_1'] = {
-            'neighborhood': neighborhood,
-            'address_number': address_number,
-            'road_type': road_type,
-            'postal_code': postal_code,
-        }
-
-        # 👉 IR AL SIGUIENTE PASO
-        return redirect('add_address2')
-
-    return render(request, 'usuarios/add_address.html')
-
-
-
-# =========================
-# DIRECCIÓN TERMINACIÓN
-# =========================
-
-def add_address_step_2(request):
-    if request.method == 'POST':
-
-        department = request.POST.get('department', '').strip()
-        city = request.POST.get('city', '').strip()
-        additional_info = request.POST.get('additional_info', '').strip()
-
-        if not department or not city:
-            messages.error(request, 'Departamento y municipio son obligatorios.')
-            return redirect('add_address_2')
-
-        # 👉 COMPLETAR DIRECCIÓN EN SESIÓN
-        address = request.session.get('address', {})
-        address.update({
-            'department': department,
-            'city': city,
-            'additional_info': additional_info,
-        })
-
-        request.session['address'] = address
-
-        # 👉 AQUÍ ESTÁ LA CLAVE
-        return redirect('register')  # 👈 vuelve al registro normal
-
-    return render(request, 'usuarios/add_address2.html')
 
 def home_client_view(request):
     products = [

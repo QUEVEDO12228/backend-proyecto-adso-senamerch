@@ -1,9 +1,20 @@
 {% extends 'index_create_store.html' %}
+{% load static %}
 
 {% block content %}
 
 <section class="create-store">
   <div class="create-store__wrapper">
+
+    <!-- MENSAJES DJANGO -->
+    {% if messages %}
+      <div class="create-store__messages">
+        {% for message in messages %}
+          <p class="create-store__error">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <header class="create-store__header">
       <h1 class="create-store__title">Crear tienda</h1>
       <p class="create-store__subtitle">
@@ -12,48 +23,148 @@
       </p>
     </header>
 
-    <form method="post" class="create-store__form">
+    <!-- IMPORTANTE enctype -->
+    <form method="post" enctype="multipart/form-data" class="create-store__form" id="formStore2">
       {% csrf_token %}
 
+      <!-- DIRECCIÓN -->
       <div class="create-store__group">
         <label class="create-store__label">Dirección de la tienda</label>
+
+        {% comment %} {% if request.session.store_address %}
+          <p style="color:green;">✔ Dirección agregada</p>
+        {% endif %} {% endcomment %}
+
         <a href="{% url 'tiendas:add_address_store' %}"
-        class="create-store__link">
-        Agregar dirección
-      </a>
-      </div>
-      
-      <div class="create-store__group">
-        <label class="create-store__label">Imagen de portada</label>
-        <input type="file" name="cover" class="create-store__input" accept="image/*">
+           class="create-store__link">
+          Agregar dirección
+        </a>
+
+        {% comment %} <small id="errorAddress" style="color:red;"></small> {% endcomment %}
       </div>
 
+      <!-- IMAGEN -->
+      <div class="create-store__group">
+        <label class="create-store__label">Imagen de portada</label>
+
+        <input type="file"
+               name="cover"
+               id="cover"
+               class="create-store__input"
+               accept="image/*">
+
+        <small id="errorImage" style="color:red;"></small>
+
+        <!-- PREVIEW -->
+        <img id="preview"
+             style="max-width:200px; margin-top:10px; display:none;">
+      </div>
+
+      <!-- DESCRIPCIÓN -->
       <div class="create-store__group">
         <label class="create-store__label">Descripción</label>
+
         <textarea name="description"
+                  id="description"
                   class="create-store__textarea"
                   rows="4"
                   placeholder="Escribe una breve descripción..."
                   required></textarea>
+
+        <small id="errorDesc" style="color:red;"></small>
       </div>
 
+      <!-- BOTONES -->
       <div class="create-store__actions">
-          <div class="create-store__action-left">
-            <a href="{% url 'tiendas:create_store' %}"
-              class="btn-secundary btn-secundary-style">
-              Volver
-            </a>
-          </div>
 
-          <div class="create-store__action-right">
-            <button type="submit" class="btn btn--primary">
-              Crear tienda
-            </button>
-          </div>
+        <div class="create-store__action-left">
+          <a href="{% url 'tiendas:create_store' %}"
+             class="btn-secundary btn-secundary-style">
+            Volver
+          </a>
         </div>
+
+        <div class="create-store__action-right">
+          <button type="submit" class="btn btn--primary">
+            Crear tienda
+          </button>
+        </div>
+
+      </div>
 
     </form>
   </div>
 </section>
+
+<script>
+// ELEMENTOS
+const form = document.getElementById("formStore2");
+const imageInput = document.getElementById("cover");
+const preview = document.getElementById("preview");
+const desc = document.getElementById("description");
+
+// PREVIEW IMAGEN
+imageInput.addEventListener("change", function(){
+  const file = this.files[0];
+
+  if (file){
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+  }
+});
+
+// VALIDACIONES
+form.addEventListener("submit", function(e){
+
+  let valid = true;
+
+  const file = imageInput.files[0];
+  const description = desc.value.trim();
+
+  // LIMPIAR ERRORES
+  document.getElementById("errorImage").textContent = "";
+  document.getElementById("errorDesc").textContent = "";
+  document.getElementById("errorAddress").textContent = "";
+
+  // DESCRIPCIÓN
+  if (description.length < 5){
+    document.getElementById("errorDesc").textContent =
+      "Mínimo 5 caracteres";
+    valid = false;
+  }
+
+  // IMAGEN
+  if (!file){
+    document.getElementById("errorImage").textContent =
+      "Debes subir una imagen";
+    valid = false;
+  } else {
+
+    if (!file.type.startsWith("image/")){
+      document.getElementById("errorImage").textContent =
+        "El archivo debe ser una imagen";
+      valid = false;
+    }
+
+    if (file.size > 2 * 1024 * 1024){
+      document.getElementById("errorImage").textContent =
+        "Máximo 2MB";
+      valid = false;
+    }
+  }
+
+  // DIRECCIÓN (Si luego se implementa)
+  const hasAddress = "{{ request.session.store_address|default:'' }}";
+
+  if (!hasAddress){
+    document.getElementById("errorAddress").textContent =
+      "Debes agregar una dirección";
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+
+});
+</script>
 
 {% endblock %}

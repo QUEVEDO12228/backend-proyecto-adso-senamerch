@@ -165,6 +165,7 @@ def edit_seller_profile(request):
         request.session['edit_user_data'] = {
             "email": request.POST.get("email"),
             "first_name": request.POST.get("first_name"),
+
         }
 
         return redirect('tiendas:edit_seller_profile2')
@@ -191,7 +192,7 @@ def edit_seller_profile2(request):
         # Guardar datos básicos
         user.email = data["email"]
         user.first_name = data["first_name"]
-
+        
         # Guardar contraseña si existe
         password = request.POST.get("password")
         confirm = request.POST.get("confirm_password")

@@ -15,6 +15,15 @@
       </p>
     </header>
 
+    <!-- 🔥 MENSAJES (NO ROMPE DISEÑO) -->
+    {% if messages %}
+      <div class="address-store-form__messages">
+        {% for message in messages %}
+          <p class="address-store-form__error">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <form class="address-store-form__form" method="post">
       {% csrf_token %}
 
@@ -33,7 +42,7 @@
         <input
           type="text"
           name="city"
-          placeholder="Ej: Bogotá"
+          placeholder="Ej: Pereira"
           class="address-store-form__input"
           required
         >
@@ -68,4 +77,25 @@
     </form>
   </div>
 </section>
+
+<!-- 🔥 VALIDACIONES FRONTEND (PRO) -->
+<script>
+  const form = document.querySelector('.address-store-form__form');
+
+  form.addEventListener('submit', function(e) {
+    const department = document.querySelector('[name="department"]').value;
+    const city = document.querySelector('[name="city"]').value.trim();
+
+    if (!department || !city) {
+      e.preventDefault();
+      alert("Debes completar departamento y municipio");
+    }
+
+    if (city.length < 3) {
+      e.preventDefault();
+      alert("El municipio debe tener al menos 3 caracteres");
+    }
+  });
+</script>
+
 {% endblock %}

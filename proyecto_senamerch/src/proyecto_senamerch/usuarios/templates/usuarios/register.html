@@ -6,68 +6,114 @@
 {% block content %}
 <section class="register">
   <div class="register__wrapper">
+
     <header class="register__header">
       <h1 class="register__title">Completa los datos para crear tu cuenta</h1>
-      <p class="register__subtitle">
-        Este formulario es para registrar<br />
-        tu tienda en <strong>SENA MERCH</strong>. Con tu perfil podrás publicar
-        productos y gestionar tus ventas fácilmente.
-      </p>
     </header>
 
-    <form class="register__form" method="post">
+    {% for message in messages %}
+      {% if "register" in message.tags %}
+        <p class="error">{{ message }}</p>
+      {% endif %}
+    {% endfor %}
+
+    <form class="register__form" method="post" id="registerForm" autocomplete="off">
       {% csrf_token %}
 
+      <!-- NOMBRE -->
       <div class="register__group">
-        <label class="register__label">Nombre</label>
-        <input
-          class="register__input"
-          type="text"
-          name="name"
-          placeholder="Tu nombre"
-          required
-        />
+        <label>Nombre</label>
+        <input type="text" name="name" id="name"
+               class="register__input"
+               placeholder="Ej: Pepito Perez"
+               required>
+        <small id="nameError" class="error-text"></small>
       </div>
 
+      <!-- TELÉFONO -->
       <div class="register__group">
-        <label class="register__label">Teléfono</label>
-        <input
-          type="tel"
-          name="phone"
-          class="register__input"
-          value="+57 300 000 0000"
-          required
-        />
+        <label>Teléfono</label>
+        <input type="text" name="phone" id="phone"
+               class="register__input"
+               placeholder="Ej: 3001234567"
+               required>
+        <small id="phoneError" class="error-text"></small>
       </div>
 
+      <!-- EMAIL -->
       <div class="register__group">
-        <label class="register__label">Correo electrónico</label>
-        <input
-          class="register__input"
-          type="email"
-          name="email"
-          placeholder="correo@ejemplo.com"
-          required
-        />
+        <label>Correo electrónico</label>
+        <input type="email" name="email" id="email"
+               class="register__input"
+               placeholder="Ej: correo@gmail.com"
+               required>
+        <small id="emailError" class="error-text"></small>
       </div>
 
+      <!-- DIRECCIÓN -->
       <div class="register__group">
-        <label class="register__label">Dirección</label>
-        <a href="{% url 'add_address' %}" class="register__link">
+        <label>Dirección</label>
+
+        {% if request.session.address_full %}
+          <p style="color: green;">✔ Dirección agregada</p>
+        {% else %}
+          <p style="color: red;">⚠ Debes agregar tu dirección</p>
+        {% endif %}
+
+        <a href="{% url 'add_address' %}" class="register__link" onclick="return goToAddress(event)">
           Agregar dirección
         </a>
-        <small class="register__text">Todo estará más cerca de ti.</small>
       </div>
 
       <button type="submit" class="btn btn--primary register__action-continue">
         Siguiente
-        <img
-          src="{% static 'assets/icons/continue.svg' %}"
-          alt=""
-          class="btn__icon"
-        />
+        <img src="{% static 'assets/icons/continue.svg' %}" alt="" class="btn__icon">
       </button>
+      
     </form>
   </div>
 </section>
+
+<script>
+const form = document.getElementById('registerForm');
+
+form.addEventListener('submit', function(e) {
+
+  let valid = true;
+
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const email = document.getElementById('email').value.trim();
+
+  if (!/^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,}$/.test(name)) {
+    document.getElementById('nameError').textContent = "Nombre inválido";
+    valid = false;
+  }
+
+  if (!/^[0-9]{10}$/.test(phone.replace(/\s/g,''))) {
+    document.getElementById('phoneError').textContent = "Debe tener 10 números";
+    valid = false;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById('emailError').textContent = "Correo inválido";
+    valid = false;
+  }
+
+  function goToAddress(e) {
+    e.preventDefault(); // vita validación del form
+    window.location.href = "{% url 'add_address' %}";
+  }
+
+  const hasAddress = "{{ request.session.address_full|yesno:'true,false' }}" === "true";
+
+  if (!hasAddress) {
+    alert("Debes agregar tu dirección antes de continuar");
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+});
+</script>
+
 {% endblock %}
