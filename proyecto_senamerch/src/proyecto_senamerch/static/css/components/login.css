@@ -110,6 +110,24 @@
   color: var(--primary-900);
   text-decoration: underline;
 }
+
+.login__error-text {
+  color: #ff4d4d;
+  font-size: 12px;
+  margin-top: 5px;
+  display: block;
+}
+
+.login__messages {
+  margin-bottom: 15px;
+}
+
+.login__error {
+  background: #ffe5e5;
+  color: #cc0000;
+  padding: 10px;
+  border-radius: 6px;
+}
 @media (width > 640px) {
   .main-site-login {
     padding-block: 2.4rem;

@@ -112,6 +112,16 @@
   background-color: var(--tertiary-100);
 }
 
+.address-store-form__messages {
+  margin-bottom: 15px;
+}
+
+.address-store-form__error {
+  color: #e74c3c;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .address-form {
     padding-block: 2rem;

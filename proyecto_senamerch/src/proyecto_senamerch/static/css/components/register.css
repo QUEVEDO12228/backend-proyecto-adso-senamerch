@@ -25,6 +25,20 @@
   margin: 24px;
   box-sizing: border-box;
 }
+
+.register__messages {
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.register__success {
+  color: #2ecc71;
+  background: #eafaf1;
+  padding: 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
 @media (width > 640px) and (width < 1024px){
   .register__wrapperr {
     margin-inline: var(--gap-lg);

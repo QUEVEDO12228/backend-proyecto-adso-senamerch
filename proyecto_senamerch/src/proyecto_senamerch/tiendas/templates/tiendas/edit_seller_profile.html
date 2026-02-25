@@ -16,13 +16,12 @@
       enctype="multipart/form-data"
       class="edit-profile-admin__form">
     {% csrf_token %}
-      <div class="edit-profile-admin__group">
-          <label class="edit-profile-admin__label">Foto de perfil</label>
-          <input type="email"
-            name="email"
-            value="{{ request.user.email }}"
-            class="edit-profile-admin__input"
-            required />
+      <div class="edit-store-seller__group">
+        <label class="edit-store-seller__label">Foto de Perfil</label>
+        <input type="file"
+          name="imagen"
+          class="edit-store-seller__input"
+          accept="image/*" />
       </div>
     
       <div class="edit-profile-admin__group">
@@ -43,10 +42,15 @@
           required />
       </div>
 
-      <div class="edit-profile-admin__group">
-        <label class="edit-profile-admin__label">Teléfono</label>
-        <input type="tel" class="edit-profile-admin__input" value="+57 300 000 0000" required>
+      <div class="edit-store-seller-one__group">
+        <label class="edit-store-seller-one__label">Teléfono</label>
+        <input type="tel"
+        name="telefono"
+        value="{{ request.user.phone }}"
+        class="edit-store-seller-one__input"
+        required>
       </div>
+
       <div class="edit-profile-admin__secondary">
         <a href="{% url 'tiendas:profile_store_seller' %}"
           class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
@@ -68,7 +72,7 @@
         >
           Siguiente
           <img
-            src="/frontend/public/assets/icons/continue.svg"
+            src="{% static 'assets/icons/continue.svg' %}"
             alt=""
             class="btn__icon edit-profile-admin__icon"
             aria-hidden="true"

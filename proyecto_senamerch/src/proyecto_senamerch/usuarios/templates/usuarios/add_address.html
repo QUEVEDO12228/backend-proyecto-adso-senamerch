@@ -15,68 +15,109 @@
       </p>
     </header>
 
-    <form class="address-store-form__form" method="post">
+    <!-- MENSAJES -->
+    {% if messages %}
+      <div class="address-store-form__messages">
+        {% for message in messages %}
+          <p class="address-store-form__error">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form class="address-store-form__form" method="post" id="addressForm">
       {% csrf_token %}
 
+      <!-- BARRIO -->
       <div class="address-store-form__group">
-        <label class="address-store-form__label">Barrio</label>
-        <input
-          type="text"
-          name="neighborhood"
+        <label>Barrio</label>
+        <input type="text" name="neighborhood" id="neighborhood"
           class="address-store-form__input"
-          placeholder="Ingresa tu barrio"
-          required
-        />
+          placeholder="Ingresa tu barrio" required>
+        <small id="errorNeighborhood" class="error-text"></small>
       </div>
 
+      <!-- DIRECCIÓN -->
       <div class="address-store-form__group">
-        <label class="address-store-form__label">Número de dirección</label>
-        <input
-          type="text"
-          name="address_number"
+        <label>Número de dirección</label>
+        <input type="text" name="address_number" id="address_number"
           class="address-store-form__input"
-          placeholder="Ej: #25A - 45"
-          required
-        />
+          placeholder="Ej: #25A - 45" required>
+        <small id="errorAddress" class="error-text"></small>
       </div>
 
+      <!-- TIPO VÍA -->
       <div class="address-store-form__group">
-        <label class="address-store-form__label">Tipo de vía</label>
-        <input
-          type="text"
-          name="road_type"
+        <label>Tipo de vía</label>
+        <input type="text" name="road_type" id="road_type"
           class="address-store-form__input"
-          placeholder="Ej: Calle, Carrera, Avenida"
-        />
+          placeholder="Ej: Calle, Carrera, Avenida">
       </div>
 
+      <!-- POSTAL -->
       <div class="address-store-form__group">
-        <label class="address-store-form__label">Código postal</label>
-        <input
-          type="text"
-          name="postal_code"
+        <label>Código postal</label>
+        <input type="text" name="postal_code" id="postal_code"
           class="address-store-form__input"
-          placeholder="Ej: 110111"
-        />
+          placeholder="Ej: 110111">
+        <small id="errorPostal" class="error-text"></small>
       </div>
 
-      <!-- VOLVER -->
+      <!-- BOTONES -->
       <div class="address-store-form__secondary">
         <a href="{% url 'register' %}" class="btn-secundary btn-secundary-style">
           Volver
-          <img src="{% static 'assets/icons/return.svg' %}" class="btn-secundary__icon">
         </a>
       </div>
 
-      <!-- SIGUIENTE -->
       <div class="address-store-form__buttons">
-        <button type="submit" class="btn btn--primary address-store-form__continue">
+        <button type="submit" class="btn btn--primary">
           Siguiente
-          <img src="{% static 'assets/icons/continue.svg' %}" class="btn__icon">
         </button>
       </div>
 
     </form>
   </div>
 </section>
+
+<script>
+const form = document.getElementById('addressForm');
+
+form.addEventListener('submit', function(e){
+
+  let valid = true;
+
+  const barrio = document.getElementById('neighborhood').value.trim();
+  const direccion = document.getElementById('address_number').value.trim();
+  const postal = document.getElementById('postal_code').value.trim();
+
+  // LIMPIAR ERRORES
+  document.getElementById('errorNeighborhood').textContent = "";
+  document.getElementById('errorAddress').textContent = "";
+  document.getElementById('errorPostal').textContent = "";
+
+  // BARRIO
+  if (barrio.length < 3) {
+    document.getElementById('errorNeighborhood').textContent =
+      "Debe tener mínimo 3 caracteres";
+    valid = false;
+  }
+
+  // DIRECCIÓN
+  if (direccion.length < 5) {
+    document.getElementById('errorAddress').textContent =
+      "Dirección inválida";
+    valid = false;
+  }
+
+  // POSTAL (opcional pero válido si lo ponen)
+  if (postal && !/^[0-9]{5,6}$/.test(postal)) {
+    document.getElementById('errorPostal').textContent =
+      "Código postal inválido";
+    valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+});
+</script>
+
 {% endblock %}

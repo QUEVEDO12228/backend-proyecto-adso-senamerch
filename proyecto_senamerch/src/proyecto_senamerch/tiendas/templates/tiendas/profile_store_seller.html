@@ -113,7 +113,7 @@
 
         <div class="store-profile__info">
           <h1 class="store-profile__name">
-            @{{ request.user.username }}
+            @{{ request.user.first_name }}
           </h1>
           <p class="store-profile__role">
             Vendedor
@@ -138,9 +138,9 @@
         </div>
 
         <div class="store-profile__field">
-          <span class="store-profile__label">Usuario:</span>
+          <span class="store-profile__label">Teléfono:</span>
           <span class="store-profile__value">
-            {{ request.user.username }}
+            {{ request.user.phone }}
           </span>
         </div>
 
