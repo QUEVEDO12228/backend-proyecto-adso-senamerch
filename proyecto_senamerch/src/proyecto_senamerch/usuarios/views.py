@@ -555,7 +555,7 @@ def profile_view(request):
     if tiene_tienda:
         return redirect('tiendas:profile_store_seller')
 
-    return render(request, 'usuarios/profile.html')
+    return render(request, 'usuarios/profile_user.html')
 
 def logout_view(request):
     logout(request)
