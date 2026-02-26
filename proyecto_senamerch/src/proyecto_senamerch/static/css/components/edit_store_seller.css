@@ -5,6 +5,13 @@
   padding-block: 2.4rem;
   overflow: hidden;
   min-height: 100%;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+    url("/static/assets/img/hero4.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 .edit-store-seller-one__wrapper {
   border: 2px solid var(--secundary-400);
@@ -19,9 +26,9 @@
   box-sizing: border-box;
 }
 @media (width > 640px) {
-  .edit-store-seller-one {
+  /* .edit-store-seller-one {
     margin-inline: var(--gap-lg);
-  }
+  } */
   .edit-store-seller-one__wrapper {
     width: fit-content;
     padding: var(--gap-lg);

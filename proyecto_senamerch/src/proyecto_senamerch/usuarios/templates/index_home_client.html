@@ -9,6 +9,17 @@
 <body>
     {% include 'components/navabar_go_go.html' %}
     {% include 'components/navbar_client_view.html' %}
+    <section class="search-category-grid">
+      <div class="search-bar-container">
+        {% include 'components/search_bar.html' %}
+      </div>
+
+      <nav class="nav">
+        <div class="navbar-product-category-container">
+          {% include 'components/navbar_product_category.html' %}
+        </div>
+      </nav>
+    </section>
     <main class="main-content">
     {% block content %}{% endblock %}
     </main> 

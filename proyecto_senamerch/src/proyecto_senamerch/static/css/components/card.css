@@ -30,7 +30,7 @@
     padding-inline: var(--gap-lg);
   }
 }
-.card {
+.pr {
   border: 1px solid var(--secundary-900);
   border-radius: 12px;
   padding: 24px;
