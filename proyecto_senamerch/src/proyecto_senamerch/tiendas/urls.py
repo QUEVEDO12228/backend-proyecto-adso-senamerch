@@ -69,6 +69,7 @@ urlpatterns = [
 
     path('direccion-tienda/', views.store_address_view, name='store_address'),
     path('direccion-vendedor/', views.seller_address_view, name='seller_address'),
+    
 ]
 
 if settings.DEBUG:

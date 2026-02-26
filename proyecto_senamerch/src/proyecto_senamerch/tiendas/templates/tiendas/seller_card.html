@@ -31,9 +31,15 @@
 
   <a href="{% url 'tiendas:profile_store_seller' %}"
      class="product-card__profile-store-link">
-    <img src="{{ producto.tienda.logo.url }}"
-         alt="Logo {{ producto.tienda.nombre }}"
+    {% if producto.tienda.imagen_portada %}
+    <img src="{{ producto.tienda.imagen_portada.url }}"
+         alt="Imagen {{ producto.tienda.nombre }}"
          class="product-card__store-logo">
+    {% else %}
+        <img src="{% static 'assets/img/default-store.jpg' %}"
+            alt="Sin imagen"
+            class="product-card__store-logo">
+    {% endif %}
 
     <span class="product-card__profile-store-tooltip">
       Perfil Tienda
@@ -43,11 +49,22 @@
     </span>
   </a>
 
-  <a href="{% url 'productos:detail' producto.id %}" class="product-card__image-link">
+  <a href="{% url 'tiendas:view_description_product_seller' producto.id %}"
+     class="product-card__image-link">
     <div class="product-card__image-wrapper">
-      <img src="{{ producto.imagen.url }}"
-           alt="{{ producto.nombre }}"
-           class="product-card__image">
+
+      {% with producto.imagenes.first as imagen %}
+          {% if imagen %}
+              <img src="{{ imagen.imagen.url }}"
+                   alt="{{ producto.nombre }}"
+                   class="product-card__image">
+          {% else %}
+              <img src="{% static 'assets/img/default-product.jpg' %}"
+                   alt="Sin imagen"
+                   class="product-card__image">
+          {% endif %}
+      {% endwith %}
+
     </div>
 
     <span class="product-card__image-tooltip">
@@ -59,7 +76,7 @@
   </a>
 
   <div class="product-card__footer--seller-edit">
-    <a href="{% url 'productos:update' producto.id %}"
+    <a href="{% url 'productos:edit_product_seller' producto.id %}"
        class="btn-secundary btn-secundary-style">
       Editar
       <img src="{% static 'assets/icons/edit.svg' %}"

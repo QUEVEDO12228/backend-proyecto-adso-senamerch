@@ -3,54 +3,46 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catálogo Vendedor | SenaMerch</title>
-
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 
 <body>
 
-  <!-- GOVCO TOP -->
-  {% include 'components/navabar_go_go.html' %}
+{% include 'components/navabar_go_go.html' %}
+{% include 'components/navbar_seller_view.html' %}
 
-  <!-- NAVBAR VENDEDOR -->
-  {% include 'components/navbar_seller_view.html' %}
-
-  <!-- Sidebar Comentarios -->
-  <section class="comments_users">
+<section class="comments_users">
     {% include 'components/comments.html' %}
-  </section>
+</section>
 
-  <!-- Hero tienda -->
-  <section class="seller-hero-store">
+<section class="seller-hero-store">
     {% include 'components/hero_seller.html' %}
-  </section>
+</section>
 
-  <!-- CONTENEDOR FLEX (EL QUE FALTABA) -->
-  <section class="section-footer-content">
+<section class="section-footer-content">
 
-    <!-- Barra de búsqueda -->
     <section class="seeker_products_list">
         {% include 'components/search_bar.html' %}
     </section>
 
-    <!-- Listado / publicaciones -->
     <section class="sellers_product_list">
         {% include 'components/list_product_seller.html' %}
     </section>
 
-  </section>
+    <!-- 🔥 AQUI VAN LAS CARDS -->
+    <section class="products-cards">
+        <div class="seller-cards__container">
+            {% block main_content %}
+            {% endblock %}
+        </div>
+    </section>
 
-  <!-- 🔥 CONTENIDO PRINCIPAL -->
-  <main class="main-content">
-    {% block main_content %}{% endblock %}
-  </main>
+</section>
 
-
-  <!-- FOOTERS -->
-  {% include 'components/footer.html' %}
-  {% include 'components/footer_go_go.html' %}
+{% include 'components/footer.html' %}
+{% include 'components/footer_go_go.html' %}
 
 </body>
-</html> 
+</html>
+
