@@ -31,12 +31,6 @@ urlpatterns = [
     # 👉 CATÁLOGO (ESTA RUTA ESTÁ BIEN)
     path('catalogo/', views.seller_catalog, name='seller_catalog'),
 
-    path(
-        'producto/<int:id>/',
-        views.view_description_product_seller,
-        name='view_description_product_seller'
-    ),
-
     # =================================
     # EDITAR PERFIL VENDEDOR
     # =================================
@@ -69,6 +63,11 @@ urlpatterns = [
 
     path('direccion-tienda/', views.store_address_view, name='store_address'),
     path('direccion-vendedor/', views.seller_address_view, name='seller_address'),
+    path(
+        "perfil/<int:id>/",
+        views.profile_store_client,
+        name="profile_store_client"
+    ),
     
 ]
 

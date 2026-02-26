@@ -8,11 +8,17 @@ from django.core.exceptions import ValidationError
 from .models import Tienda
 from productos.models import Producto
 
-def home_seller(request):
-    products = Producto.objects.filter(tienda__propietario=request.user)
 
-    return render(request, 'tiendas/home_seller.html', {
-        'products': products
+@login_required
+def home_seller(request):
+
+    # productos que NO sean de la tienda del vendedor
+    productos = Producto.objects.exclude(
+        tienda__propietario=request.user
+    ).filter(activo=True)
+
+    return render(request, "tiendas/card.html", {
+        "productos": productos
     })
 
 # ==========================================
@@ -146,16 +152,6 @@ def seller_catalog(request):
     return render(request, 'tiendas/seller_card.html', {
         'productos': productos
     })
-
-
-
-
-def view_description_product_seller(request, id):
-    context = {
-        "product_id": id
-    }
-    return render(request, 'tiendas/view_description_product_seller.html', context)
-
 @login_required
 def edit_seller_profile(request):
 
@@ -293,4 +289,11 @@ def seller_address_view(request):
     return render(request, 'tiendas/seller_profile_address.html', {
         'tienda': tienda,
         'direccion': tienda
+    })
+
+def profile_store_client(request, id):
+    tienda = get_object_or_404(Tienda, id=id)
+
+    return render(request, "tiendas/profile_store_client.html", {
+        "tienda": tienda
     })

@@ -9,9 +9,13 @@
 <body>
     {% include 'components/navabar_go_go.html' %}
     {% include 'components/navbar_home_store_seller.html' %}
-    <main class="main-content">
-    {% block content %}{% endblock %}
-    </main> 
+    
+    <section class="products-grid">
+      <div class="cards__container">
+          {% block main_content %}{% endblock %}
+      </div>
+    </section>
+    
     {% include 'components/footer.html' %}
     {% include 'components/footer_go_go.html' %}
 

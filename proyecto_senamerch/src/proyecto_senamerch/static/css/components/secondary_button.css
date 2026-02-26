@@ -45,3 +45,9 @@
 .btn-secundary__icon {
   color: var(--secundary-950);
 }
+.btn-secundary,
+.btn-secundary:hover,
+.btn-secundary:focus,
+.btn-secundary:active {
+  text-decoration: none;
+}
