@@ -1,0 +1,116 @@
+{% extends "index_create_product.html" %}
+{% load static %}
+
+{% block content %}
+<section class="class main-image-upload">
+    <div class="image-upload">
+
+        <h2 class="image-upload__title">Termina de editar el producto</h2>
+
+        <p class="image-upload__subtitle">
+            Edita las imágenes para completar la presentación de tu producto.
+        </p>
+
+        <form method="POST"
+              action="{% url 'productos:edit_product_step4' producto.id %}"
+              enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div class="image-upload__content">
+                
+                <div class="image-upload__sidebar">
+                    {% for i in "123456" %}
+                    <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+                        <span class="image-upload__add-text">Cambiar</span>
+                        <input type="file" name="image{{ i }}" accept="image/*" class="image-upload__input">
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="image-upload__viewer">
+                    <div class="image-upload__preview image-upload__preview--empty">
+                        <span class="image-upload__preview-text">Vista previa</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="image-upload__actions">
+
+                <a href="{% url 'productos:edit_product_step3' producto.id %}"
+                   class="btn-secundary btn-secundary-style image-upload__cancel">
+                    Volver
+                </a>
+
+                <button type="submit"
+                        class="btn btn--primary image-upload__submit">
+                    Guardar cambios
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</section>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const inputs = document.querySelectorAll(".image-upload__input");
+  const previewBox = document.querySelector(".image-upload__preview");
+  const previewText = document.querySelector(".image-upload__preview-text");
+
+  inputs.forEach((input) => {
+
+    // 🔥 CUANDO SE SUBE IMAGEN
+    input.addEventListener("change", function (event) {
+
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const thumbnail = input.closest(".image-upload__thumbnail");
+
+        thumbnail.style.backgroundImage = `url(${e.target.result})`;
+        thumbnail.style.backgroundSize = "cover";
+        thumbnail.style.backgroundPosition = "center";
+        thumbnail.classList.remove("image-upload__thumbnail--empty");
+
+        const text = thumbnail.querySelector(".image-upload__add-text");
+        if (text) text.style.display = "none";
+
+        // 🔥 TAMBIÉN LO MUESTRA EN LA VISTA GRANDE AUTOMÁTICAMENTE
+        previewBox.style.backgroundImage = `url(${e.target.result})`;
+        previewBox.style.backgroundSize = "cover";
+        previewBox.style.backgroundPosition = "center";
+
+        if (previewText) previewText.style.display = "none";
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+
+    // 🔥 CUANDO PASAS EL MOUSE POR UNA MINIATURA
+    const thumbnail = input.closest(".image-upload__thumbnail");
+
+    thumbnail.addEventListener("mouseenter", function () {
+
+      const bg = thumbnail.style.backgroundImage;
+      if (!bg) return;
+
+      previewBox.style.backgroundImage = bg;
+      previewBox.style.backgroundSize = "cover";
+      previewBox.style.backgroundPosition = "center";
+
+      if (previewText) previewText.style.display = "none";
+    });
+
+  });
+
+});
+</script>
+{% endblock %}

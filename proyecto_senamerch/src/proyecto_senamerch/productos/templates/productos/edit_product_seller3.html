@@ -1,0 +1,54 @@
+{% extends "index_create_product.html" %}
+{% load static %}
+
+{% block content %}
+<section class="edit-post-two">
+  <div class="edit-post-two__wrapper">
+
+    <header class="edit-post-two__header">
+      <h1 class="edit-post-two__title">Continúa editando la información del producto</h1>
+    </header>
+
+    <form method="POST" action="{% url 'productos:edit_product_step3' producto.id %}" class="edit-post-two__form">
+      {% csrf_token %}
+
+      <div class="edit-post-two__group">
+        <label class="edit-post-two__label">Edita la Descripción producto</label>
+        <textarea 
+          name="description"
+          class="edit-post-two__textarea"
+        >{{ producto.descripcion }}</textarea>
+      </div>
+
+      <div class="edit-post-two__group">
+        <label class="edit-post-two__label">Edita el Tipo de envío</label>
+        <select name="shipping_type" class="edit-post-two__input" required>
+          {% for value, label in producto.TIPO_ENVIO_CHOICES %}
+            <option value="{{ value }}" {% if producto.tipo_envio == value %}selected{% endif %}>
+              {{ label }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="edit-post-two__group ">
+        <div class="edit-post-two__secondary">
+          <a href="{% url 'productos:edit_product_step2' producto.id %}"
+             class="btn-secundary btn-secundary-style edit-post-two__cancel">
+            Volver
+          </a>
+        </div>
+      </div>
+
+      <div class="edit-post-two__group ">
+        <div class="edit-post-two__buttons">
+          <button type="submit" class="btn btn--primary edit-post-two__save">
+            Siguiente
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</section>
+{% endblock %}

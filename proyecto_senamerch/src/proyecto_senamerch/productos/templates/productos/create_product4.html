@@ -101,5 +101,63 @@
 
   </div>
 </section>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+  const inputs = document.querySelectorAll(".image-upload__input");
+  const previewBox = document.querySelector(".image-upload__preview");
+  const previewText = document.querySelector(".image-upload__preview-text");
+
+  inputs.forEach((input) => {
+
+    // 🔥 CUANDO SE SUBE IMAGEN
+    input.addEventListener("change", function (event) {
+
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        const thumbnail = input.closest(".image-upload__thumbnail");
+
+        thumbnail.style.backgroundImage = `url(${e.target.result})`;
+        thumbnail.style.backgroundSize = "cover";
+        thumbnail.style.backgroundPosition = "center";
+        thumbnail.classList.remove("image-upload__thumbnail--empty");
+
+        const text = thumbnail.querySelector(".image-upload__add-text");
+        if (text) text.style.display = "none";
+
+        // 🔥 TAMBIÉN LO MUESTRA EN LA VISTA GRANDE AUTOMÁTICAMENTE
+        previewBox.style.backgroundImage = `url(${e.target.result})`;
+        previewBox.style.backgroundSize = "cover";
+        previewBox.style.backgroundPosition = "center";
+
+        if (previewText) previewText.style.display = "none";
+      };
+
+      reader.readAsDataURL(file);
+    });
+
+
+    // 🔥 CUANDO PASAS EL MOUSE POR UNA MINIATURA
+    const thumbnail = input.closest(".image-upload__thumbnail");
+
+    thumbnail.addEventListener("mouseenter", function () {
+
+      const bg = thumbnail.style.backgroundImage;
+      if (!bg) return;
+
+      previewBox.style.backgroundImage = bg;
+      previewBox.style.backgroundSize = "cover";
+      previewBox.style.backgroundPosition = "center";
+
+      if (previewText) previewText.style.display = "none";
+    });
+
+  });
+
+});
+</script>
 {% endblock %}

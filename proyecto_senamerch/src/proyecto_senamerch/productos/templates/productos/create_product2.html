@@ -15,15 +15,12 @@
 
     <form method="POST" action="{% url 'productos:create_product_step2' %}" class="create-post__form">
       {% csrf_token %}
-      <div class="create-post__group">
-        <label class="create-post__label">Unidad de medida</label>
-        <select name="unit" class="create-product-post-one__input" required>
-          <option value="" selected disabled>Selecciona una Unidad</option>
-          <option value="kg">kg</option>
-          <option value="lb">lb</option>
-          <option value="unidad">unidad</option>
-          <option value="litro">litro</option>
-          <option value="mililitro">mililitro</option>
+      <div class="edit-post-two__group">
+        <label class="edit-post-two__label">Edita la Unidad de medida</label>
+        <select class="edit-post-two__input" required>
+          <option value="" selected disabled>Selecciona una unidad</option>
+          <option value="kg">Solido</option>
+          <option value="lb">Liquido</option>
         </select>
       </div>
       

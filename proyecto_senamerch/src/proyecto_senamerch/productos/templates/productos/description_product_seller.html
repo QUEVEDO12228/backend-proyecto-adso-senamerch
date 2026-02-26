@@ -1,0 +1,142 @@
+{% extends 'index_profile_store_seller.html' %}
+{% load static %}
+
+{% block content %}
+<section class="product-admin-description">
+
+  <!-- GALERÍA -->
+  <div class="product-admin-description__gallery">
+
+    <!-- IMAGEN PRINCIPAL -->
+    {% with producto.imagenes.first as imagen_principal %}
+      {% if imagen_principal %}
+        <img src="{{ imagen_principal.imagen.url }}" 
+             alt="{{ producto.nombre }}" 
+             class="product-admin-description__image product-admin-description__image--main"
+             id="mainImage" />
+      {% else %}
+        <img src="{% static 'assets/img/default-product.jpg' %}" 
+             alt="Sin imagen"
+             class="product-admin-description__image product-admin-description__image--main"
+             id="mainImage" />
+      {% endif %}
+    {% endwith %}
+
+    <!-- MINIATURAS -->
+    <div class="product-admin-description__thumbnails">
+      {% for imagen in producto.imagenes.all %}
+        <img src="{{ imagen.imagen.url }}"
+             class="product-admin-description__thumbnail"
+             onclick="changeMainImage(this)">
+      {% empty %}
+        <img src="{% static 'assets/img/default-product.jpg' %}"
+             class="product-admin-description__thumbnail">
+      {% endfor %}
+    </div>
+
+    <!-- COMENTARIOS -->
+    <div class="product-admin-description__comments seller-comments">
+      <h3 class="comments__title">Opiniones de los usuarios</h3>
+
+      <div class="seller-comments__list">
+        <div class="seller-comments__item">
+          <p class="seller-comments__user">
+            Usuario Demo <span class="comments__date">• Hace 2 días</span>
+          </p>
+          <p class="seller-comments__text">
+            Excelente producto.
+          </p>
+        </div>
+
+        <div class="seller-comments__secondary">
+          <a href="{% url 'productos:edit_product_seller' producto.id %}"
+             class="btn-secundary btn-secundary-style seller-comments__edit">
+            Editar producto
+            <img src="{% static 'assets/icons/edit.svg' %}" 
+                 alt=""
+                 class="btn-secundary__icon">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALLES DEL PRODUCTO -->
+  <div class="product-admin-description__details seller-details">
+
+    <!-- ACCIONES -->
+    <div class="seller-details__actions">
+      <p class="product-admin-description__status">
+        Estado: 
+        {% if producto.activo %}
+          Activo
+        {% else %}
+          Deshabilitado
+        {% endif %}
+      </p>
+
+      <button class="btn btn--warning product-admin-description__suspend">
+        Deshabilitar producto
+        <img src="{% static 'assets/icons/off.svg' %}" class="btn__icon" />
+      </button>
+    </div>
+
+    <!-- RATING -->
+    <div class="seller-details__rating rating">
+      <p class="rating__text">
+        ★ ★ ★ ★ ★ <span class="rating__score">(4.5/5)</span>
+      </p>
+    </div>
+
+    <!-- INFORMACIÓN PRINCIPAL -->
+    <h2 class="seller-details__title">{{ producto.nombre }}</h2>
+    <p class="seller-details__price">$ {{ producto.precio }} / kilo</p>
+
+    <!-- INFORMACIÓN PROFUNDA -->
+    <div class="seller-info">
+      <h3 class="seller-info__subtitle">
+        Lo que necesitas saber de este producto
+      </h3>
+
+      <p class="seller-info__text">
+        <strong>Unidad de medida:</strong> {{ producto.unidad_medida }}
+      </p>
+
+      <p class="seller-info__text">
+        <strong>Tipo de garantía:</strong> {{ producto.tipo_garantia }}
+      </p>
+
+      <p class="seller-info__text">
+        <strong>Descripción:</strong> {{ producto.descripcion }}
+      </p>
+
+      <p class="seller-info__text">
+        <strong>Fecha caducidad:</strong> {{ producto.fecha_caducidad }}
+      </p>
+
+      <p class="seller-info__text">
+        <strong>Tipo de envío:</strong> {{ producto.tipo_envio }}
+      </p>
+
+      <p class="seller-info__text">
+        <strong>Método de pago:</strong> {{ producto.metodo_pago }}
+      </p>
+
+      <p class="seller-info__text">
+        <strong>Descuento:</strong> {{ producto.descuento }} %
+      </p>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- SCRIPT PARA CAMBIAR IMAGEN PRINCIPAL -->
+<script>
+function changeMainImage(element) {
+    const mainImage = document.getElementById("mainImage");
+    mainImage.src = element.src;
+}
+</script>
+
+{% endblock %}

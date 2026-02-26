@@ -29,9 +29,10 @@
   </div>
 
   <div class="navbar_product_category__actions">
-
-    <a href="view_seller_cards.html" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/return.svg' %}"  class="navbar_product_category__icon" alt="">
+    <a href="{% url 'tiendas:seller_catalog' %}" 
+        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/return.svg' %}"  
+            class="navbar_product_category__icon" alt="">
       <span class="navbar_product_category__tooltip">Volver</span>
     </a>
   </div>
