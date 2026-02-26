@@ -17,13 +17,16 @@
       {% csrf_token %}
       <div class="create-post__group">
         <label class="create-post__label">Unidad de medida</label>
-        <select name="product_type" class="create-post__input" required>
-          <option value="" selected disabled>Selecciona una unidad</option>
-          <option value="solido">Solido</option>
-          <option value="liquido">Liquido</option>
+        <select name="unit" class="create-product-post-one__input" required>
+          <option value="" selected disabled>Selecciona una Unidad</option>
+          <option value="kg">kg</option>
+          <option value="lb">lb</option>
+          <option value="unidad">unidad</option>
+          <option value="litro">litro</option>
+          <option value="mililitro">mililitro</option>
         </select>
       </div>
-
+      
       <div class="create-post__group">
         <label class="create-post__label">Descuento (%)</label>
         <input type="number" name="discount" class="create-post__input" min="0" max="100">
