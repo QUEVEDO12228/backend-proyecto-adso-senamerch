@@ -7,7 +7,7 @@
     background-color: var(--secundary-950);
     font-family: var(--font-primary);
     border-bottom: 2px solid var(--secundary-400);
-    height: fit-content;
+    max-height: 100%;
 }
 /* Contenedor que agrupa logo y texto */
 .navbar_left_group {
@@ -15,46 +15,40 @@
     align-items: center;
     gap: 1.6rem; 
     background-color: var(--secundary-950);
-    padding: var(--gap-xxs);
-    padding-right: 2.4rem;
+    padding: var(--gap-xxxs);
+    background-color: var(--secundary-950);
     border-top-right-radius: 100px;
     border-bottom-right-radius: 100px;
 }
 
 /* Línea vertical */
 .navbar_separator {
-    
     width: 2px;
     height: 64px;
     background-color: var(--secundary-400);
 }
 
-.navbar_product_category-client {
+.navbar_product_category--client {
     width: 100%;
-    max-width: 800px;
-    padding: var(--gap-xs);
+    padding: var(--gap-xxs);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-radius: 32px;
-    background-color: var(--white);
+    border-radius: 48px;
+    background-color: var(--secundary-950);
     font-family: var(--font-primary);
     border: 2px solid var(--secundary-400);
-    margin: 0.4rem auto;
 }
 .navbar_product_category__title {
     font-size: var(--fs-md);
     font-family: var(--font-primary-bold);
-    color: var(--secundary-950);
-    margin-left: 2.4rem;
-    margin-right: 2rem;
+    color: var(--white);
 }
 .navbar_product_category__title--client {
     font-size: var(--fs-md);
     font-family: var(--font-primary-bold);
     color: var(--white);
     margin-left: 2.4rem;
-    margin-right: 2rem;
 }
 .navbar_product_category__title--SenaMerch {
     font-size: 0; 
@@ -66,34 +60,35 @@
     font-size: var(--fs-md);
     font-family: var(--font-primary-bold);
 }
+.navbar_product_category__actions {
+    display: flex;
+    align-items: center;
+    /* gap: var(--gap-md); */
+}
 .navbar_product_category__img {
-    width: 64px;
-    height: 64px;
+    width: 48px;
+    height: 48px;
     vertical-align: -12px;
     margin-left: 2.4rem;
 
 }
-.navbar_product_category__letter--1 { color: var(--secundary-300); }
+.navbar_product_category__letter--1 { color: var(--secundary-400); }
 .navbar_product_category__letter--2 { color: var(--white); }
-.navbar_product_category__letter--3 { color: var(--secundary-300); }
+.navbar_product_category__letter--3 { color: var(--secundary-400); }
 .navbar_product_category__letter--4 { color: var(--white); }
-.navbar_product_category__letter--5 { color: var(--secundary-300); }
+.navbar_product_category__letter--5 { color: var(--secundary-400); }
 .navbar_product_category__letter--6 { color: var(--white); }
-.navbar_product_category__letter--7 { color: var(--secundary-300); }
+.navbar_product_category__letter--7 { color: var(--secundary-400); }
 .navbar_product_category__letter--8 { color: var(--white); }
-.navbar_product_category__letter--9 { color: var(--secundary-300); }
+.navbar_product_category__letter--9 { color: var(--secundary-400); }
 .navbar_product_category__actions {
-    display: flex;
-    align-items: center;
-}
-.navbar_product_category__actions-category {
     display: flex;
     align-items: center;
 }
 .navbar_product_category__link {
     font-size: var(--fs-xs);
     font-family: var(--font-primary-semibold);
-    background-color: var(--secundary-950);
+    color: var(--white);
     text-decoration: none;
     padding: 8px 8px;
     border-radius: 6px;
@@ -101,15 +96,15 @@
     transition: all 0.2s ease-in-out;
     margin-right: 2rem;
 }
-/* .navbar_product_category__link--client {
+.navbar_product_category__link--client {
     font-size: var(--fs-xs);
     font-family: var(--font-primary-semibold);
     color: var(--secundary-950);
     text-decoration: none;
     padding: 8px 12px;
-    border-radius: 12px;
+    border-radius: 6px;
     transition: all 0.2s ease-in-out;
-} */
+}
 .navbar_product_category__link:hover {
     background-color: var(--tertiary-800);
     color: var(--white);
@@ -128,25 +123,8 @@
     width: 24px;
     height: 24px;
     object-fit: contain;
-    margin-left: 2px; 
-    margin-right: 4px; 
+    margin-left: 0; 
     vertical-align: -4px;
-}
-.navbar_product_category__icon-tittle {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    margin-left: 2px; 
-    margin-right: 4px; 
-    vertical-align: -8px;
-}
-.navbar_product_category__icon-category {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-    margin-left: 2px; 
-    margin-right: 4px; 
-    vertical-align: -8px;
 }
 .navbar_product_category__link--icon-nav-bar {
     display: flex;
@@ -187,16 +165,6 @@
         font-size: var(--fs-md);
     }
 }
-@media (width < 1024px) {
-    .navbar_product_category {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: var(--gap-sm);
-    }
-    .navbar_product_category__title {
-        font-size: var(--fs-md);
-    }
-}
 @media (max-width: 640px) {
     .navbar_product_category__actions {
         flex-wrap: wrap;
@@ -209,55 +177,6 @@
         height: 100%;
         min-height: 120px;
 
+        max-height: none;
     }
-    .navbar_left_group {
-        width: 100%;
-        border-radius: 0px;
-        padding: 4px ;
-    }
-    .navbar_product_category__actions {
-        padding-bottom: 1.6rem; 
-        padding-left: 1.6rem;
-    }
-    .navbar_product_category__icon{
-        margin-left: 0px;
-        margin-right: 0px;
-    }
-    .navbar_product_category__img{
-        margin-left: 2px;
-    }
-  .navbar_product_category--client {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.2rem;
-    padding: 1.2rem;
-  }
-
-  .navbar_product_category__logo {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .navbar_product_category__title--client {
-    margin: 0;
-    text-align: center;
-  }
-
-  /* GRID: 4 iconos por fila */
-  .navbar_product_category__actions-category{
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);  /* 4 por fila */
-    gap: 1.2rem;
-    justify-items: center; /* centrar cada icono */
-    padding-bottom: 1rem;
-    padding-left: 0;
-  }
-
-  .navbar_product_category__link--icon-nav-bar {
-    margin-right: 0;  /* evitar que descuadre */
-  }
-
 }

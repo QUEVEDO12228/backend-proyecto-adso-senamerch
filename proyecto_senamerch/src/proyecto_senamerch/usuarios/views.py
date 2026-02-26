@@ -546,7 +546,7 @@ def home_client_view(request):
     })
 
 def client_orders_view(request):
-    return render(request, 'usuarios/client_orders.html')
+    return render(request, 'pedidos/client_orders.html')
 
 def profile_view(request):
 

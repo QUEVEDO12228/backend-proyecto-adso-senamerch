@@ -9,6 +9,19 @@
 <body>
     {% include 'components/navabar_go_go.html' %}
     {% include 'components/navbar_home_store_seller.html' %}
+    <section class="search-category-grid">
+
+      <div class="search-bar-container">
+        {% include 'components/search_bar.html' %}
+      </div>
+
+      <nav class="nav">
+        <div class="navbar-product-category-container">
+          {% include 'components/navbar_product_category.html' %}
+        </div>
+      </nav>
+
+    </section>
     
     <section class="products-grid">
       <div class="cards__container">

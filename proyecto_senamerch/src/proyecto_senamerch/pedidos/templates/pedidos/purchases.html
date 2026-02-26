@@ -1,0 +1,181 @@
+{% extends 'index_client_orders.html' %}
+
+{% block title %}Mis Compras{% endblock %}
+
+{% load static %}
+
+{% block content %}
+
+<section class="purchases">
+
+  <div class="purchases__header">
+
+    <button class="btn-secundary btn-secundary-style purchases-details__download-volver">
+      Volver
+      <img src="{% static 'assets/icons/return.svg' %}"
+           alt="Volver"
+           class="btn-secundary__icon">
+    </button>
+
+    <h1 class="purchases__title">
+      Mis Compras
+    </h1>
+
+  </div>
+
+
+<!-- ===============================
+     COMPRA VACÍA
+================================ -->
+
+<section class="purchases-details"> 
+
+
+<!-- SIDEBAR -->
+<aside class="purchases-details__sidebar">
+
+<h3 class="purchases-details__subtitle">
+Tienda
+</h3>
+
+<p><strong>Nombre Tienda:</strong> ---</p>
+
+<p><strong>Teléfono Tienda:</strong>
+---
+</p>
+
+<p><strong>Correo Tienda:</strong>
+---
+</p>
+
+<hr>
+
+
+<h3 class="purchases-details__subtitle">
+Vendedor
+</h3>
+
+<p><strong>Nombre:</strong>
+---
+</p>
+
+<p><strong>Teléfono:</strong>
+---
+</p>
+
+<p><strong>Correo:</strong>
+---
+</p>
+
+<hr>
+
+
+<h3 class="purchases-details__subtitle">
+Cliente
+</h3>
+
+<p><strong>Nombre Cliente:</strong>
+---
+</p>
+
+<p><strong>Teléfono Cliente:</strong>
+---
+</p>
+
+<p><strong>Correo Cliente:</strong>
+---
+</p>
+
+</aside>
+
+
+
+<!-- CONTENIDO -->
+<div class="purchases-details__content">
+
+<h2 class="purchases-details__title">
+Mi compra
+</h2>
+
+
+
+<section class="purchases-details__section">
+
+<h3 class="purchases-details__subtitle">
+Productos
+</h3>
+
+
+<div class="purchases-details__grid">
+
+<div class="purchases-details__product-card">
+
+<p><strong>Fecha:</strong>
+---
+</p>
+
+<p><strong>Producto:</strong>
+---
+</p>
+
+<p><strong>Cantidad:</strong>
+---
+</p>
+
+<p><strong>Precio * kg:</strong>
+---
+</p>
+
+<p><strong>Total:</strong>
+---
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+
+<div class="purchases-details__totals">
+
+<p><strong>Base:</strong>
+---
+</p>
+
+<p><strong>IVA:</strong>
+---
+</p>
+
+<p><strong>Total pagado:</strong>
+---
+</p>
+
+</div>
+
+
+
+<div class="purchases-details__actions--left">
+
+<button class="btn-secundary btn-secundary-style purchases-details__download">
+
+Descargar
+
+<img src="{% static 'assets/icons/save.svg' %}"
+class="btn-secundary__icon">
+
+</button>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+</section>
+
+{% endblock %}

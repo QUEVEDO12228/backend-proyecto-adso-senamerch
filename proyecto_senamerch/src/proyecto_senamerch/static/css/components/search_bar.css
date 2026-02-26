@@ -4,7 +4,7 @@
   justify-content: flex-start;
   background: var(--white);
   border: 1px solid var(--gray-950);
-  border-radius: 16px;
+  border-radius: 32px;
   padding: var(--padding-top) var(--padding-right) var(--padding-bottom) var(--padding-left);
   /* gap: var(--gap-sm);  */
   font-family: var(--font-primary);
@@ -14,8 +14,8 @@
   width: 100%;
   margin: var(--gap-xxs) auto;
   max-width: 400px; 
-  max-height: 56px;
-  min-height: 56px;
+  max-height: 48px;
+  min-height: 48px;
 }
 .search-bar--navbar {
   display: flex;

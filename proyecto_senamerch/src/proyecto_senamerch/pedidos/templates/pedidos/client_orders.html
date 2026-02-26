@@ -1,0 +1,95 @@
+{% extends 'index_client_orders.html' %}
+
+{% block title %}Mis Pedidos{% endblock %}
+
+{% block content %}
+<section class="orders-panel">
+  <div class="orders-panel__container">
+
+    <!-- ========================================
+         TABS (DISEÑO PROFESIONAL)
+    ======================================== -->
+    <nav class="orders-panel__tabs">
+      <button class="orders-panel__tab orders-panel__tab--active" data-status="all">
+        Todos
+      </button>
+      <button class="orders-panel__tab" data-status="pending">
+        Pendientes
+      </button>
+      <a href="{% url 'pedidos:view_purchases' %}" class="orders-panel__tab" data-status="delivered">
+        Entregados
+      </a>
+    </nav>
+
+    <!-- Select adicional (responsive / accesibilidad) -->
+    <div class="orders-panel__filter">
+      <select class="orders-panel__select">
+        <option value="all">Todos</option>
+        <option value="pending">Pendientes</option>
+        <option value="delivered">Entregados</option>
+      </select>
+    </div>
+
+    <!-- ========================================
+         LISTA DE PEDIDOS
+    ======================================== -->
+    <div class="orders-panel__list">
+
+      {% for pedido in pedidos %}
+      <!-- TARJETA PROFESIONAL -->
+      <article class="order-card" data-status="{{ pedido.estado }}">
+
+        <header class="order-card__top">
+          <div class="order-card__meta">
+            <h3 class="order-card__id">Pedido #{{ pedido.id }}</h3>
+            <p class="order-card__date">{{ pedido.fecha }}</p>
+          </div>
+
+          <span class="order-card__status order-card__status--{{ pedido.estado }}">
+            {{ pedido.estado|capfirst }}
+          </span>
+        </header>
+
+        <!-- TIENDA -->
+        <div class="order-card__store">
+          Tienda: <strong>{{ pedido.tienda }}</strong>
+        </div>
+
+        <!-- LISTA MINI DE PRODUCTOS -->
+        <div class="order-card__products">
+          {% for item in pedido.productos %}
+          <div class="order-card__product">
+            <p class="order-card__product-name">{{ item.nombre }}</p>
+            <p class="order-card__product-qty">{{ item.cantidad }}</p>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- TOTAL -->
+        <div class="order-card__total">
+          Total del pedido: <strong>{{ pedido.total }}</strong>
+        </div>
+
+        <!-- ACCIONES -->
+        <div class="order-card__actions">
+          {% if pedido.estado == "pending" %}
+          <button class="btn-secundary btn-secundary-style order-card__cancel">
+            Cancelar
+            <img src="/frontend/public/assets/icons/cancel.svg" class="btn__icon" alt="Cancelar" />
+          </button>
+          {% endif %}
+
+          <button class="btn btn--primary order-card__edit">
+            Editar
+            <img src="/frontend/public/assets/icons/edit.svg" class="btn__icon" alt="Editar" />
+          </button>
+        </div>
+
+      </article>
+      {% endfor %}
+
+    </div>
+
+  </div>
+</section>
+{% endblock %}
