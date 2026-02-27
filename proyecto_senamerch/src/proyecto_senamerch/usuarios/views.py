@@ -48,36 +48,21 @@ from django.contrib.auth import logout
 from .models import Profile
 
 from tiendas.models import Tienda
-# =========================
-# LOGIN
-# =========================
-# views.py
-
+from productos.models import Producto
 def home_view(request):
-    products = [
-        {
-            "name": "Tomates Chonto",
-            "price": "4.500",
-            "discount": "4",
-            "image": "usuarios/assets/img/tomato_image.png",
-            "store_logo": "usuarios/assets/img/store_seller.jpg",
-            "store_name": "Verduras La Huerta",
-        },
-        {
-            "name": "Papa Pastusa",
-            "price": "2.300",
-            "discount": "6",
-            "image": "usuarios/assets/img/potato_image.png",
-            "store_logo": "usuarios/assets/img/store_seller.jpg",
-            "store_name": "Campo Andino",
-        },
-        # agrega todos los productos aquí
-    ]
-    
-    return render(request, 'usuarios/home.html', {'products': products})
 
+    if request.user.is_authenticated:
+        # Si está logueado, excluimos los productos de su propia tienda
+        productos = Producto.objects.exclude(
+            tienda__propietario=request.user
+        ).filter(activo=True)
+    else:
+        # Si no está logueado, mostramos todos los productos activos
+        productos = Producto.objects.filter(activo=True)
 
-from tiendas.models import Tienda
+    return render(request, "usuarios/cards_home.html", {
+        "productos": productos
+    })
 
 def login_view(request):
     context = {'form_submitted': False}

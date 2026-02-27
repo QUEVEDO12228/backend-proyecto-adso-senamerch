@@ -1,78 +1,74 @@
-<section class="address-store-form">
-  <div class="address-store-form__wrapper">
+{% extends 'index_home_store_seller.html' %}
+{% load static %}
 
-    <!-- Encabezado -->
-    <header class="address-store-form__header">
-      <h2 class="address-store-form__title">Edita tu dirección</h2>
-      <p class="address-store-form__subtitle">
-        Actualiza la información de ubicación tuya en <strong>SENA MERCH</strong>.<br>
+{% block content %}
+<section class="edit-profile-admin">
+  <div class="edit-profile-admin__wrapper">
+    <header class="edit-profile-admin__header">
+      <h1 class="edit-profile-admin__title">Editar dirección</h1>
+      <p class="edit-profile-admin__subtitle">
+        Completa la información inicial de tu dirección.
       </p>
     </header>
 
-    <!-- FORMULARIO -->
-    <form class="address-store-form__form">
+    <form method="POST" action="{% url 'tiendas:edit_address_seller' %}" class="address-store-form__form">
+      {% csrf_token %}
 
-      <!-- Barrio -->
       <div class="address-store-form__group">
         <label class="address-store-form__label">Barrio</label>
         <input 
           type="text"
-          placeholder="Ingresa el barrio"
+          name="neighborhood"
+          placeholder="Ej: Centro"
           class="address-store-form__input"
+          value="{{ profile.neighborhood|default:'' }}"
           required
         >
       </div>
 
-      <!-- Número de dirección -->
       <div class="address-store-form__group">
-        <label class="address-store-form__label">Número de dirección</label>
+        <label class="address-store-form__label">Número / Dirección</label>
         <input 
           type="text"
-          placeholder="Ej: #25A - 45"
+          name="address_number"
+          placeholder="Ej: 123A"
           class="address-store-form__input"
+          value="{{ profile.address_number|default:'' }}"
           required
         >
       </div>
 
-      <!-- Tipo de vía -->
       <div class="address-store-form__group">
         <label class="address-store-form__label">Tipo de vía</label>
         <input 
           type="text"
-          placeholder="Ej: Calle, Carrera, Avenida"
+          name="road_type"
+          placeholder="Ej: Calle, Carrera"
           class="address-store-form__input"
+          value="{{ profile.road_type|default:'' }}"
+          required
         >
       </div>
 
-      <!-- Código postal -->
       <div class="address-store-form__group">
         <label class="address-store-form__label">Código postal</label>
         <input 
           type="text"
-          placeholder="Ej: 110111"
+          name="postal_code"
+          placeholder="Ej: 660001"
           class="address-store-form__input"
+          value="{{ profile.postal_code|default:'' }}"
+          required
         >
       </div>
 
-      <!-- Botón Volver -->
-      <div class="address-store-form__secondary">
-        <button
-          type="button"
-          class="btn-secundary btn-secundary-style"
-        >
-          Volver
-          <img src="/frontend/public/assets/icons/return.svg" class="btn-secundary__icon">
-        </button>
-      </div>
-
-      <!-- Botón Siguiente -->
       <div class="address-store-form__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente
           <img src="/frontend/public/assets/icons/continue.svg" class="btn__icon">
         </button>
       </div>
-
     </form>
   </div>
 </section>
+{% endblock %}

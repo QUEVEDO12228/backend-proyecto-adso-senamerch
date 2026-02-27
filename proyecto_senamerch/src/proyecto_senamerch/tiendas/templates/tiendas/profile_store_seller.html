@@ -107,8 +107,11 @@
 
       <div class="store-profile__header">
         <div class="store-profile__avatar">
-          <img src="{% static 'img/admin_profile.png' %}" 
-               alt="Foto del usuario">
+          {% if profile and profile.image %}
+            <img src="{{ profile.image.url }}" alt="Foto del usuario">
+          {% else %}
+            <img src="{% static 'img/admin_profile.png' %}" alt="Foto del usuario">
+          {% endif %}
         </div>
 
         <div class="store-profile__info">
@@ -140,7 +143,7 @@
         <div class="store-profile__field">
           <span class="store-profile__label">Teléfono:</span>
           <span class="store-profile__value">
-            {{ request.user.phone }}
+            {{ profile.phone|default:"No registrado" }}
           </span>
         </div>
 

@@ -15,70 +15,78 @@
       action="{% url 'tiendas:edit_seller_profile' %}"
       enctype="multipart/form-data"
       class="edit-profile-admin__form">
-    {% csrf_token %}
+      {% csrf_token %}
+
+      <!-- FOTO ACTUAL Y SUBIR NUEVA -->
       <div class="edit-store-seller__group">
         <label class="edit-store-seller__label">Foto de Perfil</label>
-        <input type="file"
-          name="imagen"
-          class="edit-store-seller__input"
-          accept="image/*" />
+
+        <label for="imagen-upload" class="profile-image-label">
+          {% if profile.image %}
+            <img src="{{ profile.image.url }}" alt="Foto actual" class="profile-image">
+          {% else %}
+            <img src="{% static 'img/admin_profile.png' %}" alt="Foto por defecto" class="profile-image">
+          {% endif %}
+        </label>
+
+        <input type="file" id="imagen-upload" name="imagen" accept="image/*" class="profile-image-input">
       </div>
     
+      <!-- Correo -->
       <div class="edit-profile-admin__group">
         <label class="edit-profile-admin__label">Correo electrónico</label>
         <input type="email"
-            name="email"
-            value="{{ request.user.email }}"
-            class="edit-profile-admin__input"
-            required />
+               name="email"
+               value="{{ request.user.email }}"
+               class="edit-profile-admin__input"
+               required />
       </div>
 
+      <!-- Nombre -->
       <div class="edit-profile-admin__group">
         <label class="edit-profile-admin__label">Nombre</label>
         <input type="text"
-          name="first_name"
-          value="{{ request.user.first_name }}"
-          class="edit-profile-admin__input"
-          required />
+               name="first_name"
+               value="{{ request.user.first_name }}"
+               class="edit-profile-admin__input"
+               required />
       </div>
 
+      <!-- Teléfono -->
       <div class="edit-store-seller-one__group">
         <label class="edit-store-seller-one__label">Teléfono</label>
         <input type="tel"
-        name="telefono"
-        value="{{ request.user.phone }}"
-        class="edit-store-seller-one__input"
-        required>
+               name="telefono"
+               value="{{ profile.phone }}"
+               class="edit-store-seller-one__input"
+               required />
       </div>
 
+      <!-- Botón secundario -->
       <div class="edit-profile-admin__secondary">
         <a href="{% url 'tiendas:profile_store_seller' %}"
-          class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
-          Volver
-          <img
-            src="{% static 'assets/icons/return.svg' %}"
-            alt=""
-            class="btn-secundary__icon"
-            aria-hidden="true"
-          />
+           class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
+          Cancelar
+          <img src="{% static 'assets/icons/cancel.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
         </a>
       </div>
 
+      <!-- Botón principal -->
       <div class="edit-profile-admin__buttons">
-        <button
-          type="submit"
-          class="btn btn--primary edit-profile-admin__submit"
-          aria-label="Guardar datos del administrador"
-        >
+        <button type="submit"
+                class="btn btn--primary edit-profile-admin__submit"
+                aria-label="Guardar datos del vendedor">
           Siguiente
-          <img
-            src="{% static 'assets/icons/continue.svg' %}"
-            alt=""
-            class="btn__icon edit-profile-admin__icon"
-            aria-hidden="true"
-          />
+          <img src="{% static 'assets/icons/continue.svg' %}" 
+               alt=""
+               class="btn__icon edit-profile-admin__icon"
+               aria-hidden="true"/>
         </button>
       </div>
+
     </form>
   </div>
 </section>

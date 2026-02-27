@@ -68,7 +68,8 @@ urlpatterns = [
         views.profile_store_client,
         name="profile_store_client"
     ),
-    
+    path('edit-address/', views.edit_address_seller, name='edit_address_seller'),
+    path('edit-address-step2/', views.edit_address_seller2, name='edit_address_seller2'),
 ]
 
 if settings.DEBUG:

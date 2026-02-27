@@ -202,7 +202,15 @@ def edit_product_step3(request, id):
 # ===============================
 @login_required
 def edit_product_step4(request, id):
-    producto = get_object_or_404(Producto, id=id, tienda__propietario=request.user)
+
+    producto = get_object_or_404(
+        Producto,
+        id=id,
+        tienda__propietario=request.user
+    )
+
+    # 🔥 OBTENER IMÁGENES ORDENADAS
+    imagenes = producto.imagenes.order_by("id")
 
     if request.method == "POST":
 
@@ -218,25 +226,23 @@ def edit_product_step4(request, id):
         producto.unidad_medida = data.get("unidad")
         producto.tipo_producto = data.get("tipo_producto")
         producto.descuento = data.get("descuento") or 0
-        producto.fecha_caducidad = data.get("fecha_caducidad") or datetime.now().date()
+        producto.fecha_caducidad = data.get("fecha_caducidad")
         producto.metodo_pago = data.get("metodo_pago")
         producto.tipo_envio = data.get("tipo_envio")
         producto.descripcion = data.get("descripcion")
 
         producto.save()
 
-        # 🔥 ACTUALIZAR IMÁGENES
-        imagenes_actuales = list(producto.imagenes.all())
+        imagenes_actuales = list(imagenes)
 
         for i in range(1, 7):
             nueva_imagen = request.FILES.get(f"image{i}")
 
             if nueva_imagen:
                 if len(imagenes_actuales) >= i:
-                    # 🔥 REEMPLAZAR IMAGEN EXISTENTE
+
                     imagen_obj = imagenes_actuales[i - 1]
 
-                    # eliminar archivo anterior del disco
                     if imagen_obj.imagen:
                         imagen_obj.imagen.delete(save=False)
 
@@ -244,7 +250,6 @@ def edit_product_step4(request, id):
                     imagen_obj.save()
 
                 else:
-                    # 🔥 CREAR NUEVA SI NO EXISTE
                     ImagenProducto.objects.create(
                         producto=producto,
                         imagen=nueva_imagen
@@ -254,8 +259,10 @@ def edit_product_step4(request, id):
 
         return redirect("tiendas:seller_catalog")
 
+    # 🔥 IMPORTANTE: PASAMOS IMÁGENES
     return render(request, "productos/edit_product_seller4.html", {
-        "producto": producto
+        "producto": producto,
+        "imagenes": imagenes
     })
 
 def description_product_seller(request, id):

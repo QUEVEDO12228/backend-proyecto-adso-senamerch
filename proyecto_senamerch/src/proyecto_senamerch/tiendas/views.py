@@ -4,10 +4,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-
 from .models import Tienda
 from productos.models import Producto
-
+from django.contrib.auth import update_session_auth_hash
+from usuarios.models import Profile, Address
 
 @login_required
 def home_seller(request):
@@ -133,17 +133,19 @@ def add_address_store2(request):
 
 @login_required
 def profile_store_seller(request):
-
+    # Traer la tienda
     tienda = Tienda.objects.filter(propietario=request.user).first()
-
     if not tienda:
         messages.warning(request, "Primero debes crear una tienda.")
         return redirect('tiendas:create_store')
 
-    return render(request, 'tiendas/profile_store_seller.html', {
-        'tienda': tienda
-    })
+    # Traer el perfil del usuario
+    profile = getattr(request.user, 'profile', None)
 
+    return render(request, 'tiendas/profile_store_seller.html', {
+        'tienda': tienda,
+        'profile': profile
+    })
 def store_orders(request):
     return render(request, 'tiendas/seller_catalog.html')
 
@@ -152,65 +154,126 @@ def seller_catalog(request):
     return render(request, 'tiendas/seller_card.html', {
         'productos': productos
     })
+
+
 @login_required
 def edit_seller_profile(request):
+    profile = request.user.profile
 
     if request.method == "POST":
-
-        # Guardamos datos temporales en sesión
+        # Guardamos los datos del paso 1 en sesión
         request.session['edit_user_data'] = {
-            "email": request.POST.get("email"),
-            "first_name": request.POST.get("first_name"),
-
+            "email": request.POST.get("email", request.user.email),
+            "first_name": request.POST.get("first_name", request.user.first_name),
+            "telefono": request.POST.get("telefono", profile.phone)
         }
 
+        # Guardar la imagen directamente si existe
+        if "imagen" in request.FILES:
+            profile.image = request.FILES["imagen"]
+            profile.save()
+
+        # Redirigir al paso 2
         return redirect('tiendas:edit_seller_profile2')
 
-    return render(request, 'tiendas/edit_seller_profile.html')
+    return render(request, 'tiendas/edit_seller_profile.html', {
+        "profile": profile,
+    })
 
-# ==========================================
-# EDITAR TIENDA - PASO 2
-# ==========================================
-from django.contrib.auth import update_session_auth_hash
 
 @login_required
 def edit_seller_profile2(request):
-
     data = request.session.get('edit_user_data')
 
     if not data:
         return redirect('tiendas:edit_seller_profile')
 
     if request.method == "POST":
-
         user = request.user
 
-        # Guardar datos básicos
-        user.email = data["email"]
-        user.first_name = data["first_name"]
-        
-        # Guardar contraseña si existe
+        # Guardar los datos del paso 1
+        user.email = data.get("email", user.email)
+        user.first_name = data.get("first_name", user.first_name)
+        user.save()
+
+        profile = user.profile
+        profile.phone = data.get("telefono", profile.phone)
+        profile.save()
+
+        # Contraseña
         password = request.POST.get("password")
         confirm = request.POST.get("confirm_password")
-
         if password and confirm:
             if password != confirm:
                 messages.error(request, "Las contraseñas no coinciden.")
                 return redirect('tiendas:edit_seller_profile2')
-
             user.set_password(password)
             update_session_auth_hash(request, user)
+            user.save()
 
-        user.save()
-
+        # Limpiar sesión
         request.session.pop('edit_user_data')
-
         messages.success(request, "Perfil actualizado correctamente.")
-
         return redirect('tiendas:profile_store_seller')
 
-    return render(request, 'tiendas/edit_seller_profile2.html')
+    return render(request, 'tiendas/edit_seller_profile2.html', {
+        "profile": request.user.profile
+    })
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from usuarios.models import Profile  # 👈 import correcto
+from django.contrib import messages
 
+@login_required
+def edit_address_seller(request):
+    profile = request.user.profile  # traemos el perfil
+
+    if request.method == "POST":
+        # Guardar datos del primer paso
+        profile.neighborhood = request.POST.get("neighborhood", profile.neighborhood)
+        profile.address_number = request.POST.get("address_number", profile.address_number)
+        profile.road_type = request.POST.get("road_type", profile.road_type)
+        profile.postal_code = request.POST.get("postal_code", profile.postal_code)
+        profile.save()
+
+        # Guardamos los datos en session para el segundo paso
+        request.session['edit_address_data'] = {
+            "neighborhood": profile.neighborhood,
+            "address_number": profile.address_number,
+            "road_type": profile.road_type,
+            "postal_code": profile.postal_code
+        }
+
+        return redirect('tiendas:edit_address_seller2')
+
+    return render(request, 'tiendas/add_adress_seller_edit.html', {
+        "profile": profile
+    })
+
+
+@login_required
+def edit_address_seller2(request):
+    data = request.session.get('edit_address_data')
+    if not data:
+        return redirect('tiendas:edit_address_seller')
+
+    profile = request.user.profile
+
+    if request.method == "POST":
+        profile.department = request.POST.get("department", profile.department)
+        profile.city = request.POST.get("city", profile.city)
+        profile.extra_info = request.POST.get("additional_info", profile.extra_info)
+        profile.save()
+
+        # Limpiamos session
+        request.session.pop('edit_address_data', None)
+        messages.success(request, "Dirección actualizada correctamente.")
+        return redirect('tiendas:edit_seller_profile2')
+
+    return render(request, 'tiendas/add_adress_seller_edit2.html', {
+        "profile": profile,
+        "data": data
+    })
 # ==========================================
 # EDITAR TIENDA - PASO 1
 # ==========================================

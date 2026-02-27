@@ -20,8 +20,7 @@
       </div>
       <div class="edit-profile-admin__group">
         <label class="edit-profile-admin__label">Dirección</label>
-        <a href="#"
-          class="edit-profile-admin__link">
+        <a href="{% url 'tiendas:edit_address_seller' %}" class="edit-profile-admin__link">
           Editar dirección
         </a>
         <small class="edit-profile-admin__text">Todo estará más cerca de ti.</small>
@@ -50,7 +49,7 @@
       </div>
 
       <div class="edit-profile-admin__secondary">
-        <a href="{% url 'tiendas:profile_store_seller' %}"
+        <a href="{% url 'tiendas:edit_seller_profile' %}"
           class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
           Volver
           <img src="{% static 'assets/icons/return.svg' %}"
