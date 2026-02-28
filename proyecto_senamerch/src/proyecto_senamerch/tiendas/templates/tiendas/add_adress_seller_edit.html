@@ -1,9 +1,10 @@
-{% extends 'index_home_store_seller.html' %}
+{% extends 'index_home_store_seller.html' %}  
 {% load static %}
 
 {% block content %}
 <section class="edit-profile-admin">
   <div class="edit-profile-admin__wrapper">
+
     <header class="edit-profile-admin__header">
       <h1 class="edit-profile-admin__title">Editar dirección</h1>
       <p class="edit-profile-admin__subtitle">
@@ -62,12 +63,23 @@
         >
       </div>
 
+      <div class="address-store-form__secondary">
+        <a href="{% url 'tiendas:edit_seller_profile2' %}" 
+           class="btn-secundary btn-secundary-style">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}" 
+               class="btn-secundary__icon">
+        </a>
+      </div>
+
       <div class="address-store-form__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente
-          <img src="/frontend/public/assets/icons/continue.svg" class="btn__icon">
+          <img src="{% static 'assets/icons/continue.svg' %}" 
+               class="btn__icon">
         </button>
       </div>
+
     </form>
   </div>
 </section>

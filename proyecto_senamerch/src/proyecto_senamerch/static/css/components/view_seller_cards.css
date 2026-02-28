@@ -1,6 +1,7 @@
 .section-footer-content {
   display: flex;
   flex-wrap: wrap;
+  margin-top: 2.4rem;
 }
 
 .section-footer-content > * {

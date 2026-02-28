@@ -11,21 +11,18 @@
       </p>
     </header>
 
-    <form method="POST"
-      action="{% url 'tiendas:edit_seller_profile' %}"
-      enctype="multipart/form-data"
-      class="edit-profile-admin__form">
+    <form method="POST" action="{% url 'tiendas:edit_seller_profile' %}" class="edit-profile-admin__form" enctype="multipart/form-data">
       {% csrf_token %}
-
+      
       <!-- FOTO ACTUAL Y SUBIR NUEVA -->
       <div class="edit-store-seller__group">
         <label class="edit-store-seller__label">Foto de Perfil</label>
 
         <label for="imagen-upload" class="profile-image-label">
           {% if profile.image %}
-            <img src="{{ profile.image.url }}" alt="Foto actual" class="profile-image">
+            <img src="{{ profile.image.url }}" alt="Foto actual" id="profile-preview" class="profile-image">
           {% else %}
-            <img src="{% static 'img/admin_profile.png' %}" alt="Foto por defecto" class="profile-image">
+            <img src="{% static 'img/admin_profile.png' %}" alt="Foto por defecto" id="profile-preview" class="profile-image">
           {% endif %}
         </label>
 
@@ -90,4 +87,22 @@
     </form>
   </div>
 </section>
+
+<!-- JS para previsualizar imagen seleccionada -->
+<script>
+  const inputImagen = document.getElementById('imagen-upload');
+  const preview = document.getElementById('profile-preview');
+
+  inputImagen.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        preview.src = e.target.result;
+      }
+      reader.readAsDataURL(file);
+    }
+  });
+</script>
+
 {% endblock %}

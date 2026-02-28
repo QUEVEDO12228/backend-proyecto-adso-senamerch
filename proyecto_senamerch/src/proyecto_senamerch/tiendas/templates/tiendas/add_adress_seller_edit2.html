@@ -1,4 +1,8 @@
-<section class="address-store-form"> 
+{% extends 'index_home_store_seller.html' %}
+{% load static %}
+
+{% block content %}
+<section class="address-store-form">
   <div class="address-store-form__wrapper">
 
     <header class="address-store-form__header">
@@ -9,29 +13,35 @@
       </p>
     </header>
 
-    <!-- Form POST al backend -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
     <form method="POST" action="{% url 'tiendas:edit_address_seller2' %}" class="address-store-form__form">
       {% csrf_token %}
 
-      <div class="address-store-form__group">
-        <label class="address-store-form__label">Departamento</label>
-        <input 
-          type="text"
-          name="departamento"
-          placeholder="Ej: Cundinamarca"
-          class="address-store-form__input"
-          value="{{ direccion.departamento|default:'' }}"
-        >
-      </div>
+      <select name="department" class="address-store-form__input" required>
+          <option value="">Selecciona...</option>
+          {% for dep in departamentos %}
+              <option value="{{ dep }}" {% if form_data.department == dep or profile.department == dep %}selected{% endif %}>
+                  {{ dep }}
+              </option>
+          {% endfor %}
+      </select>
 
       <div class="address-store-form__group">
         <label class="address-store-form__label">Municipio</label>
         <input 
           type="text"
-          name="municipio"
+          name="city"
           placeholder="Ej: Bogotá"
           class="address-store-form__input"
-          value="{{ direccion.municipio|default:'' }}"
+          value="{{ profile.city|default:'' }}"
+          required
         >
       </div>
 
@@ -39,24 +49,25 @@
         <label class="address-store-form__label">Información adicional</label>
         <input 
           type="text"
-          name="informacion_adicional"
+          name="additional_info"
           placeholder="Apartamento, interior, referencias, etc."
           class="address-store-form__input"
-          value="{{ direccion.informacion_adicional|default:'' }}"
+          value="{{ profile.extra_info|default:'' }}"
         >
       </div>
 
       <div class="address-store-form__secondary">
-        <a href="{% url 'tiendas:edit_address_seller' %}" class="btn-secundary btn-secundary-style">
+        <a href="{% url 'tiendas:edit_address_seller' %}" 
+           class="btn-secundary btn-secundary-style">
           Volver
-          <img src="/frontend/public/assets/icons/return.svg" class="btn-secundary__icon">
+          <img src="{% static 'assets/icons/return.svg' %}" class="btn-secundary__icon">
         </a>
       </div>
 
       <div class="address-store-form__buttons">
         <button type="submit" class="btn btn--primary">
           Guardar
-          <img src="/frontend/public/assets/icons/save.svg" class="btn__icon">
+          <img src="{% static 'assets/icons/save.svg' %}" class="btn__icon">
         </button>
       </div>
 
@@ -64,3 +75,4 @@
 
   </div>
 </section>
+{% endblock %}

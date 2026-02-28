@@ -8,53 +8,101 @@
 
   <div class="product-card__actions">
 
+    <!-- Like -->
     <a href="{% url 'login' %}" class="product-card__like-btn">
       <img src="{% static 'assets/icons/heart.svg' %}" 
-          class="product-card__like-icon">
-      <span class="product-card__like-tooltip">Me gusta</span>
+           class="product-card__like-icon">
+      <span class="product-card__like-tooltip">
+        Me gusta
+      </span>
     </a>
 
+    <!-- Dislike -->
     <a href="{% url 'login' %}" class="product-card__like-btn--dislike">
       <img src="{% static 'assets/icons/heart-off.svg' %}" 
-          class="product-card__like-icon--dislike">
-      <span class="product-card__dislike-tooltip">No me gusta</span>
+           class="product-card__like-icon--dislike">
+      <span class="product-card__dislike-tooltip">
+        No me gusta
+      </span>
     </a>
+
+    <!-- Menú -->
+    <div class="product-card__menu">
+      <button class="product-card__menu-btn">⋮</button>
+
+      <ul class="product-card__menu-dropdown">
+        <li>
+          <a href="{% url 'login' %}" class="product-card__menu-item">
+            Dejar un comentario
+            <img src="{% static 'assets/icons/contact.svg' %}" 
+                 class="product-card__menu-item-icon"/>
+          </a>
+        </li>
+      </ul>
+    </div>
 
   </div>
 
+  <!-- Header -->
   <div class="product-card__header">
     <h2 class="product-card__title">{{ producto.nombre }}</h2>
     <p class="product-card__price">$ {{ producto.precio }} / kilo</p>
-    <p class="product-card__discount">{{ producto.descuento }} % de descuento</p>
+    <p class="product-card__discount">
+      {{ producto.descuento }} % de descuento
+    </p>
   </div>
 
   <!-- Logo tienda -->
   <a href="{% url 'login' %}" class="product-card__profile-store-link">
+
     {% if producto.tienda.imagen_portada %}
-      <img src="{{ producto.tienda.imagen_portada.url }}" class="product-card__store-logo">
+      <img src="{{ producto.tienda.imagen_portada.url }}"
+           class="product-card__store-logo">
     {% else %}
-      <img src="{% static 'assets/img/default-store.jpg' %}" class="product-card__store-logo">
+      <img src="{% static 'assets/img/default-store.jpg' %}"
+           class="product-card__store-logo">
     {% endif %}
+
+    <span class="product-card__profile-store-tooltip">
+      Visitar Tienda
+      <img src="{% static 'assets/icons/store_profile.svg' %}"
+           class="product-card__profile-store-tooltip-icon"/>
+    </span>
+
   </a>
 
   <!-- Imagen producto -->
   <a href="{% url 'login' %}" class="product-card__image-link">
     <div class="product-card__image-wrapper">
+
       {% with producto.imagenes.first as imagen %}
         {% if imagen %}
-          <img src="{{ imagen.imagen.url }}" class="product-card__image">
+          <img src="{{ imagen.imagen.url }}"
+               class="product-card__image">
         {% else %}
-          <img src="{% static 'assets/img/default-product.jpg' %}" class="product-card__image">
+          <img src="{% static 'assets/img/default-product.jpg' %}"
+               class="product-card__image">
         {% endif %}
       {% endwith %}
+
     </div>
+
+    <!-- Tooltip imagen -->
+    <span class="product-card__image-tooltip">
+      Visualizar Producto
+      <img src="{% static 'assets/icons/eye.svg' %}"
+           class="product-card__image-tooltip-icon"/>
+    </span>
+
   </a>
 
   <!-- Comprar -->
   <div class="product-card__footer--end">
-    <a href="{% url 'login' %}" class="btn btn--primary product-card__pay">
+    <a href="{% url 'login' %}" 
+       class="btn btn--primary product-card__pay">
       Comprar
-      <img src="{% static 'assets/icons/cash-button.svg' %}" class="btn__icon product-card__icon">
+      <img src="{% static 'assets/icons/cash-button.svg' %}"
+           class="btn__icon product-card__icon">
     </a>
   </div>
 
