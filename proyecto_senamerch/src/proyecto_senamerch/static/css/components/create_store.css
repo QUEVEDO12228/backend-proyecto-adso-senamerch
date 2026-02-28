@@ -191,6 +191,10 @@
   align-items: center;
   gap: 8px;
 }
+.create-store-one__buttons{
+  display: flex;
+  justify-content: right;
+}
 
 .create-store-one__action-return {
   justify-self: start;  

@@ -560,13 +560,6 @@ def edit_profile_client2(request):
 
     return render(request, 'usuarios/edit_profile_client2.html')
 
-def add_address_store(request):
-    return render(request, 'usuarios/add_adress_store.html')
-
-
-def add_address_store2(request):
-    return render(request, 'usuarios/add_address_store2.html')
-
 
 
 
