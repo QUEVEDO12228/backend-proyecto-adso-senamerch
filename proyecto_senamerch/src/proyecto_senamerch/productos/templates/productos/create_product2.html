@@ -1,4 +1,5 @@
 {% extends "index_create_product.html" %}
+{% load static %}
 {% block content %}
 
 <section class="create-post">
@@ -15,52 +16,77 @@
 
     <form method="POST" action="{% url 'productos:create_product_step2' %}" class="create-post__form">
       {% csrf_token %}
-      <div class="edit-post-two__group">
-        <label class="edit-post-two__label">Edita la Unidad de medida</label>
-        <select class="edit-post-two__input" required>
-          <option value="" selected disabled>Selecciona una unidad</option>
-          <option value="kg">Solido</option>
-          <option value="lb">Liquido</option>
+
+      <div class="create-post__group">
+        <label class="create-post__label">Categoría</label>
+        <select name="categoria" class="create-post__input" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+
+          {% for value, label in categorias %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+
         </select>
       </div>
-      
+
+      <div class="create-product-post-one__group">
+        <label class="create-product-post-one__label">
+          Precio * Unidad de medida
+        </label>
+
+        <select name="unit" class="create-product-post-one__input" required>
+          <option value="" selected disabled>Selecciona una Unidad</option>
+
+          {% if tipo_producto == "liquido" %}
+              <option value="litro">Litro</option>
+              <option value="mililitro">Mililitro</option>
+              <option value="centilitro">Centilitro</option>
+              <option value="decilitro">Decilitro</option>
+              <option value="decalitro">Decalitro</option>
+              <option value="hectolitro">Hectolitro</option>
+              <option value="kilolitro">Kilolitro</option>
+          {% else %}
+              <option value="tonelada">Tonelada</option>
+              <option value="kg">Kilogramo</option>
+              <option value="g">Gramo</option>
+              <option value="mg">Miligramo</option>
+              <option value="Uni">Unidad</option>
+          {% endif %}
+        </select>
+      </div>
+
+      <div class="create-product-post-one__group">
+        <label class="create-product-post-one__label">Precio</label>
+        <input type="number"
+               name="price"
+               class="create-product-post-one__input"
+               min="0"
+               required>
+      </div>
+
       <div class="create-post__group">
         <label class="create-post__label">Descuento (%)</label>
-        <input type="number" name="discount" class="create-post__input" min="0" max="100">
+        <input type="number"
+               name="discount"
+               class="create-post__input"
+               min="0"
+               max="100">
       </div>
 
-      <div class="create-post__group">
-        <label class="create-post__label">Fecha de caducidad</label>
-        <input type="date" name="expiration_date" class="create-post__input" required>
-      </div>
-
-      <div class="create-post__group">
-        <label class="create-post__label">Metodo de pago</label>
-        <select name="payment_method" class="create-post__input" required>
-          <option value="" selected disabled>Selecciona una opción</option>
-          <option value="efectivo">Efectivo</option>
-        </select>
-      </div>
-
-      <!-- Botón volver -->
       <div class="create-post__secondary">
-        <a href="{% url 'productos:create_product_step2' %}" class="btn-secundary btn-secundary-style">
+        <a href="{% url 'productos:create_product' %}"
+           class="btn-secundary btn-secundary-style">
           Volver
-          <img src="{% static 'assets/icons/return.svg' %}" 
-               alt=""
-               class="btn-secundary__icon"
-               aria-hidden="true"/>
+          <img src="{% static 'assets/icons/return.svg' %}"
+               class="btn-secundary__icon"/>
         </a>
       </div>
 
-      <!-- Botón siguiente -->
       <div class="create-post__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente
-          <img src="{% static 'assets/icons/continue.svg' %}" 
-               alt=""
-               class="btn-secundary__icon"
-               aria-hidden="true"/>
+          <img src="{% static 'assets/icons/continue.svg' %}"
+               class="btn-secundary__icon"/>
         </button>
       </div>
 

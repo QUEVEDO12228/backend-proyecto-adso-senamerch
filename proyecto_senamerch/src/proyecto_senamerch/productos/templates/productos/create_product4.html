@@ -66,7 +66,7 @@
      <div class="image-upload__actions">
 
         <!-- Botón secundario -->
-        <button
+        <a href="{% url 'productos:create_product_step3' %}" 
             type="button"
             class="btn-secundary btn-secundary-style image-upload__cancel"
             aria-label="Volver sin crear producto"
@@ -78,7 +78,7 @@
                 class="btn-secundary__icon"
                 aria-hidden="true"
             />
-        </button>
+        </a>
 
         <!-- Botón principal -->
         <button

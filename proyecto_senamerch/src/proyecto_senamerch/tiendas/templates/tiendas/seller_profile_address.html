@@ -6,9 +6,13 @@
 <section class="admin-profile">
   <section class="admin-profile__card">
 
-    <div class="admin-profile__header">
-      <div class="admin-profile__avatar">
-        <img src="{% static 'img/admin_profile.png' %}">
+    <div class="store-profile__header">
+      <div class="store-profile__avatar">
+        {% if profile and profile.image %}
+          <img src="{{ profile.image.url }}" alt="Foto del usuario">
+        {% else %}
+          <img src="{% static 'img/admin_profile.png' %}" alt="Foto del usuario">
+        {% endif %}
       </div>
 
       <div class="admin-profile__info">

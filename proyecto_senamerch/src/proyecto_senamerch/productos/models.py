@@ -90,6 +90,17 @@ class Producto(models.Model):
         choices=TIPO_ENVIO_CHOICES,
         default='contraentrega'
     )
+    stock = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Stock disponible",
+        help_text="Cantidad actual disponible para la venta"
+    )
+
+    stock_minimo = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Stock mínimo",
+        help_text="Nivel mínimo antes de mostrar alerta"
+    )
 
     descripcion = models.TextField()
 

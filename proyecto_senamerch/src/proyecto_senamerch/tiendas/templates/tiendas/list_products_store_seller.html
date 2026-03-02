@@ -16,6 +16,7 @@
           <th class="product-seller__table-header">Fecha creación</th>
           <th class="product-seller__table-header">Precio * Unidad</th>
           <th class="product-seller__table-header">Categoría</th>
+          <th class="product-seller__table-header">Stock</th> <!-- 🔹 NUEVO -->
           <th class="product-seller__table-header">Estado</th>
           <th class="product-seller__table-header">Acción</th>
           <th class="product-seller__table-header">Detalles</th>
@@ -42,6 +43,10 @@
 
           <td class="product-seller__table-cell" data-label="Categoría">
             {{ producto.get_categoria_display }}
+          </td>
+
+          <td class="product-seller__table-cell" data-label="Stock"> <!-- 🔹 NUEVO -->
+            {{ producto.stock }} {{ producto.unidad_medida }}
           </td>
 
           <td class="product-seller__table-cell" data-label="Estado">
@@ -89,7 +94,7 @@
 
         {% empty %}
         <tr>
-          <td colspan="7" style="text-align:center; padding:20px;">
+          <td colspan="8" style="text-align:center; padding:20px;">
             No tienes productos registrados.
           </td>
         </tr>

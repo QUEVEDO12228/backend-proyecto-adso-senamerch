@@ -46,8 +46,9 @@
   color: var(--white);
 }
 .btn--warning {
-  background-color: var(--tertiary-600);
+  background-color: var(--tertiary-500);
   color: var(--white);
+  border: 2px solid var(--tertiary-950);
 }
 .btn--warning:hover {
   background-color: var(--tertiary-700);

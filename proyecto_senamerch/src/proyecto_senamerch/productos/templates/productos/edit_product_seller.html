@@ -9,9 +9,14 @@
       <h1 class="edit-product-one__title">Editar producto</h1>
       <p class="edit-product-one__subtitle">
         Este formulario es para editar<br> tu producto en <strong>SENA MERCH</strong>.
-        Podrás actualizar su información y gestionarlo fácilmente.
       </p>
     </header>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
 
     <form method="POST" action="{% url 'productos:edit_product_seller' producto.id %}" class="edit-product-one__form">
       {% csrf_token %}
@@ -23,38 +28,33 @@
           name="name"
           value="{{ producto.nombre }}"
           class="edit-product-one__input"
-          required
-        >
+          required>
       </div>
 
-      <div class="edit-product-one__group">
-        <label class="edit-product-one__label">Edita el precio</label>
+      <div class="edit-post-two__group">
+        <label class="edit-post-two__label">Edita la Descripción producto</label>
+        <textarea 
+          name="description"
+          class="edit-post-two__textarea"
+          required>{{ producto.descripcion }}</textarea>
+      </div>
+
+      <div class="edit-post-two__group">
+        <label class="edit-post-two__label">Edita la Fecha de caducidad</label>
         <input 
-          type="number"
-          name="price"
-          value="{{ producto.precio }}"
-          class="edit-product-one__input"
-          min="0"
-          required
-        >
-      </div>
-      
-      <div class="edit-product-one__group">
-        <label class="edit-product-one__label">Edita la categoría</label>
-        <select name="categoria" class="edit-product-one__input" required>
-          {% for value, label in producto.CATEGORIA_CHOICES %}
-            <option value="{{ value }}" {% if producto.categoria == value %}selected{% endif %}>
-              {{ label }}
-            </option>
-          {% endfor %}
-        </select>
+          type="date"
+          name="expiration_date"
+          value="{{ producto.fecha_caducidad|date:'Y-m-d' }}"
+          max="{{ fecha_max }}"
+          class="edit-post-two__input"
+          required>
       </div>
 
-      <div class="edit-product-one__group">
-        <label class="edit-product-one__label">Edita el Precio * Unidad de medida</label>
-        <select name="unit" class="edit-product-one__input" required>
-          {% for value, label in producto.UNIDAD_MEDIDA_CHOICES %}
-            <option value="{{ value }}" {% if producto.unidad_medida == value %}selected{% endif %}>
+      <div class="edit-post-two__group">
+        <label class="edit-post-two__label">Edita el Tipo de producto</label>
+        <select name="tipo_producto" class="edit-post-two__input" required>
+          {% for value, label in producto.TIPO_PRODUCTO_CHOICES %}
+            <option value="{{ value }}" {% if producto.tipo_producto == value %}selected{% endif %}>
               {{ label }}
             </option>
           {% endfor %}
@@ -63,12 +63,12 @@
 
       <div class="edit-product-one__secondary">
         <a href="{% url 'tiendas:seller_catalog' %}"
-           class="btn-secundary btn-secundary-style edit-product-one__cancel">
-          Cancelar
-          <img src="{% static 'assets/icons/cancel.svg' %}" 
-               alt=""
-               class="btn-secundary__icon"
-               aria-hidden="true"/>
+          class="btn-secundary btn-secundary-style edit-product-one__cancel">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}" 
+              alt=""
+              class="btn-secundary__icon"
+              aria-hidden="true"/>
         </a>
       </div>
 
@@ -76,9 +76,9 @@
         <button type="submit" class="btn btn--primary edit-product-one__continue">
           Siguiente
           <img src="{% static 'assets/icons/continue.svg' %}" 
-               alt=""
-               class="btn-secundary__icon"
-               aria-hidden="true"/>
+                alt=""
+                class="btn-secundary__icon"
+                aria-hidden="true"/>
         </button>
       </div>
 

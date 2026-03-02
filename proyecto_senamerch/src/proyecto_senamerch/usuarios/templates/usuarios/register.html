@@ -21,8 +21,24 @@
       {% endif %}
     {% endfor %}
 
-    <form class="register__form" method="post" id="registerForm" autocomplete="off">
+    <form class="register__form" method="post" id="registerForm" autocomplete="off" enctype="multipart/form-data">
       {% csrf_token %}
+
+
+      <!-- DIRECCIÓN -->
+      <div class="register__group">
+        <label>Dirección</label>
+
+        {% if request.session.address_full %}
+          <p style="color: green;">✔ Dirección agregada</p>
+        {% else %}
+          <p style="color: red;">⚠ Debes agregar tu dirección</p>
+        {% endif %}
+
+        <a href="{% url 'add_address' %}" class="register__link" onclick="return goToAddress(event)">
+          Agregar dirección
+        </a>
+      </div>
 
       <!-- NOMBRE -->
       <div class="register__group">
@@ -52,21 +68,6 @@
                placeholder="Ej: correo@gmail.com"
                required>
         <small id="emailError" class="error-text"></small>
-      </div>
-
-      <!-- DIRECCIÓN -->
-      <div class="register__group">
-        <label>Dirección</label>
-
-        {% if request.session.address_full %}
-          <p style="color: green;">✔ Dirección agregada</p>
-        {% else %}
-          <p style="color: red;">⚠ Debes agregar tu dirección</p>
-        {% endif %}
-
-        <a href="{% url 'add_address' %}" class="register__link" onclick="return goToAddress(event)">
-          Agregar dirección
-        </a>
       </div>
 
       <button type="submit" class="btn btn--primary register__action-continue">

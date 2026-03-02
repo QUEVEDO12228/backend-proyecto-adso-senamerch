@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<section class="product-admin-description">
+<section class="product-admin-description {% if not producto.activo %}product--disabled{% endif %}">
 
   <!-- GALERÍA -->
   <div class="product-admin-description__gallery">
@@ -38,34 +38,43 @@
     <div class="product-admin-description__comments seller-comments">
       <h3 class="comments__title">Opiniones de los usuarios</h3>
 
-      <form id="formComentario" data-producto-id="{{ producto.id }}">
+      <!-- FORMULARIO PARA NUEVO COMENTARIO -->
+      <form id="formComentario" 
+          method="POST" 
+          data-producto-id="{{ producto.id }}"
+          class="seller-comments__form">
         {% csrf_token %}
-        <label for="comentario">Escribe tu comentario</label>
-        <textarea id="comentario" name="comentario" class="comments-users-sidebar__textarea" required></textarea>
+        <label for="comentario" class="seller-comments__label">
+          Escribe tu comentario
+        </label>
+
+        <textarea id="comentario"
+                  name="comentario"
+                  class="seller-comments-products-store__textarea"
+                  required>
+        </textarea>
         <button type="submit" class="btn btn--primary comments-users-sidebar__pay">
           Enviar comentario
           <img src="{% static 'assets/icons/contact.svg' %}" alt="Icono enviar" class="btn__icon comments-users-sidebar__icon"/>
         </button>
       </form>
 
+      <!-- LISTA DE COMENTARIOS EXISTENTES -->
       <div id="listaComentarios" class="seller-comments__list">
         {% for comentario in comentarios %}
           <div class="seller-comments__item">
-            <p class="seller-comments__user">{{ comentario.usuario.username }} <span class="comments__date">• {{ comentario.creado_en|timesince }} atrás</span></p>
+            <p class="seller-comments__user">
+              {{ request.user.username }}
+              <span class="comments__date">• {{ comentario.creado_en|timesince }} atrás</span>
+            </p>
             <p class="seller-comments__text">{{ comentario.texto }}</p>
           </div>
         {% empty %}
           <p>No hay comentarios aún.</p>
         {% endfor %}
-
-        <div class="seller-comments__secondary">
-          <button class="btn-secundary btn-secundary-style seller-comments__edit">
-            Editar producto
-            <img src="{% static 'assets/icons/edit.svg' %}" alt="Icono editar" class="btn-secundary__icon">
-          </button>
-        </div>
       </div>
     </div>
+
   </div>
 
   <!-- DETALLES DEL PRODUCTO -->
@@ -73,18 +82,22 @@
 
     <!-- BOTONES ADMIN -->
     <div class="seller-details__actions">
-      <p class="product-admin-description__status"> Estado: {% if producto.activo %}Activo{% else %}Deshabilitado{% endif %}</p>
-      {% if producto.activo %}
-        <button class="btn btn--warning product-admin-description__suspend">
-          Deshabilitar producto
-          <img src="{% static 'assets/icons/off.svg' %}" class="btn__icon" />
-        </button>
-      {% else %}
-        <button class="btn btn--success product-admin-description__suspend">
-          Habilitar producto
-          <img src="{% static 'assets/icons/enabled.svg' %}" class="btn__icon" />
-        </button>
-      {% endif %}
+      <p class="product-admin-description__status">Estado: {% if producto.activo %}Activo{% else %}Deshabilitado{% endif %}</p>
+
+      <form method="POST" action="{% url 'productos:toggle_product_status' producto.id %}">
+        {% csrf_token %}
+        {% if producto.activo %}
+          <button type="submit" class="btn btn--warning product-admin-description__suspend">
+            Deshabilitar producto
+            <img src="{% static 'assets/icons/off.svg' %}" class="btn__icon" />
+          </button>
+        {% else %}
+          <button type="submit" class="btn btn--success product-admin-description__suspend">
+            Habilitar producto
+            <img src="{% static 'assets/icons/enabled.svg' %}" class="btn__icon" />
+          </button>
+        {% endif %}
+      </form>
     </div>
 
     <!-- RATING -->
@@ -99,16 +112,24 @@
     <div class="seller-info">
       <h3 class="seller-info__subtitle">Lo que necesitas saber de este producto</h3>
 
-      <p class="seller-info__text"><strong>Unidad de medida: </strong>{{ producto.unidad_medida }}</p>
-      <p class="seller-info__text"><strong>Tipo de garantía: </strong>{{ producto.tipo_garantia }}</p>
-      <p class="seller-info__text"><strong>Descripción: </strong>{{ producto.descripcion }}</p>
-      <p class="seller-info__text"><strong>Fecha caducidad: </strong>{{ producto.fecha_caducidad }}</p>
-      <p class="seller-info__text"><strong>Tipo de envío: </strong>{{ producto.tipo_envio }}</p>
-      <p class="seller-info__text"><strong>Método de pago: </strong>{{ producto.metodo_pago }}</p>
-      <p class="seller-info__text"><strong>Descuento: </strong>{{ producto.descuento }}%</p>
+      <p class="seller-info__text"><strong>Unidad de medida:</strong>{{ producto.unidad_medida }}</p>
+      <p class="seller-info__text"><strong>Tipo de garantía:</strong>{{ producto.tipo_garantia }}</p>
+      <p class="seller-info__text"><strong>Descripción:</strong>{{ producto.descripcion }}</p>
+      <p class="seller-info__text"><strong>Fecha caducidad:</strong>{{ producto.fecha_caducidad }}</p>
+      <p class="seller-info__text"><strong>Tipo de envío:</strong>{{ producto.tipo_envio }}</p>
+      <p class="seller-info__text"><strong>Método de pago:</strong>{{ producto.metodo_pago }}</p>
+      <p class="seller-info__text"><strong>Descuento:</strong>{{ producto.descuento }}%</p>
+    </div>
+    <div class="seller-comments__secondary">
+      <a href="{% url 'productos:edit_product_seller' producto.id %}"
+          class="btn-secundary btn-secundary-style seller-comments__edit">
+        Editar
+        <img src="{% static 'assets/icons/edit.svg' %}"
+              class="btn-secundary__icon"
+              alt="">
+      </a>
     </div>
   </div>
-
 </section>
 
 <!-- SCRIPT PARA CAMBIAR IMAGEN PRINCIPAL -->
@@ -121,5 +142,13 @@ function changeMainImage(element) {
 
 <!-- SCRIPT AJAX COMENTARIOS -->
 <script src="{% static 'js/description_product_seller.js' %}" defer></script>
+
+<style>
+/* Si el producto está deshabilitado, aplicamos opacidad y pointer-events none */
+.product--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+</style>
 
 {% endblock %}

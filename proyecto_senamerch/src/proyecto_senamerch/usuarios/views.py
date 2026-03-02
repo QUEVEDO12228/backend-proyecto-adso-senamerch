@@ -226,6 +226,11 @@ def register_step_2(request):
             first_name=name
         )
 
+        Profile.objects.create(
+            user=user,
+            phone=request.session.get('register_phone', '')
+        )
+
         Address.objects.create(
             user=user,
             neighborhood=address.get('neighborhood'),

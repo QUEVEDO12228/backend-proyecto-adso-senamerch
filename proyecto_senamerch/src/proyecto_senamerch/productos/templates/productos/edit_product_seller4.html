@@ -6,6 +6,11 @@
     <div class="image-upload">
 
         <h2 class="image-upload__title">Termina de editar el producto</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
         <p class="image-upload__subtitle">
             Edita las imágenes para completar la presentación de tu producto.
         </p>
