@@ -4,7 +4,6 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
-from .models import Tienda
 from productos.models import Producto
 from django.contrib.auth import update_session_auth_hash
 from usuarios.models import Profile, Address
@@ -245,28 +244,30 @@ def seller_catalog(request):
 
 @login_required
 def edit_seller_profile(request):
-    profile = request.user.profile
 
-    if request.method == "POST":
-        # Guardamos los datos del paso 1 en sesión
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+
+        # 🔥 GUARDAR EN SESIÓN (IMPORTANTE)
         request.session['edit_user_data'] = {
-            "email": request.POST.get("email", request.user.email),
-            "first_name": request.POST.get("first_name", request.user.first_name),
-            "telefono": request.POST.get("telefono", profile.phone)
+            "email": request.POST.get('email'),
+            "first_name": request.POST.get('first_name'),
+            "telefono": request.POST.get('telefono'),
         }
 
-        # Guardar la imagen directamente si existe
-        if "imagen" in request.FILES:
-            profile.image = request.FILES["imagen"]
+        # Guardar imagen si viene
+        if 'imagen' in request.FILES:
+            profile.image = request.FILES['imagen']
             profile.save()
 
-        # Redirigir al paso 2
+        request.session.modified = True
+
         return redirect('tiendas:edit_seller_profile2')
 
     return render(request, 'tiendas/edit_seller_profile.html', {
-        "profile": profile,
+        'profile': profile
     })
-
 
 @login_required
 def edit_seller_profile2(request):

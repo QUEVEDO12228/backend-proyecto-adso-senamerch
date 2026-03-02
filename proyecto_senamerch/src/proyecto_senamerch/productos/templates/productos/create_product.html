@@ -1,6 +1,5 @@
 {% extends "index_create_product.html" %}
 {% load static %}
-
 {% block content %}
 
 <section class="create-product-post-one">
@@ -14,11 +13,9 @@
       </p>
     </header>
 
-    <!-- IMPORTANTE -->
     <form method="POST" action="{% url 'productos:create_product' %}"  class="create-post__form">
       {% csrf_token %}
 
-      <!-- Nombre -->
       <div class="create-product-post-one__group">
         <label class="create-product-post-one__label">Nombre del producto</label>
         <input 
@@ -30,72 +27,52 @@
         >
       </div>
 
-      <!-- Precio -->
-      <div class="create-product-post-one__group">
-        <label class="create-product-post-one__label">Precio</label>
-        <input 
-          type="number"
-          name="price"
-          class="create-product-post-one__input"
-          placeholder="Ej: 3000"
-          min="0"
-          required
-        >
-      </div>
-      <!-- Categoría -->
       <div class="create-post__group">
-        <label class="create-post__label">Categoría</label>
-        <select name="categoria" class="create-post__input" required>
-          <option value="" selected disabled>Selecciona una opción</option>
-          <option value="frutas">Frutas</option>
-          <option value="verduras">Verduras</option>
-          <option value="lacteos">Lácteos</option>
-          <option value="granos">Granos</option>
-          <option value="ornamentales">Ornamentales</option>
-          <option value="cereales">Cereales</option>
-          <option value="oleaginosas">Oleaginosas</option>
-        </select>
+        <label class="create-post__label">Descripción producto</label>
+        <textarea 
+          name="description"
+          class="create-post__textarea"
+          placeholder="Describe brevemente el producto..."
+          required
+        ></textarea>
       </div>
 
-      <!-- Unidad -->
-      <div class="create-product-post-one__group">
-        <label class="create-product-post-one__label">Precio * Unidad de medida</label>
-        <select name="unit" class="create-product-post-one__input" required>
-          <option value="" selected disabled>Selecciona una Unidad</option>
-          <option value="kg">kg</option>
-          <option value="lb">lb</option>
-          <option value="unidad">unidad</option>
-          <option value="litro">litro</option>
-          <option value="mililitro">mililitro</option>
-        </select>
+      <div class="create-post__group">
+        <label class="create-post__label">Fecha de caducidad</label>
+        <input type="date"
+               name="expiration_date"
+               class="create-post__input"
+               max="{{ fecha_max }}"
+               required>
       </div>
 
+      <div class="create-post__group">
+        <label class="create-post__label">Tipo de producto</label>
+        <select class="create-post__input"
+                name="tipo_producto"
+                id="tipo_producto"
+                required>
+            <option value="" disabled selected>Selecciona tipo</option>
+            <option value="solido">Sólido</option>
+            <option value="liquido">Líquido</option>
+        </select>
+      </div>
+      
       <div class="create-product-post-one__secondary">
-        <a
-          href="{% url 'tiendas:seller_catalog' %}"
-          class="btn-secundary btn-secundary-style create-product-post-one__cancel"
-          aria-label="Cancelar edición"
-        >
+        <a href="{% url 'tiendas:seller_catalog' %}"
+           class="btn-secundary btn-secundary-style create-product-post-one__cancel">
           Cancelar
-          <img
-            src="{% static 'assets/icons/cancel.svg' %}"
-            alt=""
-            class="btn-secundary__icon"
-            aria-hidden="true"
-          />
+          <img src="{% static 'assets/icons/cancel.svg' %}"
+               class="btn-secundary__icon"/>
         </a>
       </div>
 
       <div class="create-product-post-one__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente
-          <img
-            src="{% static 'assets/icons/get_into.svg' %}" 
-            alt="Icono ingresar"
-            class="btn__icon login__btn-icon"
-          >
+          <img src="{% static 'assets/icons/get_into.svg' %}" 
+               class="btn__icon login__btn-icon">
         </button>
-        
       </div>
 
     </form>

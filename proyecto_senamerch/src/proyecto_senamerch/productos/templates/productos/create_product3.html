@@ -1,31 +1,31 @@
-{% extends "index_create_product.html" %}
-{% block content %}
+{% extends "index_create_product.html" %} {% load static %} {% block content %}
 
 <section class="create-post">
   <div class="create-post__wrapper">
-
     <header class="create-post__header">
-      <h1 class="create-post__title">Agrega las características del producto</h1>
+      <h1 class="create-post__title">
+        Agrega las características del producto
+      </h1>
       <p class="create-post__subtitle">
         Este formulario es para registrar tu producto.
       </p>
     </header>
 
-    <form method="POST" action="{% url 'productos:create_product_step3' %}" class="create-post__form">
+    <form
+      method="POST"
+      action="{% url 'productos:create_product_step3' %}"
+      class="create-post__form"
+    >
       {% csrf_token %}
 
-      <!-- Descripción -->
       <div class="create-post__group">
-        <label class="create-post__label">Descripción producto</label>
-        <textarea 
-          name="description"
-          class="create-post__textarea"
-          placeholder="Describe brevemente el producto..."
-          required
-        ></textarea>
+        <label class="create-post__label">Metodo de pago</label>
+        <select name="payment_method" class="create-post__input" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="efectivo">Efectivo</option>
+        </select>
       </div>
 
-      <!-- Tipo envío -->
       <div class="create-post__group">
         <label class="create-post__label">Tipo de envío</label>
         <select name="shipping_type" class="create-post__input" required>
@@ -34,29 +34,50 @@
         </select>
       </div>
 
-      <div class="create-post__secondary">
-        <a href="{% url 'productos:create_product_step3' %}" class="btn-secundary btn-secundary-style">
-          Volver
-          <img src="{% static 'assets/icons/return.svg' %}" 
-               alt=""
-               class="btn-secundary__icon"
-               aria-hidden="true"/>
-        </a>
+      <div class="create-post__group">
+        <label class="create-post__label" for="stock">
+          Stock disponible (en {{ unidad }})
+        </label>
+
+        <input
+          type="number"
+          id="stock"
+          name="stock"
+          class="create-post__input"
+          min="0"
+          required
+        />
+
+        <small class="create-post__help">
+          Indica la cantidad disponible para la venta.
+        </small>
       </div>
 
+      <div class="div"></div>
+
+      <div class="create-post__secondary">
+        <a
+          href="{% url 'productos:create_product_step2' %}"
+          class="btn-secundary btn-secundary-style"
+        >
+          Volver
+          <img
+            src="{% static 'assets/icons/return.svg' %}"
+            class="btn-secundary__icon"
+          />
+        </a>
+      </div>
 
       <div class="create-post__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente
-          <img src="{% static 'assets/icons/continue.svg' %}" 
-               alt=""
-               class="btn-secundary__icon"
-               aria-hidden="true"/>
+          <img
+            src="{% static 'assets/icons/continue.svg' %}"
+            class="btn-secundary__icon"
+          />
         </button>
       </div>
-
     </form>
-
   </div>
 </section>
 
