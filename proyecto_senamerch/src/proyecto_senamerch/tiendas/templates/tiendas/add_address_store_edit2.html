@@ -1,0 +1,90 @@
+{% extends 'index_home_store_seller.html' %}
+{% load static %}
+
+{% block content %}
+<section class="address-store-form">
+  <div class="address-store-form__wrapper">
+
+    <header class="address-store-form__header">
+      <h2 class="address-store-form__title">
+        Finaliza la edición de la dirección de tu tienda
+      </h2>
+    </header>
+
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST" action="{% url 'tiendas:edit_address_store2' %}" class="address-store-form__form">
+      {% csrf_token %}
+      <div class="address-store-form__group">
+        <label for="department" class="address-store-form__label">
+          Departamento
+        </label>
+
+        <select
+            id="department"
+            name="department"
+            class="address-store-form__input"
+            required
+        >
+            <option value="">Selecciona...</option>
+            {% for dep in departamentos %}
+                <option value="{{ dep }}"
+                  {% if form_data.department == dep or tienda.departamento == dep %}
+                    selected
+                  {% endif %}
+                >
+                    {{ dep }}
+                </option>
+            {% endfor %}
+        </select>
+      </div>
+      
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Municipio</label>
+        <input 
+          type="text"
+          name="city"
+          placeholder="Ej: Pereira"
+          class="address-store-form__input"
+          value="{{ form_data.city|default:tienda.municipio }}"
+          required
+        >
+      </div>
+
+      <div class="address-store-form__group address-store-form__group--full">
+        <label class="address-store-form__label">Información adicional</label>
+        <input 
+          type="text"
+          name="additional_info"
+          placeholder="Apartamento, interior, referencias, etc."
+          class="address-store-form__input"
+          value="{{ form_data.additional_info|default:tienda.informacion_adicional }}"
+        >
+      </div>
+
+      <div class="address-store-form__secondary">
+        <a href="{% url 'tiendas:edit_address_store' %}" 
+          class="btn-secundary btn-secundary-style">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}" class="btn-secundary__icon">
+        </a>
+      </div>
+
+      <div class="address-store-form__buttons">
+        <button type="submit" class="btn btn--primary">
+          Guardar
+          <img src="{% static 'assets/icons/save.svg' %}" class="btn__icon">
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>
+{% endblock %}

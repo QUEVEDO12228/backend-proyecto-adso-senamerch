@@ -22,8 +22,13 @@
         </div>
       </nav>
   </section>
+
   <main class="main-content">
-    {% block content %}{% endblock %}
+    <section class="products-grid">
+      <div class="cards__container">
+        {% block main_content %}{% endblock %}
+      </div>
+    </section>
   </main>
 
   {% include 'components/footer.html' %}

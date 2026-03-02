@@ -194,3 +194,27 @@
     align-items: start;
   }
 }
+/* Contenedor clickeable para la imagen */
+.profile-image-label {
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* Imagen de perfil */
+.profile-image {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--secundary-400);
+  transition: transform 0.2s;
+}
+
+.profile-image:hover {
+  transform: scale(1.1);
+}
+
+/* Input oculto */
+.profile-image-input {
+  display: none;
+}

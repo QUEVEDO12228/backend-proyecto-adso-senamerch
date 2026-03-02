@@ -2,11 +2,10 @@
 {% load static %}
 
 {% block content %}
-<section class="class main-image-upload">
+<section class="main-image-upload">
     <div class="image-upload">
 
         <h2 class="image-upload__title">Termina de editar el producto</h2>
-
         <p class="image-upload__subtitle">
             Edita las imágenes para completar la presentación de tu producto.
         </p>
@@ -18,34 +17,73 @@
             {% csrf_token %}
 
             <div class="image-upload__content">
-                
+
+                <!-- Sidebar de miniaturas -->
                 <div class="image-upload__sidebar">
-                    {% for i in "123456" %}
-                    <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+
+                    {% for imagen in imagenes %}
+                    <div class="image-upload__thumbnail"
+                         style="background-image: url('{{ imagen.imagen.url }}');
+                                background-size: cover;
+                                background-position: center;">
                         <span class="image-upload__add-text">Cambiar</span>
-                        <input type="file" name="image{{ i }}" accept="image/*" class="image-upload__input">
+                        <input type="file"
+                               name="image{{ forloop.counter }}"
+                               accept="image/*"
+                               class="image-upload__input">
                     </div>
                     {% endfor %}
+
+                    {% for i in "123456" %}
+                        {% if forloop.counter > imagenes.count %}
+                        <div class="image-upload__thumbnail image-upload__thumbnail--empty">
+                            <span class="image-upload__add-text">Agregar</span>
+                            <input type="file"
+                                   name="image{{ forloop.counter }}"
+                                   accept="image/*"
+                                   class="image-upload__input">
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+
                 </div>
 
+                <!-- Vista previa grande -->
                 <div class="image-upload__viewer">
-                    <div class="image-upload__preview image-upload__preview--empty">
-                        <span class="image-upload__preview-text">Vista previa</span>
-                    </div>
+                    {% if imagenes.first %}
+                        <div class="image-upload__preview"
+                             style="background-image: url('{{ imagenes.first.imagen.url }}');
+                                    background-size: cover;
+                                    background-position: center;">
+                        </div>
+                    {% else %}
+                        <div class="image-upload__preview image-upload__preview--empty">
+                            <span class="image-upload__preview-text">Vista previa</span>
+                        </div>
+                    {% endif %}
                 </div>
 
             </div>
 
+            <!-- Acciones del formulario -->
             <div class="image-upload__actions">
 
                 <a href="{% url 'productos:edit_product_step3' producto.id %}"
                    class="btn-secundary btn-secundary-style image-upload__cancel">
                     Volver
+                    <img src="{% static 'assets/icons/return.svg' %}" 
+                        alt=""
+                        class="btn-secundary__icon"
+                        aria-hidden="true"/>
                 </a>
 
                 <button type="submit"
                         class="btn btn--primary image-upload__submit">
                     Guardar cambios
+                    <img src="{% static 'assets/icons/save.svg' %}" 
+                    alt=""
+                    class="btn-secundary__icon"
+                    aria-hidden="true"/>
                 </button>
 
             </div>
@@ -54,6 +92,8 @@
 
     </div>
 </section>
+
+<!-- Script para mostrar preview al subir imagen -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -63,17 +103,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   inputs.forEach((input) => {
 
-    // 🔥 CUANDO SE SUBE IMAGEN
+    // Cuando se sube una imagen
     input.addEventListener("change", function (event) {
-
       const file = event.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
-
       reader.onload = function (e) {
         const thumbnail = input.closest(".image-upload__thumbnail");
-
         thumbnail.style.backgroundImage = `url(${e.target.result})`;
         thumbnail.style.backgroundSize = "cover";
         thumbnail.style.backgroundPosition = "center";
@@ -82,30 +119,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const text = thumbnail.querySelector(".image-upload__add-text");
         if (text) text.style.display = "none";
 
-        // 🔥 TAMBIÉN LO MUESTRA EN LA VISTA GRANDE AUTOMÁTICAMENTE
+        // Mostrar en la vista previa grande
         previewBox.style.backgroundImage = `url(${e.target.result})`;
         previewBox.style.backgroundSize = "cover";
         previewBox.style.backgroundPosition = "center";
 
         if (previewText) previewText.style.display = "none";
       };
-
       reader.readAsDataURL(file);
     });
 
-
-    // 🔥 CUANDO PASAS EL MOUSE POR UNA MINIATURA
+    // Mostrar en preview grande al pasar el mouse sobre miniatura
     const thumbnail = input.closest(".image-upload__thumbnail");
-
     thumbnail.addEventListener("mouseenter", function () {
-
       const bg = thumbnail.style.backgroundImage;
       if (!bg) return;
-
       previewBox.style.backgroundImage = bg;
       previewBox.style.backgroundSize = "cover";
       previewBox.style.backgroundPosition = "center";
-
       if (previewText) previewText.style.display = "none";
     });
 

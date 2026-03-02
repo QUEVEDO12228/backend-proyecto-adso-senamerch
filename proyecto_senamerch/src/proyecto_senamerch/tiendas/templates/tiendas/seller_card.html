@@ -4,90 +4,129 @@
 {% block main_content %}
 
 {% for producto in productos %}
-<article class="product-card">
 
-  <div class="product-card__actions">
-    <div class="product-card__menu">
-      <button class="product-card__menu-btn">⋮</button>
+<article class="product-card {% if not producto.activo %}product-card--disabled{% endif %}">
 
-      <ul class="product-card__menu-dropdown">
-        <li>
-          <a href="#" class="product-card__menu-item">
-            Dejar un comentario
-            <img src="{% static 'assets/icons/contact.svg' %}"
-                 class="product-card__menu-item-icon"
-                 alt="">
-          </a>
-        </li>
-      </ul>
+  <!-- CONTENIDO VISUAL -->
+  <div class="product-card__content">
+
+    <!-- MENÚ -->
+    {% if producto.activo %}
+    <div class="product-card__actions">
+      <div class="product-card__menu">
+        <button class="product-card__menu-btn">⋮</button>
+
+        <ul class="product-card__menu-dropdown">
+          <li>
+            <a href="#"
+              class="product-card__menu-item"
+              data-action="open-comments"
+              data-product-id="{{ producto.id }}">
+              Dejar un comentario
+              <img src="{% static 'assets/icons/contact.svg' %}"
+                  class="product-card__menu-item-icon"
+                  alt="">
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
-
-  <div class="product-card__header">
-    <h2 class="product-card__title">{{ producto.nombre }}</h2>
-    <p class="product-card__price">$ {{ producto.precio }} / kilo</p>
-    <p class="product-card__discount">{{ producto.descuento }} % de descuento</p>
-  </div>
-
-  <a href="{% url 'tiendas:profile_store_seller' %}"
-     class="product-card__profile-store-link">
-    {% if producto.tienda.imagen_portada %}
-    <img src="{{ producto.tienda.imagen_portada.url }}"
-         alt="Imagen {{ producto.tienda.nombre }}"
-         class="product-card__store-logo">
-    {% else %}
-        <img src="{% static 'assets/img/default-store.jpg' %}"
-            alt="Sin imagen"
-            class="product-card__store-logo">
     {% endif %}
 
-    <span class="product-card__profile-store-tooltip">
-      Perfil Tienda
-      <img src="{% static 'assets/icons/store_profile.svg' %}"
-           class="product-card__profile-store-tooltip-icon"
-           alt="">
-    </span>
-  </a>
-
-  <a href="{% url 'productos:description_product_seller' producto.id %}"
-     class="product-card__image-link">
-    <div class="product-card__image-wrapper">
-
-      {% with producto.imagenes.first as imagen %}
-          {% if imagen %}
-              <img src="{{ imagen.imagen.url }}"
-                   alt="{{ producto.nombre }}"
-                   class="product-card__image">
-          {% else %}
-              <img src="{% static 'assets/img/default-product.jpg' %}"
-                   alt="Sin imagen"
-                   class="product-card__image">
-          {% endif %}
-      {% endwith %}
-
+    <!-- HEADER -->
+    <div class="product-card__header">
+      <h2 class="product-card__title">{{ producto.nombre }}</h2>
+      <p class="product-card__price">$ {{ producto.precio }} / kilo</p>
+      <p class="product-card__discount">{{ producto.descuento }} % de descuento</p>
     </div>
 
-    <span class="product-card__image-tooltip">
-      Visualizar Producto
-      <img src="{% static 'assets/icons/eye.svg' %}"
-           class="product-card__image-tooltip-icon"
-           alt="">
-    </span>
-  </a>
+    <!-- PERFIL TIENDA -->
+    <a href="{% if producto.activo %}{% url 'tiendas:profile_store_seller' %}{% else %}javascript:void(0){% endif %}"
+       class="product-card__profile-store-link {% if not producto.activo %}disabled-link{% endif %}">
 
-  <div class="product-card__footer--seller-edit">
-    <a href="{% url 'productos:edit_product_seller' producto.id %}"
-       class="btn-secundary btn-secundary-style">
-      Editar
-      <img src="{% static 'assets/icons/edit.svg' %}"
-           class="btn-secundary__icon"
-           alt="">
+      {% if producto.tienda.imagen_portada %}
+        <img src="{{ producto.tienda.imagen_portada.url }}"
+             alt="Imagen {{ producto.tienda.nombre }}"
+             class="product-card__store-logo">
+      {% else %}
+        <img src="{% static 'assets/img/default-store.jpg' %}"
+             alt="Sin imagen"
+             class="product-card__store-logo">
+      {% endif %}
+
+      {% if producto.activo %}
+      <span class="product-card__profile-store-tooltip">
+        Perfil Tienda
+        <img src="{% static 'assets/icons/store_profile.svg' %}"
+             class="product-card__profile-store-tooltip-icon"
+             alt="">
+      </span>
+      {% endif %}
+
     </a>
+
+    <!-- IMAGEN PRODUCTO -->
+    <a href="{% if producto.activo %}{% url 'productos:description_product_seller' producto.id %}{% else %}javascript:void(0){% endif %}"
+       class="product-card__image-link {% if not producto.activo %}disabled-link{% endif %}">
+
+      <div class="product-card__image-wrapper">
+        {% with producto.imagenes.first as imagen %}
+            {% if imagen %}
+                <img src="{{ imagen.imagen.url }}"
+                     alt="{{ producto.nombre }}"
+                     class="product-card__image">
+            {% else %}
+                <img src="{% static 'assets/img/default-product.jpg' %}"
+                     alt="Sin imagen"
+                     class="product-card__image">
+            {% endif %}
+        {% endwith %}
+      </div>
+
+      {% if producto.activo %}
+      <span class="product-card__image-tooltip">
+        Visualizar Producto
+        <img src="{% static 'assets/icons/eye.svg' %}"
+             class="product-card__image-tooltip-icon"
+             alt="">
+      </span>
+      {% endif %}
+
+    </a>
+
+  </div>
+  <!-- FIN CONTENIDO VISUAL -->
+
+
+  <!-- FOOTER (NO SE APAGA) -->
+  <div class="product-card__footer--seller-edit">
+
+      {% if producto.activo %}
+          <a href="{% url 'productos:edit_product_seller' producto.id %}"
+             class="btn-secundary btn-secundary-style">
+            Editar
+            <img src="{% static 'assets/icons/edit.svg' %}"
+                 class="btn-secundary__icon"
+                 alt="">
+          </a>
+      {% else %}
+          <p class="disabled-label">Producto deshabilitado</p>
+
+          <a href="{% url 'productos:toggle_product_status' producto.id %}"
+             class="btn btn--success">
+            Habilitar
+            <img src="{% static 'assets/icons/mobiledata.svg' %}"
+                 class="btn-secundary__icon"
+                 alt="">
+          </a>
+      {% endif %}
+
   </div>
 
 </article>
+
 {% empty %}
-<p>No hay productos registrados.</p>
+<p class="no-products-message">No hay productos registrados.</p>
 {% endfor %}
 
 {% endblock %}

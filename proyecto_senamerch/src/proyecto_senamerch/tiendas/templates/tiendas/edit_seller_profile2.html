@@ -16,18 +16,17 @@
       class="edit-profile-admin__form">
     {% csrf_token %}
 
-      <div>
-      </div>
-      <div class="edit-profile-admin__group">
+      <!-- Columna 1: Dirección -->
+      <div class="edit-profile-admin__group direccion-col">
         <label class="edit-profile-admin__label">Dirección</label>
-        <a href="#"
-          class="edit-profile-admin__link">
+        <a href="{% url 'tiendas:edit_address_seller' %}" class="edit-profile-admin__link">
           Editar dirección
         </a>
         <small class="edit-profile-admin__text">Todo estará más cerca de ti.</small>
       </div>
-      <!-- add_adress_seller_edit -->
-      <div class="edit-profile-admin__group">
+
+      <!-- Columna 2: Editar contraseña -->
+      <div class="edit-profile-admin__group password-col">
         <label class="edit-profile-admin__label">Edita tu contraseña</label>
         <div class="edit-profile-admin__password-wrapper">
           <input
@@ -38,7 +37,8 @@
         </div>
       </div>
 
-      <div class="edit-profile-admin__group">
+      <!-- Columna 1: Confirmar contraseña debajo de Dirección -->
+      <div class="edit-profile-admin__group confirmar-col">
         <label class="edit-profile-admin__label">Confirma tu contraseña</label>
         <div class="edit-profile-admin__password-wrapper">
           <input
@@ -49,8 +49,9 @@
         </div>
       </div>
 
-      <div class="edit-profile-admin__secondary">
-        <a href="{% url 'tiendas:profile_store_seller' %}"
+      <!-- Botones: Volver a la izquierda, Guardar a la derecha -->
+      <div class="edit-profile-admin__secondary volver-col">
+        <a href="{% url 'tiendas:edit_seller_profile' %}"
           class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
           Volver
           <img src="{% static 'assets/icons/return.svg' %}"
@@ -58,7 +59,7 @@
         </a>
       </div>
 
-      <div class="edit-profile-admin__buttons">
+      <div class="edit-profile-admin__buttons guardar-col">
         <button
           type="submit"
           class="btn btn--primary edit-profile-admin__submit"
@@ -73,7 +74,18 @@
           />
         </button>
       </div>
+
     </form>
   </div>
 </section>
+
+<style>
+/* Grid manual para forzar columnas */
+.direccion-col { grid-column: 1; }
+.confirmar-col { grid-column: 1; }
+.password-col { grid-column: 2; }
+/* Botones: Volver en columna 1, Guardar en columna 2 */
+.volver-col { grid-column: 1; margin-top: 1rem; justify-self: start; }
+.guardar-col { grid-column: 2; margin-top: 1rem; justify-self: end; }
+</style>
 {% endblock %}

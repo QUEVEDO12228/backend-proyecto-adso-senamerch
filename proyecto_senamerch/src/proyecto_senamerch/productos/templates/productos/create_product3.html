@@ -34,9 +34,24 @@
         </select>
       </div>
 
+      <div class="create-post__secondary">
+        <a href="{% url 'productos:create_product_step3' %}" class="btn-secundary btn-secundary-style">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
+        </a>
+      </div>
+
+
       <div class="create-post__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente
+          <img src="{% static 'assets/icons/continue.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
         </button>
       </div>
 

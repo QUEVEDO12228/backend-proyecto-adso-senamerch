@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Listado de productos Vendedor | SenaMerch</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+
+<body>
+
+{% include 'components/navabar_go_go.html' %}
+{% include 'components/navbar_seller_view.html' %}
+<section class="seller-hero-store">
+    {% include 'components/hero_seller.html' %}
+</section>
+
+<main class="main-content">
+{% block content %}{% endblock %}
+</main> 
+
+{% include 'components/footer.html' %}
+{% include 'components/footer_go_go.html' %}
+
+</body>
+</html>
+

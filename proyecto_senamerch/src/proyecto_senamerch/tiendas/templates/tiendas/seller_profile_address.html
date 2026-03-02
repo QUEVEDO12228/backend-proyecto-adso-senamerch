@@ -21,34 +21,37 @@
 
       <div class="admin-profile__field">
         <span class="admin-profile__label">Barrio:</span>
-        <span class="admin-profile__value">{{ direccion.barrio }}</span>
+        <span class="admin-profile__value">{{ profile.neighborhood|default:"No registrado" }}</span>
+      </div>
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Número / Dirección:</span>
+        <span class="admin-profile__value">{{ profile.address_number|default:"No registrado" }}</span>
       </div>
 
       <div class="admin-profile__field">
         <span class="admin-profile__label">Tipo de vía:</span>
-        <span class="admin-profile__value">{{ direccion.tipo_via }}</span>
-      </div>
-
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Departamento:</span>
-        <span class="admin-profile__value">{{ direccion.departamento }}</span>
-      </div>
-
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Municipio:</span>
-        <span class="admin-profile__value">{{ direccion.municipio }}</span>
+        <span class="admin-profile__value">{{ profile.road_type|default:"No registrado" }}</span>
       </div>
 
       <div class="admin-profile__field">
         <span class="admin-profile__label">Código postal:</span>
-        <span class="admin-profile__value">{{ direccion.codigo_postal }}</span>
+        <span class="admin-profile__value">{{ profile.postal_code|default:"No registrado" }}</span>
+      </div>
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Departamento:</span>
+        <span class="admin-profile__value">{{ profile.department|default:"No registrado" }}</span>
+      </div>
+
+      <div class="admin-profile__field">
+        <span class="admin-profile__label">Municipio:</span>
+        <span class="admin-profile__value">{{ profile.city|default:"No registrado" }}</span>
       </div>
 
       <div class="admin-profile__field">
         <span class="admin-profile__label">Información adicional:</span>
-        <span class="admin-profile__value">
-          {{ direccion.informacion_adicional|default:"No registrada" }}
-        </span>
+        <span class="admin-profile__value">{{ profile.extra_info|default:"No registrada" }}</span>
       </div>
 
     </div>
@@ -60,7 +63,6 @@
           Volver
           <img
             src="{% static 'assets/icons/return.svg' %}"
-            alt=""
             class="btn-secundary__icon"
             aria-hidden="true"
           />
@@ -70,7 +72,5 @@
 
   </section>
 </section>
-
-
 
 {% endblock %}

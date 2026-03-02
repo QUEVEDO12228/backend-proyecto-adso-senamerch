@@ -1,6 +1,9 @@
+/* =======================================================
+   COMPONENTE 2 — NAVBAR GLOBAL PARA TODOS LOS HTMLS (.navbar_product_category)
+   ======================================================= */
+
 .navbar_product_category {
     width: 100%;
-    /* padding: var(--gap-lg); */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -9,14 +12,14 @@
     border-bottom: 2px solid var(--secundary-400);
     max-height: 100%;
 }
-/* Contenedor que agrupa logo y texto */
+
+/* Grupo izquierdo (logo + separador + nombre) */
 .navbar_left_group {
     display: flex;
     align-items: center;
     gap: 1.6rem; 
     background-color: var(--secundary-950);
     padding: var(--gap-xxxs);
-    background-color: var(--secundary-950);
     border-top-right-radius: 100px;
     border-bottom-right-radius: 100px;
 }
@@ -28,63 +31,43 @@
     background-color: var(--secundary-400);
 }
 
-.navbar_product_category--client {
-    width: 100%;
-    padding: var(--gap-xxs);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 48px;
-    background-color: var(--secundary-950);
-    font-family: var(--font-primary);
-    border: 2px solid var(--secundary-400);
-}
-.navbar_product_category__title {
-    font-size: var(--fs-md);
-    font-family: var(--font-primary-bold);
-    color: var(--white);
-}
-.navbar_product_category__title--client {
-    font-size: var(--fs-md);
-    font-family: var(--font-primary-bold);
-    color: var(--white);
-    margin-left: 2.4rem;
-}
-.navbar_product_category__title--SenaMerch {
-    font-size: 0; 
-    font-family: var(--font-primary-bold);
-    color: var(--white);
-}
-.navbar_product_category__letter {
-    display: inline-block;
-    font-size: var(--fs-md);
-    font-family: var(--font-primary-bold);
-}
-.navbar_product_category__actions {
-    display: flex;
-    align-items: center;
-    /* gap: var(--gap-md); */
-}
+/* Imagen logo */
 .navbar_product_category__img {
     width: 48px;
     height: 48px;
     vertical-align: -12px;
     margin-left: 2.4rem;
-
 }
-.navbar_product_category__letter--1 { color: var(--secundary-400); }
-.navbar_product_category__letter--2 { color: var(--white); }
-.navbar_product_category__letter--3 { color: var(--secundary-400); }
-.navbar_product_category__letter--4 { color: var(--white); }
-.navbar_product_category__letter--5 { color: var(--secundary-400); }
-.navbar_product_category__letter--6 { color: var(--white); }
-.navbar_product_category__letter--7 { color: var(--secundary-400); }
-.navbar_product_category__letter--8 { color: var(--white); }
-.navbar_product_category__letter--9 { color: var(--secundary-400); }
+
+/* Título SenaMerch */
+.navbar_product_category__title--SenaMerch {
+    font-size: 0; 
+    font-family: var(--font-primary-bold);
+    color: var(--white);
+}
+
+.navbar_product_category__letter {
+    display: inline-block;
+    font-size: var(--fs-md);
+    font-family: var(--font-primary-bold);
+}
+
+.navbar_product_category__letter--1 { color: var(--secundary-300); }
+.navbar_product_category__letter--2 { color: var(--secundary-300); }
+.navbar_product_category__letter--3 { color: var(--secundary-300); }
+.navbar_product_category__letter--4 { color: var(--secundary-300); }
+.navbar_product_category__letter--5 { color: var(--secundary-300); }
+.navbar_product_category__letter--6 { color: var(--secundary-300); }
+.navbar_product_category__letter--7 { color: var(--secundary-300); }
+.navbar_product_category__letter--8 { color: var(--secundary-300); }
+.navbar_product_category__letter--9 { color: var(--secundary-300); }
+
+/* Actions (login, register, contact) */
 .navbar_product_category__actions {
     display: flex;
     align-items: center;
 }
+
 .navbar_product_category__link {
     font-size: var(--fs-xs);
     font-family: var(--font-primary-semibold);
@@ -96,29 +79,20 @@
     transition: all 0.2s ease-in-out;
     margin-right: 2rem;
 }
-.navbar_product_category__link--client {
-    font-size: var(--fs-xs);
-    font-family: var(--font-primary-semibold);
-    color: var(--secundary-950);
-    text-decoration: none;
-    padding: 8px 12px;
-    border-radius: 6px;
-    transition: all 0.2s ease-in-out;
-}
+
 .navbar_product_category__link:hover {
     background-color: var(--tertiary-800);
     color: var(--white);
 }
-.navbar_product_category__link--client:hover {
-    background-color: var(--tertiary-900);
-    color: var(--secundary-200);
-}
+
 .navbar_product_category__link.active {
     background-color: var(--primary-300);
     color: var(--primary-950);
     font-family: var(--font-primary-bold);
     border-bottom: 2px solid var(--primary-700);
 }
+
+/* Iconos */
 .navbar_product_category__icon {
     width: 24px;
     height: 24px;
@@ -126,6 +100,7 @@
     margin-left: 0; 
     vertical-align: -4px;
 }
+
 .navbar_product_category__link--icon-nav-bar {
     display: flex;
     align-items: center;
@@ -133,6 +108,8 @@
     padding: 6px; 
     position: relative; 
 }
+
+/* Tooltip */
 .navbar_product_category__tooltip {
     position: absolute;
     bottom: -38px;
@@ -151,32 +128,171 @@
     transition: opacity 0.2s ease-in-out;
     z-index: 20;
 }
+
 .navbar_product_category__link--icon-nav-bar:hover 
 .navbar_product_category__tooltip {
     opacity: 1;
 }
+
+/* Responsive navbar principal */
 @media (max-width: 768px) {
     .navbar_product_category {
         flex-direction: column;
         align-items: flex-start;
         gap: var(--gap-sm);
     }
+
     .navbar_product_category__title {
         font-size: var(--fs-md);
     }
+}
+@media (max-width: 768px) {
+
+  .navbar_product_category {
+    flex-direction: column;
+    align-items: stretch;
+    padding: var(--gap-sm);
+  }
+
+  .navbar_left_group {
+    justify-content: center;
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .navbar_product_category__actions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--gap-xs);
+    margin-top: var(--gap-xs);
+  }
+
+  .navbar_product_category__link {
+    margin-right: 0; /* QUITA el desbordamiento */
+  }
+
 }
 @media (max-width: 640px) {
     .navbar_product_category__actions {
         flex-wrap: wrap;
         gap: var(--gap-xs);
     }
+
     .navbar_product_category__link {
         width: auto;
     }
+
     .navbar_product_category {
         height: 100%;
         min-height: 120px;
-
         max-height: none;
     }
+}
+@media (max-width: 640px) {
+
+    .navbar_product_category {
+        height: auto;        /* 🔥 importante */
+        min-height: auto;    /* 🔥 quita la altura fija */
+        max-height: none;
+    }
+
+    .navbar_product_category__actions {
+        flex-wrap: wrap;
+        gap: var(--gap-xs);
+    }
+
+    .navbar_product_category__link {
+        margin-right: 0;     /* evita empujes innecesarios */
+    }
+}
+
+
+/* =======================================================
+   COMPONENTE 1 — NAVBAR CATEGORÍAS (.navbar_product_category--client)
+   ======================================================= */
+
+.navbar_product_category--client {
+    width: 100%;
+    padding: var(--gap-xxs);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 48px;
+    background-color: var(--secundary-950);
+    font-family: var(--font-primary);
+    border: 2px solid var(--secundary-400);
+}
+
+/* Títulos */
+.navbar_product_category__title {
+    font-size: var(--fs-md);
+    font-family: var(--font-primary-bold);
+    color: var(--white);
+}
+
+.navbar_product_category__title--client {
+    font-size: var(--fs-md);
+    font-family: var(--font-primary-bold);
+    color: var(--white);
+    margin-left: 2.4rem;
+}
+
+/* Link variante cliente */
+.navbar_product_category__link--client {
+    font-size: var(--fs-xs);
+    font-family: var(--font-primary-semibold);
+    color: var(--secundary-950);
+    text-decoration: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.navbar_product_category__link--client:hover {
+    background-color: var(--tertiary-900);
+    color: var(--secundary-200);
+}
+
+@media (max-width: 768px) {
+
+  .navbar_product_category--client {
+    flex-direction: column;
+    align-items: center;
+    border-radius: 24px;
+  }
+
+  .navbar_product_category--client .navbar_product_category__actions {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: var(--gap-xs);
+    padding-bottom: 6px;
+    scrollbar-width: none; /* Firefox */
+  }
+
+  .navbar_product_category--client 
+  .navbar_product_category__actions::-webkit-scrollbar {
+    display: none; /* Chrome */
+  }
+
+  .navbar_product_category__link--icon-nav-bar {
+    flex: 0 0 auto;
+  }
+
+}
+@media (max-width: 768px) {
+
+  .navbar_product_category--client {
+    height: auto;        /* 🔥 elimina cualquier altura fija */
+    min-height: auto;    /* 🔥 permite que crezca */
+    align-items: flex-start;
+  }
+
+  .navbar_product_category--client 
+  .navbar_product_category__actions {
+    flex-wrap: wrap;     /* permite que bajen correctamente */
+    justify-content: center;
+  }
+
 }

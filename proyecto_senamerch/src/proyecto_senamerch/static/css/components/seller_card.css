@@ -126,3 +126,25 @@
     justify-content: flex-start;
   }
 }
+
+.product-card--disabled .product-card__content {
+    opacity: 0.5;
+    filter: grayscale(60%);
+}
+
+.disabled-link {
+    pointer-events: none;
+}
+
+.disabled-label {
+    font-weight: 600;
+    color: #c0392b;
+    margin-bottom: 8px;
+}
+
+.product-seller__gestor{
+  border: solid 2px var(--secundary-400);
+}
+.btn--success{
+  border: solid 2px var(--secundary-400);
+}

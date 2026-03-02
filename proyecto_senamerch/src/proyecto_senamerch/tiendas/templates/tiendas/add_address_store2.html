@@ -1,0 +1,102 @@
+{% extends 'index_create_store.html' %}
+{% load static %}
+
+{% block title %}Completar Dirección Tienda{% endblock %}
+
+{% block content %}
+<section class="address-store-form">
+  <div class="address-store-form__wrapper">
+
+    <header class="address-store-form__header">
+      <h2 class="address-store-form__title">Completa la dirección de tu tienda</h2>
+      <p class="address-store-form__subtitle">
+        Ingresa los datos restantes para registrar la dirección en <strong>SENA MERCH</strong>.
+      </p>
+    </header>
+
+    {% if messages %}
+      <div class="address-store-form__messages">
+        {% for message in messages %}
+          <p class="address-store-form__error">{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form class="address-store-form__form" method="post" id="storeAddressForm2">
+      {% csrf_token %}
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Departamento</label>
+        <select name="department" class="address-store-form__input" required>
+          <option value="">Selecciona...</option>
+          <option value="Risaralda">Risaralda</option>
+          <option value="Quindío">Quindío</option>
+          <option value="Caldas">Caldas</option>
+        </select>
+      </div>
+
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Municipio</label>
+        <input 
+          type="text"
+          name="city"
+          placeholder="Ej: Pereira"
+          class="address-store-form__input"
+          required
+        >
+      </div>
+
+      <div class="address-store-form__group address-store-form__group--full">
+        <label class="address-store-form__label">Información adicional</label>
+        <input 
+          type="text"
+          name="additional_info"
+          placeholder="Apartamento, interior, referencias..."
+          class="address-store-form__input"
+        >
+      </div>
+
+      <div class="address-store-form__secondary">
+        <a href="{% url 'tiendas:add_address_store' %}" class="btn-secundary btn-secundary-style">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
+        </a>
+      </div>
+      <div class="address-store-form__buttons">
+        <button type="submit" class="btn btn--primary">
+          Guardar
+          <img src="{% static 'assets/icons/save.svg' %}" 
+               alt=""
+               class="btn__icon edit-profile-admin__icon"
+               aria-hidden="true"/>
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>
+
+<script>
+const form2 = document.getElementById('storeAddressForm2');
+
+form2.addEventListener('submit', function(e){
+
+  const department = document.querySelector('[name="department"]').value;
+  const city = document.querySelector('[name="city"]').value.trim();
+
+  if (!department || !city) {
+    e.preventDefault();
+    alert("Debes completar departamento y municipio");
+  }
+
+  if (city.length < 3) {
+    e.preventDefault();
+    alert("El municipio debe tener al menos 3 caracteres");
+  }
+});
+</script>
+
+{% endblock %}

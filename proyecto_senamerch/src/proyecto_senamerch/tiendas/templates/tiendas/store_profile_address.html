@@ -29,6 +29,12 @@
       </div>
 
       <div class="admin-profile__field">
+        <span class="admin-profile__label">Número / Dirección:</span>
+        <span class="admin-profile__value">{{ direccion.numero_direccion|default:"No registrado" }}</span>
+      </div>
+
+
+      <div class="admin-profile__field">
         <span class="admin-profile__label">Tipo de vía:</span>
         <span class="admin-profile__value">{{ direccion.tipo_via }}</span>
       </div>

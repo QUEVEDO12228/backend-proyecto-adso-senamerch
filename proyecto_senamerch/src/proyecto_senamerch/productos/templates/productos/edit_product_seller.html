@@ -65,12 +65,20 @@
         <a href="{% url 'tiendas:seller_catalog' %}"
            class="btn-secundary btn-secundary-style edit-product-one__cancel">
           Cancelar
+          <img src="{% static 'assets/icons/cancel.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
         </a>
       </div>
 
       <div class="edit-product-one__buttons">
         <button type="submit" class="btn btn--primary edit-product-one__continue">
           Siguiente
+          <img src="{% static 'assets/icons/continue.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
         </button>
       </div>
 

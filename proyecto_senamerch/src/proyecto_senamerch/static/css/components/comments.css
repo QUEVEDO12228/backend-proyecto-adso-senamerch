@@ -103,3 +103,45 @@
         min-width: 100%;
     }
 }
+.comments-users-sidebar {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 360px;
+  max-width: 90%;
+  height: 100vh;
+  background: var(--secundary-900);
+  border: solid 2px var(--secundary-400);
+  box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  padding: var(--gap-lg);
+  transition: left 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+.comments-users-sidebar--active {
+  left: 0;
+}
+
+.comments-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 998;
+}
+
+.comments-overlay--active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.comments-users-sidebar__actions-wrapper {
+  margin-bottom: 2.4rem;
+}
+.comments-users-sidebar__actions {
+  margin-top: 2.4rem; /* sigue pegado al fondo */
+}

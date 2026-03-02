@@ -1,5 +1,5 @@
 {% extends 'index_create_store.html' %}
-
+{% load static %}
 {% block content %}
 
 <section class="create-store-one">
@@ -75,13 +75,21 @@
       <div class="create-store-one__secondary">
         <a href="{% url 'home_client' %}"
            class="btn-secundary btn-secundary-style create-store-one__gestor">
-          Volver
+          Cancelar
+          <img src="{% static 'assets/icons/cancel.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
         </a>
       </div>
 
       <div class="create-store-one__buttons">
         <button type="submit" class="btn btn--primary create-store-one__continue">
           Siguiente
+          <img src="{% static 'assets/icons/continue.svg' %}" 
+               alt=""
+               class="btn__icon edit-profile-admin__icon"
+               aria-hidden="true"/>
         </button>
       </div>
     </form>

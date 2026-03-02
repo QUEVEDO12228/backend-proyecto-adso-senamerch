@@ -3,7 +3,8 @@
   grid-template-columns: 40% 60%;   /* buscador | categorías */
   align-items: center;
   gap: 1rem;
-  margin:2.4rem;
+  margin-top:2.4rem;
+  margin-right:2.4rem;
 }
 
 .search-bar-container {

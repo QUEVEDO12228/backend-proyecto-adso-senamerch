@@ -163,3 +163,8 @@
     align-items: start;
   }
 }
+
+.address-store-form__input{
+  max-height: 56px;
+  min-height: 56px;
+}
