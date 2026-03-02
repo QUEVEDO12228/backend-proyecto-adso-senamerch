@@ -81,6 +81,7 @@ def create_store_view(request):
 def create_store2(request):
 
     store_data = request.session.get('store_data')
+    store_address = request.session.get('store_address')
 
     if not store_data:
         messages.error(request, 'Debes completar el paso 1.')
@@ -88,9 +89,18 @@ def create_store2(request):
 
     if request.method == 'POST':
 
-        descripcion = request.POST.get('descripcion', '').strip()
-        imagen = request.FILES.get('imagen')
+        if not store_address:
+            messages.error(request, 'Debes agregar la dirección.')
+            return redirect('tiendas:add_address_store')
 
+        descripcion = request.POST.get('description', '').strip()
+        imagen = request.FILES.get('cover')
+
+        if not descripcion or not imagen:
+            messages.error(request, 'Todos los campos son obligatorios.')
+            return redirect('tiendas:create_store2')
+
+        # 🔥 AQUÍ SE CREA TODO JUNTO
         Tienda.objects.create(
             propietario=request.user,
             nombre=store_data['name'],
@@ -98,16 +108,24 @@ def create_store2(request):
             telefono=store_data['phone'],
             categoria=store_data['category'],
             descripcion=descripcion,
-            imagen_portada=imagen
+            imagen_portada=imagen,
+
+            barrio=store_address['neighborhood'],
+            tipo_via=store_address['road_type'],
+            codigo_postal=store_address['postal_code'],
+            departamento=store_address['department'],
+            municipio=store_address['city'],
+            informacion_adicional=store_address['additional_info'],
         )
 
-        request.session.pop('store_data')
+        # 🔥 LIMPIAR SESIÓN
+        request.session.pop('store_data', None)
+        request.session.pop('store_address', None)
 
         messages.success(request, 'Tienda creada correctamente.')
         return redirect('home_client')
 
     return render(request, 'tiendas/create_store2.html')
-
 
 # =====================================================
 # DIRECCIÓN TIENDA - PASO 1
@@ -155,6 +173,43 @@ def add_address_store(request):
         return redirect('tiendas:add_address_store2')
 
     return render(request, 'tiendas/add_address_store.html')
+@login_required
+def add_address_store2(request):
+
+    step_1 = request.session.get('store_address_step_1')
+
+    if not step_1:
+        messages.error(request, 'Debes completar el paso anterior.')
+        return redirect('tiendas:add_address_store')
+
+    if request.method == 'POST':
+        department = request.POST.get('department', '').strip()
+        city = request.POST.get('city', '').strip()
+        additional_info = request.POST.get('additional_info', '').strip()
+
+        if not department or not city:
+            messages.error(request, 'Departamento y municipio obligatorios.')
+            return redirect('tiendas:add_address_store2')
+
+        if len(city) < 3:
+            messages.error(request, 'El municipio debe tener mínimo 3 caracteres.')
+            return redirect('tiendas:add_address_store2')
+
+        # 🔥 GUARDAR TODA LA DIRECCIÓN EN SESIÓN
+        request.session['store_address'] = {
+            **step_1,
+            'department': department,
+            'city': city,
+            'additional_info': additional_info,
+        }
+
+        request.session.modified = True
+        request.session.pop('store_address_step_1', None)
+
+        # 🔥 VOLVER A CREATE_STORE2
+        return redirect('tiendas:create_store2')
+
+    return render(request, 'tiendas/add_address_store2.html')
 
 
 @login_required
@@ -175,12 +230,18 @@ def profile_store_seller(request):
 def store_orders(request):
     return render(request, 'tiendas/seller_catalog.html')
 
+@login_required
 def seller_catalog(request):
-    productos = Producto.objects.filter(tienda__propietario=request.user)
-    return render(request, 'tiendas/seller_card.html', {
-        'productos': productos
-    })
+    tienda = Tienda.objects.filter(propietario=request.user).first()
 
+    productos = Producto.objects.filter(
+        tienda__propietario=request.user
+    )
+
+    return render(request, 'tiendas/seller_card.html', {
+        'productos': productos,
+        'tienda': tienda   # 👈 IMPORTANTE
+    })
 
 @login_required
 def edit_seller_profile(request):
@@ -413,54 +474,6 @@ def edit_store_seller2(request):
 # ==========================================
 # EDITAR TIENDA - PASO 2
 # ==========================================
-@login_required
-def add_address_store2(request):
-
-    step_1 = request.session.get('store_address_step_1')
-
-    if not step_1:
-        messages.error(request, 'Debes completar el paso anterior.')
-        return redirect('tiendas:add_address_store')
-
-    if request.method == 'POST':
-
-        department = request.POST.get('department', '').strip()
-        city = request.POST.get('city', '').strip()
-        additional_info = request.POST.get('additional_info', '').strip()
-
-        if not department or not city:
-            messages.error(request, 'Departamento y municipio obligatorios.')
-            return redirect('tiendas:add_address_store2')
-
-        if len(city) < 3:
-            messages.error(request, 'El municipio debe tener mínimo 3 caracteres.')
-            return redirect('tiendas:add_address_store2')
-
-        # 🔥 TRAER LA TIENDA DEL USUARIO
-        tienda = Tienda.objects.filter(propietario=request.user).first()
-
-        if not tienda:
-            messages.error(request, "Primero debes crear la tienda.")
-            return redirect('tiendas:create_store')
-
-        # 🔥 GUARDAR DIRECCIÓN EN LA TIENDA
-        tienda.barrio = step_1['neighborhood']
-        tienda.tipo_via = step_1['road_type']
-        tienda.codigo_postal = step_1['postal_code']
-        tienda.departamento = department
-        tienda.municipio = city
-        tienda.informacion_adicional = additional_info
-
-        tienda.save()
-
-        # Limpiar sesión
-        request.session.pop('store_address_step_1', None)
-
-        messages.success(request, 'Dirección guardada correctamente.')
-
-        return redirect('tiendas:store_address')
-
-    return render(request, 'tiendas/add_address_store2.html')
 
 @login_required
 def store_address_view(request):
@@ -485,3 +498,105 @@ def profile_store_client(request, id):
         "tienda": tienda
     })
 
+# ==========================================
+# EDITAR DIRECCIÓN TIENDA - PASO 1
+# ==========================================
+@login_required
+def edit_address_store(request):
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+
+    if not tienda:
+        messages.error(request, "Primero debes crear la tienda.")
+        return redirect('tiendas:create_store')
+
+    if request.method == "POST":
+        neighborhood = request.POST.get("neighborhood", "").strip()
+        address_number = request.POST.get("address_number", "").strip()
+        road_type = request.POST.get("road_type", "").strip()
+        postal_code = request.POST.get("postal_code", "").strip()
+
+        if not neighborhood or not address_number:
+            messages.error(request, "Barrio y número de dirección son obligatorios.")
+            return redirect('tiendas:edit_address_store')
+
+        # Guardamos temporal en sesión
+        request.session['edit_store_address_step1'] = {
+            "neighborhood": neighborhood,
+            "address_number": address_number,
+            "road_type": road_type,
+            "postal_code": postal_code,
+        }
+
+        return redirect('tiendas:edit_address_store2')
+
+    return render(request, "tiendas/add_address_store_edit.html", {
+        "tienda": tienda
+    })
+
+
+# ==========================================
+# EDITAR DIRECCIÓN TIENDA - PASO 2
+# ==========================================
+@login_required
+def edit_address_store2(request):
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+    step1 = request.session.get("edit_store_address_step1", {})
+
+    if not tienda:
+        return redirect("tiendas:edit_address_store")
+
+    # Lista departamentos igual que vendedor
+    departamentos = ["Risaralda", "Quindío", "Caldas"]
+
+    if request.method == "POST":
+        department = request.POST.get("department", "").strip()
+        city = request.POST.get("city", "").strip()
+        additional_info = request.POST.get("additional_info", "").strip()
+
+        if not department or not city:
+            messages.error(request, "Departamento y municipio son obligatorios.")
+            return render(request, "tiendas/add_address_store_edit2.html", {
+                "tienda": tienda,
+                "form_data": {
+                    "department": department,
+                    "city": city,
+                    "additional_info": additional_info
+                },
+                "departamentos": departamentos
+            })
+
+        # Guardar todo
+        tienda.barrio = step1.get("neighborhood", tienda.barrio)
+        tienda.numero_direccion = step1.get("address_number", tienda.numero_direccion)
+        tienda.tipo_via = step1.get("road_type", tienda.tipo_via)
+        tienda.codigo_postal = step1.get("postal_code", tienda.codigo_postal)
+
+        tienda.departamento = department
+        tienda.municipio = city
+        tienda.informacion_adicional = additional_info
+
+        tienda.save()
+
+        request.session.pop("edit_store_address_step1", None)
+
+        messages.success(request, "Dirección de la tienda actualizada correctamente.")
+        return redirect("tiendas:store_address")
+
+    return render(request, "tiendas/add_address_store_edit2.html", {
+        "tienda": tienda,
+        "form_data": {},
+        "departamentos": departamentos
+    })
+
+@login_required
+def list_products_store_seller(request):
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+
+    productos = Producto.objects.filter(
+        tienda__propietario=request.user
+    ).order_by('-creado_en')
+
+    return render(request, 'tiendas/list_products_store_seller.html', {
+        'productos': productos,
+        'tienda': tienda   # 👈 IMPORTANTE
+    })

@@ -1,4 +1,5 @@
 {% load static %}
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,40 +10,55 @@
 
 <body>
 
-{% include 'components/navabar_go_go.html' %}
-{% include 'components/navbar_seller_view.html' %}
+  <!-- Navbar -->
+  {% include 'components/navabar_go_go.html' %}
+  {% include 'components/navbar_seller_view.html' %}
 
-<section class="comments_users">
-    {% include 'components/comments.html' %}
-</section>
+  <!-- Sidebar de comentarios -->
+  <section class="comments_users">
+    <div class="comments-userss-container">
+      {% include 'components/comments.html' %}
+    </div>
+    <div class="comments-overlay"></div>
+  </section>
 
-<section class="seller-hero-store">
+  <!-- Hero -->
+  <section class="seller-hero-store">
     {% include 'components/hero_seller.html' %}
-</section>
+  </section>
 
-<section class="section-footer-content">
+  <!-- Contenido principal -->
+  <section class="section-footer-content">
 
+    <!-- Buscador -->
     <section class="seeker_products_list">
-        {% include 'components/search_bar.html' %}
+      {% include 'components/search_bar.html' %}
     </section>
 
+    <!-- Lista de productos del vendedor -->
     <section class="sellers_product_list">
-        {% include 'components/list_product_seller.html' %}
+      {% include 'components/list_product_seller.html' %}
     </section>
 
-    <!-- 🔥 AQUI VAN LAS CARDS -->
+    <!-- Productos -->
     <section class="products-cards">
-        <div class="seller-cards__container">
-            {% block main_content %}
-            {% endblock %}
-        </div>
+      <div class="seller-cards__container">
+        {% block main_content %}
+        {% endblock %}
+      </div>
     </section>
 
-</section>
+  </section>
 
-{% include 'components/footer.html' %}
-{% include 'components/footer_go_go.html' %}
+  <!-- Footer -->
+  {% include 'components/footer.html' %}
+  {% include 'components/footer_go_go.html' %}
+
+  <!-- ✅ CARGA CORRECTA DEL JS (ES MODULE) -->
+  <script type="module">
+    import { initCommentsSidebar } from "{% static 'js/comments.js' %}";
+    initCommentsSidebar();
+  </script>
 
 </body>
 </html>
-

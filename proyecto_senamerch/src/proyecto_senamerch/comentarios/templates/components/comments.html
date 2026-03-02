@@ -1,0 +1,34 @@
+{% load static %}
+
+<aside class="comments-users-sidebar">
+  <div class="comments-users-sidebar__header">
+    <span>Comentarios</span>
+    <button type="button" class="comments-users-sidebar__close-btn">✕</button>
+  </div>
+
+  <div id="commentsSidebarBody" class="comments-users-sidebar__body">
+    <form id="commentForm" method="POST">
+      {% csrf_token %}
+      <input type="hidden" id="producto_id" name="producto_id">
+
+      <label class="comments-users-sidebar__label">
+        Escribe tu comentario
+      </label>
+
+      <textarea
+        name="texto"
+        class="comments-users-sidebar__textarea"
+        placeholder="Cuéntanos tu opinión..."
+        required></textarea>
+
+      <div class="comments-users-sidebar__actions">
+        <button type="submit" class="btn btn--primary comments-users-sidebar__pay">
+          Enviar comentario
+          <img src="{% static 'assets/icons/contact.svg' %}"
+               class="btn__icon comments-users-sidebar__icon"
+               alt="">
+        </button>
+      </div>
+    </form>
+  </div>
+</aside>

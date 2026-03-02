@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'productos',
     'carrito',
     'pedidos',
+    'comentarios',
 ]
 
 
@@ -147,3 +148,10 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
+# settings.py
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_HTTPONLY = False
+CSRF_HEADER_NAME = 'X-Csrftoken'  # Asegúrate de que el nombre del encabezado esté configurado correctamente

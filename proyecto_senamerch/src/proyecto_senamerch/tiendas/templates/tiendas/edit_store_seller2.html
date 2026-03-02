@@ -19,12 +19,12 @@
       <div class="edit-store-seller__group">
         <label class="edit-store-seller__label">Dirección de la tienda</label>
         <a
-          href="view_add_adress_store_edit.html"
+          href="{% url 'tiendas:edit_address_store' %}"
           class="edit-store-seller__link"
-          >Editar dirección</a
         >
+          Editar dirección
+        </a>
       </div>
-
       <div class="edit-store-seller__group">
         <label class="edit-store-seller__label">Imagen de portada</label>
         <input type="file"

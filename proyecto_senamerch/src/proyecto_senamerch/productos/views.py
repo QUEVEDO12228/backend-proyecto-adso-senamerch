@@ -4,11 +4,17 @@ from tiendas.models import Tienda
 from .models import Producto, ImagenProducto
 from datetime import datetime
 from django.shortcuts import render, redirect, get_object_or_404
+from .models import Producto
+from comentarios.models import Comentario
 
 # 🔹 PASO 1
 @login_required
 def create_product(request):
     if request.method == "POST":
+        categoria = request.POST.get("categoria")
+
+        if not categoria:
+            return redirect("productos:create_product")
 
         request.session['product_data'] = {
             "nombre": request.POST.get("name"),
@@ -265,9 +271,26 @@ def edit_product_step4(request, id):
         "imagenes": imagenes
     })
 
+@login_required
 def description_product_seller(request, id):
-    producto = Producto.objects.get(id=id)
-    return render(request, "productos/description_product_seller.html", {"producto": producto})
+    producto = get_object_or_404(Producto, id=id)
+    
+    if request.method == "POST":
+        texto = request.POST.get("comentario", "").strip()
+        if texto:
+            Comentario.objects.create(
+                producto=producto,
+                usuario=request.user,
+                texto=texto
+            )
+            return redirect('productos:description_product_seller', id=producto.id)
+
+    comentarios = producto.comentarios.order_by('-creado_en')  # Relacion inversa
+
+    return render(request, "productos/description_product_seller.html", {
+        "producto": producto,
+        "comentarios": comentarios
+    })
 
 def description_product_client(request, id):
     producto = get_object_or_404(Producto, id=id)
@@ -285,3 +308,23 @@ def buy_product(request, id):
     # por ahora redirigimos al detalle o al carrito
 
     return redirect("productos:description_product_client", id=producto.id) 
+
+from django.contrib import messages
+
+@login_required
+def toggle_product_status(request, producto_id):
+    producto = get_object_or_404(
+        Producto,
+        id=producto_id,
+        tienda__propietario=request.user
+    )
+
+    producto.activo = not producto.activo
+    producto.save()
+
+    if producto.activo:
+        messages.success(request, "Producto habilitado correctamente.")
+    else:
+        messages.warning(request, "Producto deshabilitado correctamente.")
+
+    return redirect('productos:description_product_seller', producto.id)

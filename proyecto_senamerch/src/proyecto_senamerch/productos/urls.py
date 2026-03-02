@@ -51,6 +51,11 @@ urlpatterns = [
         views.buy_product,
         name="buy_product"
     ),
+    path(
+        'toggle-product/<int:producto_id>/',
+        views.toggle_product_status,
+        name='toggle_product_status'
+    ),
 ]
 
 if settings.DEBUG:

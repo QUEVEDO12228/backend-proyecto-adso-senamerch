@@ -71,11 +71,19 @@
                 <a href="{% url 'productos:edit_product_step3' producto.id %}"
                    class="btn-secundary btn-secundary-style image-upload__cancel">
                     Volver
+                    <img src="{% static 'assets/icons/return.svg' %}" 
+                        alt=""
+                        class="btn-secundary__icon"
+                        aria-hidden="true"/>
                 </a>
 
                 <button type="submit"
                         class="btn btn--primary image-upload__submit">
                     Guardar cambios
+                    <img src="{% static 'assets/icons/save.svg' %}" 
+                    alt=""
+                    class="btn-secundary__icon"
+                    aria-hidden="true"/>
                 </button>
 
             </div>

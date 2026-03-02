@@ -97,6 +97,7 @@
   font-size: var(--fs-xxxs);
   font-family: var(--font-primary-bold);
   color: var(--black);
+  font-size: 12px ¡important!;
 }
 .address-store-form__input {
   padding: var(--padding-top) var(--padding-right) var(--padding-bottom)
@@ -160,4 +161,9 @@
     flex-direction: column;
     align-items: start;
   }
+}
+
+label{
+  font-size: 12px ¡important!;
+
 }

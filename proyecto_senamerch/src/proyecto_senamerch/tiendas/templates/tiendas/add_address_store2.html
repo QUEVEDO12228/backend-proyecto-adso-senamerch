@@ -26,7 +26,7 @@
       {% csrf_token %}
 
       <div class="address-store-form__group">
-        <label>Departamento</label>
+        <label class="address-store-form__label">Departamento</label>
         <select name="department" class="address-store-form__input" required>
           <option value="">Selecciona...</option>
           <option value="Risaralda">Risaralda</option>
@@ -36,7 +36,7 @@
       </div>
 
       <div class="address-store-form__group">
-        <label>Municipio</label>
+        <label class="address-store-form__label">Municipio</label>
         <input 
           type="text"
           name="city"
@@ -47,7 +47,7 @@
       </div>
 
       <div class="address-store-form__group address-store-form__group--full">
-        <label>Información adicional</label>
+        <label class="address-store-form__label">Información adicional</label>
         <input 
           type="text"
           name="additional_info"

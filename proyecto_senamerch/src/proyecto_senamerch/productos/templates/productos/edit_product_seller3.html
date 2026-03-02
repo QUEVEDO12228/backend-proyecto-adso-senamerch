@@ -36,6 +36,10 @@
           <a href="{% url 'productos:edit_product_step2' producto.id %}"
              class="btn-secundary btn-secundary-style edit-post-two__cancel">
             Volver
+            <img src="{% static 'assets/icons/return.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
           </a>
         </div>
       </div>
@@ -44,6 +48,10 @@
         <div class="edit-post-two__buttons">
           <button type="submit" class="btn btn--primary edit-post-two__save">
             Siguiente
+            <img src="{% static 'assets/icons/continue.svg' %}" 
+               alt=""
+               class="btn-secundary__icon"
+               aria-hidden="true"/>
           </button>
         </div>
       </div>

@@ -25,12 +25,12 @@
     <!-- MINIATURAS -->
     <div class="product-admin-description__thumbnails">
       {% for imagen in producto.imagenes.all %}
-        <img src="{{ imagen.imagen.url }}"
+        <img src="{{ imagen.imagen.url }}" 
              class="product-admin-description__thumbnail"
-             onclick="changeMainImage(this)">
+             onclick="changeMainImage(this)" />
       {% empty %}
-        <img src="{% static 'assets/img/default-product.jpg' %}"
-             class="product-admin-description__thumbnail">
+        <img src="{% static 'assets/img/default-product.jpg' %}" 
+             class="product-admin-description__thumbnail" />
       {% endfor %}
     </div>
 
@@ -38,24 +38,31 @@
     <div class="product-admin-description__comments seller-comments">
       <h3 class="comments__title">Opiniones de los usuarios</h3>
 
-      <div class="seller-comments__list">
-        <div class="seller-comments__item">
-          <p class="seller-comments__user">
-            Usuario Demo <span class="comments__date">• Hace 2 días</span>
-          </p>
-          <p class="seller-comments__text">
-            Excelente producto.
-          </p>
-        </div>
+      <form id="formComentario" data-producto-id="{{ producto.id }}">
+        {% csrf_token %}
+        <label for="comentario">Escribe tu comentario</label>
+        <textarea id="comentario" name="comentario" class="comments-users-sidebar__textarea" required></textarea>
+        <button type="submit" class="btn btn--primary comments-users-sidebar__pay">
+          Enviar comentario
+          <img src="{% static 'assets/icons/contact.svg' %}" alt="Icono enviar" class="btn__icon comments-users-sidebar__icon"/>
+        </button>
+      </form>
+
+      <div id="listaComentarios" class="seller-comments__list">
+        {% for comentario in comentarios %}
+          <div class="seller-comments__item">
+            <p class="seller-comments__user">{{ comentario.usuario.username }} <span class="comments__date">• {{ comentario.creado_en|timesince }} atrás</span></p>
+            <p class="seller-comments__text">{{ comentario.texto }}</p>
+          </div>
+        {% empty %}
+          <p>No hay comentarios aún.</p>
+        {% endfor %}
 
         <div class="seller-comments__secondary">
-          <a href="{% url 'productos:edit_product_seller' producto.id %}"
-             class="btn-secundary btn-secundary-style seller-comments__edit">
+          <button class="btn-secundary btn-secundary-style seller-comments__edit">
             Editar producto
-            <img src="{% static 'assets/icons/edit.svg' %}" 
-                 alt=""
-                 class="btn-secundary__icon">
-          </a>
+            <img src="{% static 'assets/icons/edit.svg' %}" alt="Icono editar" class="btn-secundary__icon">
+          </button>
         </div>
       </div>
     </div>
@@ -64,72 +71,45 @@
   <!-- DETALLES DEL PRODUCTO -->
   <div class="product-admin-description__details seller-details">
 
-    <!-- ACCIONES -->
+    <!-- BOTONES ADMIN -->
     <div class="seller-details__actions">
-      <p class="product-admin-description__status">
-        Estado: 
-        {% if producto.activo %}
-          Activo
-        {% else %}
-          Deshabilitado
-        {% endif %}
-      </p>
-
-      <button class="btn btn--warning product-admin-description__suspend">
-        Deshabilitar producto
-        <img src="{% static 'assets/icons/off.svg' %}" class="btn__icon" />
-      </button>
+      <p class="product-admin-description__status"> Estado: {% if producto.activo %}Activo{% else %}Deshabilitado{% endif %}</p>
+      {% if producto.activo %}
+        <button class="btn btn--warning product-admin-description__suspend">
+          Deshabilitar producto
+          <img src="{% static 'assets/icons/off.svg' %}" class="btn__icon" />
+        </button>
+      {% else %}
+        <button class="btn btn--success product-admin-description__suspend">
+          Habilitar producto
+          <img src="{% static 'assets/icons/enabled.svg' %}" class="btn__icon" />
+        </button>
+      {% endif %}
     </div>
 
     <!-- RATING -->
     <div class="seller-details__rating rating">
-      <p class="rating__text">
-        ★ ★ ★ ★ ★ <span class="rating__score">(4.5/5)</span>
-      </p>
+      <p class="rating__text">★ ★ ★ ★ ★ <span class="rating__score">(4.5/5)</span></p>
     </div>
 
-    <!-- INFORMACIÓN PRINCIPAL -->
+    <!-- INFORMACIÓN DEL PRODUCTO -->
     <h2 class="seller-details__title">{{ producto.nombre }}</h2>
-    <p class="seller-details__price">$ {{ producto.precio }} / kilo</p>
+    <p class="seller-details__price">${{ producto.precio }} / kilo</p>
 
-    <!-- INFORMACIÓN PROFUNDA -->
     <div class="seller-info">
-      <h3 class="seller-info__subtitle">
-        Lo que necesitas saber de este producto
-      </h3>
+      <h3 class="seller-info__subtitle">Lo que necesitas saber de este producto</h3>
 
-      <p class="seller-info__text">
-        <strong>Unidad de medida:</strong> {{ producto.unidad_medida }}
-      </p>
-
-      <p class="seller-info__text">
-        <strong>Tipo de garantía:</strong> {{ producto.tipo_garantia }}
-      </p>
-
-      <p class="seller-info__text">
-        <strong>Descripción:</strong> {{ producto.descripcion }}
-      </p>
-
-      <p class="seller-info__text">
-        <strong>Fecha caducidad:</strong> {{ producto.fecha_caducidad }}
-      </p>
-
-      <p class="seller-info__text">
-        <strong>Tipo de envío:</strong> {{ producto.tipo_envio }}
-      </p>
-
-      <p class="seller-info__text">
-        <strong>Método de pago:</strong> {{ producto.metodo_pago }}
-      </p>
-
-      <p class="seller-info__text">
-        <strong>Descuento:</strong> {{ producto.descuento }} %
-      </p>
+      <p class="seller-info__text"><strong>Unidad de medida: </strong>{{ producto.unidad_medida }}</p>
+      <p class="seller-info__text"><strong>Tipo de garantía: </strong>{{ producto.tipo_garantia }}</p>
+      <p class="seller-info__text"><strong>Descripción: </strong>{{ producto.descripcion }}</p>
+      <p class="seller-info__text"><strong>Fecha caducidad: </strong>{{ producto.fecha_caducidad }}</p>
+      <p class="seller-info__text"><strong>Tipo de envío: </strong>{{ producto.tipo_envio }}</p>
+      <p class="seller-info__text"><strong>Método de pago: </strong>{{ producto.metodo_pago }}</p>
+      <p class="seller-info__text"><strong>Descuento: </strong>{{ producto.descuento }}%</p>
     </div>
-
   </div>
-</section>
 
+</section>
 
 <!-- SCRIPT PARA CAMBIAR IMAGEN PRINCIPAL -->
 <script>
@@ -138,5 +118,8 @@ function changeMainImage(element) {
     mainImage.src = element.src;
 }
 </script>
+
+<!-- SCRIPT AJAX COMENTARIOS -->
+<script src="{% static 'js/description_product_seller.js' %}" defer></script>
 
 {% endblock %}
