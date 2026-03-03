@@ -4,7 +4,7 @@
 
   <div class="navbar_left_group">
     <div class="navbar_product_category__actions--left">
-      <a href="{% url 'home' %}" class="navbar_product_category__link-image">
+      <a href="{% url 'usuarios:home' %}" class="navbar_product_category__link-image">
         <img
           src="{% static 'assets/img/sena-logo.png' %}"
           class="navbar_product_category__img"
@@ -40,7 +40,7 @@
   <div class="navbar_product_category__actions">
 
     <!-- INICIAR SESIÓN -->
-    <a href="{% url 'login' %}"
+    <a href="{% url 'usuarios:login' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img
         src="{% static 'assets/icons/login.svg' %}"
@@ -51,7 +51,7 @@
     </a>
 
     <!-- INICIO -->
-    <a href="{% url 'home' %}"
+    <a href="{% url 'usuarios:home' %}"
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img
         src="{% static 'assets/icons/home.svg' %}"
@@ -62,7 +62,7 @@
     </a>
 
     <!-- CONTACTO -->
-    <a href="{% url 'contact' %}"
+    <a href="{% url 'usuarios:contact' %}"
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img
         src="{% static 'assets/icons/contact.svg' %}"

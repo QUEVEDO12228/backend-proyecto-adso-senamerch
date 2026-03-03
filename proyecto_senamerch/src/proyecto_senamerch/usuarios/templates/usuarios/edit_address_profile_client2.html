@@ -1,0 +1,68 @@
+{% extends "index_edit_profile_client.html" %}
+{% load static %}
+
+{% block content %}
+<section class="edit-profile-user">
+  <div class="edit-profile-user__wrapper">
+
+    <header class="edit-profile-user__header">
+      <h1 class="edit-profile-user__title">Completa tu dirección</h1>
+    </header>
+
+    {% if messages %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endif %}
+
+    <form method="POST"
+          action="{% url 'usuarios:edit_address_profile_user2' %}"
+          class="edit-profile-user__form">
+
+      {% csrf_token %}
+
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Departamento</label>
+        <select name="department"
+                class="edit-profile-user__input"
+                required>
+          <option value="">Selecciona...</option>
+          <option value="Risaralda">Risaralda</option>
+          <option value="Quindío">Quindío</option>
+          <option value="Caldas">Caldas</option>
+        </select>
+      </div>
+
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Ciudad</label>
+        <input type="text"
+               name="city"
+               class="edit-profile-user__input"
+               required>
+      </div>
+
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Información adicional</label>
+        <input type="text"
+               name="extra_info"
+               class="edit-profile-user__input">
+      </div>
+
+      <div class="edit-profile-user__secondary">
+        <a href="{% url 'usuarios:edit_address_profile_user' %}"
+           class="btn-secundary btn-secundary-style">
+          Volver
+        </a>
+      </div>
+
+      <div class="edit-profile-user__buttons">
+        <button type="submit"
+                class="btn btn--primary">
+          Guardar dirección
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>
+{% endblock %}

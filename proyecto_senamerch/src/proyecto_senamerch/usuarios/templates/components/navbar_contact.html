@@ -2,7 +2,7 @@
 <nav class="navbar_product_category">
   <div class="navbar_left_group">
     <div class="navbar_product_category__actions--left">
-      <a href="{% url 'home' %}" class="navbar_product_category__link-image">
+      <a href="{% url 'usuarios:home' %}" class="navbar_product_category__link-image">
         <img
           src="{% static 'assets/img/sena-logo.png' %}"
           class="navbar_product_category__img"
@@ -37,7 +37,7 @@
   <div class="navbar_product_category__actions">
 
     <a
-      href="{% url 'login' %}"
+      href="{% url 'usuarios:login' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
     >
       <img
@@ -49,7 +49,7 @@
     </a>
     
     <a
-      href="{% url 'home' %}"
+      href="{% url 'usuarios:home' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
     >
       <img

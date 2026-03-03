@@ -4,7 +4,7 @@
 
   <div class="navbar_left_group">
       <div class="navbar_product_category__actions--left">
-          <a href="{% url 'home_client' %}" class="navbar_product_category__link-image">
+          <a href="{% url 'usuarios:home_client' %}" class="navbar_product_category__link-image">
             <img src="{% static 'assets/img/sena-logo.png' %}" 
                  class="navbar_product_category__img" 
                  alt="Sena Logo">
@@ -30,30 +30,6 @@
                class="navbar_product_category__icon">
         </h1>
       </div>
-  </div>
-
-  <div class="search-bar">
-
-    <button class="search-bar__button" aria-label="Buscar">
-      <span class="search-bar__icon">
-        <img src="{% static 'assets/icons/icon_search.svg' %}" 
-             alt="Buscar" />
-      </span>
-    </button>
-
-    <input 
-      type="text" 
-      class="search-bar__input" 
-      placeholder="Busca productos o tiendas" 
-    />
-
-    <button class="search-bar__button" aria-label="Cancelar búsqueda">
-      <span class="search-bar__icon search-bar__icon--close">
-        <img src="{% static 'assets/icons/icon_cancel.svg' %}" 
-             alt="Cancelar" />
-      </span>
-    </button>
-
   </div>
 
   <div class="navbar_product_category__actions">

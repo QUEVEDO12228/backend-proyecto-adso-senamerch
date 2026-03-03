@@ -4,7 +4,7 @@
 
   <div class="navbar_left_group">
       <div class="navbar_product_category__actions--left">
-          <a href="{% url 'home' %}" class="navbar_product_category__link-image">
+          <a href="{% url 'usuarios:home' %}" class="navbar_product_category__link-image">
             <img src="{% static 'assets/img/sena-logo.png' %}"
                  class="navbar_product_category__img"
                  alt="">
@@ -36,7 +36,7 @@
   <div class="navbar_product_category__actions">
 
 
-    <a href="{% url 'register' %}"
+    <a href="{% url 'usuarios:register' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/register.svg' %}"
             class="navbar_product_category__icon"
@@ -48,7 +48,7 @@
     
 
     <!-- SIEMPRE VISIBLE -->
-    <a href="{% url 'contact' %}"
+    <a href="{% url 'usuarios:contact' %}"
       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/contact.svg' %}"
           class="navbar_product_category__icon"

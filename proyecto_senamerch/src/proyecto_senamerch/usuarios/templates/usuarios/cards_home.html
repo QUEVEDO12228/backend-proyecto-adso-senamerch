@@ -9,7 +9,7 @@
   <div class="product-card__actions">
 
     <!-- Like -->
-    <a href="{% url 'login' %}" class="product-card__like-btn">
+    <a href="{% url 'usuarios:login' %}" class="product-card__like-btn">
       <img src="{% static 'assets/icons/heart.svg' %}" 
            class="product-card__like-icon">
       <span class="product-card__like-tooltip">
@@ -18,7 +18,7 @@
     </a>
 
     <!-- Dislike -->
-    <a href="{% url 'login' %}" class="product-card__like-btn--dislike">
+    <a href="{% url 'usuarios:login' %}" class="product-card__like-btn--dislike">
       <img src="{% static 'assets/icons/heart-off.svg' %}" 
            class="product-card__like-icon--dislike">
       <span class="product-card__dislike-tooltip">
@@ -32,7 +32,7 @@
 
       <ul class="product-card__menu-dropdown">
         <li>
-          <a href="{% url 'login' %}" class="product-card__menu-item">
+          <a href="{% url 'usuarios:login' %}" class="product-card__menu-item">
             Dejar un comentario
             <img src="{% static 'assets/icons/contact.svg' %}" 
                  class="product-card__menu-item-icon"/>
@@ -53,7 +53,7 @@
   </div>
 
   <!-- Logo tienda -->
-  <a href="{% url 'login' %}" class="product-card__profile-store-link">
+  <a href="{% url 'usuarios:login' %}" class="product-card__profile-store-link">
 
     {% if producto.tienda.imagen_portada %}
       <img src="{{ producto.tienda.imagen_portada.url }}"
@@ -72,7 +72,7 @@
   </a>
 
   <!-- Imagen producto -->
-  <a href="{% url 'login' %}" class="product-card__image-link">
+  <a href="{% url 'usuarios:login' %}" class="product-card__image-link">
     <div class="product-card__image-wrapper">
 
       {% with producto.imagenes.first as imagen %}
@@ -98,7 +98,7 @@
 
   <!-- Comprar -->
   <div class="product-card__footer--end">
-    <a href="{% url 'login' %}" 
+    <a href="{% url 'usuarios:login' %}" 
        class="btn btn--primary product-card__pay">
       Comprar
       <img src="{% static 'assets/icons/cash-button.svg' %}"

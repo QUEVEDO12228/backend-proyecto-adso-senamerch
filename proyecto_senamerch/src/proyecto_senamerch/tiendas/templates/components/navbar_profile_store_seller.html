@@ -4,7 +4,7 @@
 
   <div class="navbar_left_group">
       <div class="navbar_product_category__actions--left">
-          <a href="{% url 'home' %}" class="navbar_product_category__link-image">
+          <a href="{% url 'usuarios:home' %}" class="navbar_product_category__link-image">
             <img src="{% static 'assets/img/sena-logo.png' %}" 
                  class="navbar_product_category__img" 
                  alt="">
@@ -52,7 +52,7 @@
     </a>
 
      <!-- 🔹 MIS PEDIDOS COMO USUARIO -->
-    <a href="{% url 'client_orders' %}" 
+    <a href="{% url 'usuarios:client_orders' %}" 
         class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/orders_users.svg' %}" 
             class="navbar_product_category__icon" alt="">
@@ -74,7 +74,7 @@
     </a>
 
     <!-- Salir -->
-    <a href="{% url 'logout' %}" 
+    <a href="{% url 'usuarios:logout' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/exit.svg' %}" 
            class="navbar_product_category__icon" 
