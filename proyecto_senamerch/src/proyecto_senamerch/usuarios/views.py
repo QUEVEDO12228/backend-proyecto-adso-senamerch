@@ -49,6 +49,12 @@ from .models import Profile
 
 from tiendas.models import Tienda
 from productos.models import Producto
+
+from django.contrib.auth.decorators import login_required
+from .models import Address
+from django.contrib.auth import update_session_auth_hash
+
+
 def home_view(request):
 
     if request.user.is_authenticated:
@@ -101,7 +107,7 @@ def login_view(request):
         if tiene_tienda:
             return redirect('tiendas:home_seller')   # CAMBIO AQUÍ
         else:
-            return redirect('home_client')
+            return redirect('usuarios:home_client')
 
     return render(request, 'usuarios/login.html', context)
 
@@ -538,34 +544,160 @@ def home_client_view(request):
 def client_orders_view(request):
     return render(request, 'pedidos/client_orders.html')
 
+
+@login_required
 def profile_view(request):
 
-    tiene_tienda = Tienda.objects.filter(propietario=request.user).exists()
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
-    if tiene_tienda:
-        return redirect('tiendas:profile_store_seller')
+    # Traer la dirección del usuario
+    address = Address.objects.filter(user=request.user).first()
 
-    return render(request, 'usuarios/profile_user.html')
-
+    return render(request, 'usuarios/profile_user.html', {
+        'profile': profile,
+        'address': address
+    })
 def logout_view(request):
     logout(request)
     return redirect('login')
 
+# ===============================
+# PASO 1
+# ===============================
+@login_required
 def edit_profile_client(request):
-    if request.method == "POST":
-        # Aquí luego guardas email, nombre, imagen, etc
-        return redirect('edit_profile_client2')
 
-    return render(request, 'usuarios/edit_profile_client.html')
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
+    if request.method == 'POST':
+
+        # Guardar datos en sesión (igual que vendedor)
+        request.session['edit_client_data'] = {
+            "email": request.POST.get("email"),
+            "first_name": request.POST.get("name"),
+        }
+
+        # Imagen
+        if request.FILES.get("cover_image"):
+            profile.image = request.FILES.get("cover_image")
+            profile.save()
+
+        request.session.modified = True
+
+        return redirect('usuarios:edit_profile_client2')
+
+    return render(request, 'usuarios/edit_profile_client.html', {
+        "profile": profile
+    })
+
+@login_required
 def edit_profile_client2(request):
+
+    data = request.session.get("edit_client_data")
+
+    if not data:
+        return redirect("usuarios:edit_profile_client")
+
     if request.method == "POST":
-        # Aquí luego guardas teléfono y contraseña
-        return redirect('profile')  # o donde vuelva el usuario
 
-    return render(request, 'usuarios/edit_profile_client2.html')
+        user = request.user
+        profile = user.profile
 
+        # =========================
+        # GUARDAR DATOS USUARIO
+        # =========================
+        user.email = data.get("email", user.email)
+        user.first_name = data.get("first_name", user.first_name)
+        user.save()
 
+        # Teléfono
+        profile.phone = request.POST.get("phone", profile.phone)
+        profile.save()
 
+        # =========================
+        # CAMBIO DE CONTRASEÑA
+        # =========================
+        password = request.POST.get("password")
+        confirm = request.POST.get("password_confirm")
 
+        if password and confirm:
+            if password != confirm:
+                messages.error(request, "Las contraseñas no coinciden.")
+                return redirect("usuarios:edit_profile_client2")
 
+            user.set_password(password)
+            update_session_auth_hash(request, user)
+            user.save()
+
+        # =========================
+        # LIMPIAR SESIÓN
+        # =========================
+        request.session.pop("edit_client_data", None)
+
+        messages.success(request, "Perfil actualizado correctamente.")
+        return redirect("usuarios:profile")
+
+    return render(request, "usuarios/edit_profile_client2.html", {
+        "user": request.user
+    })
+
+# ===============================
+# EDITAR DIRECCIÓN PASO 1
+# ===============================
+@login_required
+def edit_address_profile_user(request):
+
+    if request.method == "POST":
+
+        request.session["edit_client_address"] = {
+            "neighborhood": request.POST.get("neighborhood"),
+            "address_number": request.POST.get("address_number"),
+            "road_type": request.POST.get("road_type"),
+            "postal_code": request.POST.get("postal_code"),
+        }
+
+        return redirect("usuarios:edit_address_profile_user2")
+
+    return render(request, "usuarios/edit_address_profile_client.html")
+# ===============================
+# EDITAR DIRECCIÓN PASO 2
+# ===============================
+# ===============================
+# EDITAR DIRECCIÓN PASO 2
+# ===============================
+@login_required
+def edit_address_profile_user2(request):
+
+    data = request.session.get("edit_client_address")
+
+    if not data:
+        return redirect("usuarios:edit_address_profile_user")
+
+    if request.method == "POST":
+
+        department = request.POST.get("department")
+        city = request.POST.get("city")
+        extra_info = request.POST.get("extra_info")
+
+        if not department or not city:
+            messages.error(request, "Departamento y ciudad son obligatorios.")
+            return redirect("usuarios:edit_address_profile_user2")
+
+        # 🔥 Obtener o crear dirección (NO DUPLICA)
+        address, created = Address.objects.get_or_create(user=request.user)
+
+        address.neighborhood = data.get("neighborhood")
+        address.address_number = data.get("address_number")
+        address.road_type = data.get("road_type")
+        address.postal_code = data.get("postal_code")
+        address.department = department
+        address.city = city
+        address.extra_info = extra_info
+        address.save()
+
+        request.session.pop("edit_client_address", None)
+
+        messages.success(request, "Dirección actualizada correctamente.")
+        return redirect("usuarios:profile")
+
+    return render(request, "usuarios/edit_address_profile_client2.html")

@@ -3,7 +3,7 @@
 
   <div class="navbar_left_group">
       <div class="navbar_product_category__actions--left">
-          <a href="{% url 'home' %}" class="navbar_product_category__link-image">
+          <a href="{% url 'usuarios:home' %}" class="navbar_product_category__link-image">
             <img src="{% static 'assets/img/sena-logo.png' %}" class="navbar_product_category__img" alt="">
           </a>
       </div>  
@@ -29,7 +29,7 @@
 
   <div class="navbar_product_category__actions">
 
-    <a href="{% url 'profile' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+    <a href="{% url 'usuarios:profile' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/return.svg' %}" class="navbar_product_category__icon" alt="">
       <span class="navbar_product_category__tooltip">Volver al perfil</span>
     </a>

@@ -18,10 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-
-    # TODA la app usuarios
-    path('', include('usuarios.urls')),
+    path('admin/', admin.site.urls),  # ← AQUÍ VA LA COMA
+    path('', include(('usuarios.urls', 'usuarios'), namespace='usuarios')),
     path('stores/', include('tiendas.urls')),
     path('products/', include('productos.urls')),
     path('pedidos/', include('pedidos.urls')),

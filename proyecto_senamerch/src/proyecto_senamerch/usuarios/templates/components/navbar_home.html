@@ -4,7 +4,7 @@
 
   <div class="navbar_left_group">
       <div class="navbar_product_category__actions--left">
-          <a href="{% url 'home' %}" class="navbar_product_category__link-image">
+          <a href="{% url 'usuarios:home' %}" class="navbar_product_category__link-image">
             <img src="{% static 'assets/img/sena-logo.png' %}" class="navbar_product_category__img" alt="">
           </a>
       </div>  
@@ -30,17 +30,17 @@
 
   <div class="navbar_product_category__actions">
 
-    <a href="{% url 'login' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+    <a href="{% url 'usuarios:login' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/login.svg' %}" class="navbar_product_category__icon" alt="">
       <span class="navbar_product_category__tooltip">Iniciar sesión</span>
     </a>
 
-    <a href="{% url 'register' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+    <a href="{% url 'usuarios:register' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/register.svg' %}" class="navbar_product_category__icon" alt="">
       <span class="navbar_product_category__tooltip">Registrarse</span>
     </a>
 
-    <a href="{% url 'contact' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+    <a href="{% url 'usuarios:contact' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/contact.svg' %}" class="navbar_product_category__icon" alt="">
       <span class="navbar_product_category__tooltip">Contacto</span>
     </a>

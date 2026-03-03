@@ -1,10 +1,14 @@
 {% load static %}
+
 <nav class="navbar_product_category">
 
   <div class="navbar_left_group">
       <div class="navbar_product_category__actions--left">
-          <a href="{% url 'home' %}" class="navbar_product_category__link-image">
-            <img src="/frontend/public/assets/img/sena-logo.png" class="navbar_product_category__img" alt="">
+          <a href="{% url 'usuarios:home' %}" 
+             class="navbar_product_category__link-image">
+            <img src="{% static 'assets/img/sena-logo.png' %}" 
+                 class="navbar_product_category__img" 
+                 alt="">
           </a>
       </div>  
 
@@ -22,17 +26,23 @@
           <span class="navbar_product_category__letter navbar_product_category__letter--7">r</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--8">c</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--9">h</span>
-          <img src="/frontend/public/assets/icons/wheat.svg" alt="" class="navbar_product_category__icon">
+          <img src="{% static 'assets/icons/wheat.svg' %}" 
+               alt="" 
+               class="navbar_product_category__icon">
         </h1>
       </div>
   </div>
 
   <div class="navbar_product_category__actions">
 
-    <a href="seller_view.html" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="/frontend/public/assets/icons/return.svg" class="navbar_product_category__icon" alt="">
+    <!-- VOLVER -->
+    <a href="{% url 'usuarios:profile' %}" 
+       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/return.svg' %}" 
+           class="navbar_product_category__icon" 
+           alt="">
       <span class="navbar_product_category__tooltip">Volver</span>
     </a>
+
   </div>
 </nav>
-

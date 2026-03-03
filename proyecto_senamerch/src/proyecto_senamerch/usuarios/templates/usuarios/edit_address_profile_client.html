@@ -1,0 +1,68 @@
+{% extends "index_edit_profile_client.html" %}
+{% load static %}
+
+{% block content %}
+<section class="edit-profile-user">
+  <div class="edit-profile-user__wrapper">
+
+    <header class="edit-profile-user__header">
+      <h1 class="edit-profile-user__title">Editar dirección</h1>
+      <p class="edit-profile-user__subtitle">
+        Actualiza los datos principales de tu dirección.
+      </p>
+    </header>
+
+    <form method="POST"
+          action="{% url 'usuarios:edit_address_profile_user' %}"
+          class="edit-profile-user__form">
+
+      {% csrf_token %}
+
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Barrio</label>
+        <input type="text"
+               name="neighborhood"
+               class="edit-profile-user__input"
+               required>
+      </div>
+
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Número</label>
+        <input type="text"
+               name="address_number"
+               class="edit-profile-user__input"
+               required>
+      </div>
+
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Tipo de vía</label>
+        <input type="text"
+               name="road_type"
+               class="edit-profile-user__input">
+      </div>
+
+      <div class="edit-profile-user__group">
+        <label class="edit-profile-user__label">Código postal</label>
+        <input type="text"
+               name="postal_code"
+               class="edit-profile-user__input">
+      </div>
+
+      <div class="edit-profile-user__secondary">
+        <a href="{% url 'usuarios:edit_profile_client' %}"
+           class="btn-secundary btn-secundary-style">
+          Volver
+        </a>
+      </div>
+
+      <div class="edit-profile-user__buttons">
+        <button type="submit"
+                class="btn btn--primary">
+          Siguiente
+        </button>
+      </div>
+
+    </form>
+  </div>
+</section>
+{% endblock %}

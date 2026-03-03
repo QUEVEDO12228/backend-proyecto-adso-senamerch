@@ -13,8 +13,21 @@
       </p>
     </header>
 
+    <!-- 🔥 MENSAJES -->
+    {% if messages %}
+      <div class="edit-profile-user__group">
+        {% for message in messages %}
+          <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <!-- Form -->
-    <form class="edit-profile-user__form" method="POST">
+    <form 
+      class="edit-profile-user__form" 
+      method="POST"
+      action="{% url 'usuarios:edit_profile_client2' %}">
+      
       {% csrf_token %}
 
       <!-- Tipo de usuario -->
@@ -34,37 +47,44 @@
           type="tel"
           name="phone"
           class="edit-profile-user__input"
-          value="{{ user.profile.phone }}"
+          value="{{ user.profile.phone|default:'' }}"
           required>
       </div>
 
       <!-- Contraseña -->
-      <div class="edit-profile-user__group">
-        <label class="edit-profile-user__label">Escribe tu contraseña</label>
+      <!-- Columna: Contraseña actual -->
+      <div class="edit-profile-user__group password-col">
+        <label class="edit-profile-user__label">Escribe tu contraseña actual</label>
         <div class="edit-profile-user__password-wrapper">
           <input
-            type="password"
             name="password"
+            type="password"
             class="edit-profile-user__input edit-profile-user__input--password"
             required>
+          <button type="button" class="edit-profile-user__toggle-password">
+            Mostrar
+          </button>
         </div>
       </div>
 
-      <!-- Confirmar contraseña -->
-      <div class="edit-profile-user__group">
+      <!-- Columna: Confirmar contraseña -->
+      <div class="edit-profile-user__group confirmar-col">
         <label class="edit-profile-user__label">Confirma tu contraseña</label>
         <div class="edit-profile-user__password-wrapper">
           <input
-            type="password"
             name="password_confirm"
+            type="password"
             class="edit-profile-user__input edit-profile-user__input--password"
             required>
+          <button type="button" class="edit-profile-user__toggle-password">
+            Mostrar
+          </button>
         </div>
       </div>
 
       <!-- Botón secundario -->
       <div class="edit-profile-user__secondary">
-        <a href="{% url 'edit_profile_client' %}"
+        <a href="{% url 'usuarios:edit_profile_client' %}"
            class="btn-secundary btn-secundary-style edit-profile-user__cancel">
           Volver
           <img
@@ -91,4 +111,20 @@
     </form>
   </div>
 </section>
+<script>
+  document.querySelectorAll(".edit-profile-user__toggle-password")
+    .forEach(button => {
+      button.addEventListener("click", function () {
+        const input = this.previousElementSibling;
+
+        if (input.type === "password") {
+          input.type = "text";
+          this.textContent = "Ocultar";
+        } else {
+          input.type = "password";
+          this.textContent = "Mostrar";
+        }
+      });
+    });
+</script>
 {% endblock %}

@@ -1,6 +1,10 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path
+
+
+app_name = "usuarios"
+
 from .views import (
     home_view,
     home_client_view,
@@ -18,6 +22,8 @@ from .views import (
     logout_view,
     edit_profile_client,
     edit_profile_client2,
+    edit_address_profile_user,
+    edit_address_profile_user2,
 )
 
 urlpatterns = [
@@ -70,6 +76,11 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
     path('edit-profile/', edit_profile_client, name='edit_profile_client'),
     path('edit-profile-2/', edit_profile_client2, name='edit_profile_client2'),
+    # =========================
+    # EDITAR DIRECCIÓN USUARIO
+    # =========================
+    path('edit-address/', edit_address_profile_user, name='edit_address_profile_user'),
+    path('edit-address-step-2/', edit_address_profile_user2, name='edit_address_profile_user2'),
 ]
 
 if settings.DEBUG:
