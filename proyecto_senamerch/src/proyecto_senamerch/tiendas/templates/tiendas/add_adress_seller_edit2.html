@@ -24,29 +24,51 @@
     <form method="POST" action="{% url 'tiendas:edit_address_seller2' %}" class="address-store-form__form">
       {% csrf_token %}
 
-      <select name="department" class="address-store-form__input" required>
+      <!-- DEPARTAMENTO -->
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Departamento</label>
+
+        <select id="department"
+                name="department"
+                class="address-store-form__input"
+                required>
+
           <option value="">Selecciona...</option>
+
           {% for dep in departamentos %}
-              <option value="{{ dep }}" {% if form_data.department == dep or profile.department == dep %}selected{% endif %}>
+              <option value="{{ dep }}"
+              {% if form_data.department == dep or profile.department == dep %}
+              selected
+              {% endif %}
+              >
                   {{ dep }}
               </option>
           {% endfor %}
-      </select>
 
-      <div class="address-store-form__group">
-        <label class="address-store-form__label">Municipio</label>
-        <input 
-          type="text"
-          name="city"
-          placeholder="Ej: Bogotá"
-          class="address-store-form__input"
-          value="{{ profile.city|default:'' }}"
-          required
-        >
+        </select>
       </div>
 
+      <!-- MUNICIPIO -->
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Municipio</label>
+
+        <select id="city"
+                name="city"
+                class="address-store-form__input"
+                required>
+
+          <option value="">
+            {{ profile.city|default:"Selecciona municipio" }}
+          </option>
+
+        </select>
+
+      </div>
+
+      <!-- INFO ADICIONAL -->
       <div class="address-store-form__group address-store-form__group--full">
         <label class="address-store-form__label">Información adicional</label>
+
         <input 
           type="text"
           name="additional_info"
@@ -75,4 +97,78 @@
 
   </div>
 </section>
+
+
+<script>
+
+const municipios = {
+
+  Risaralda: [
+    "Pereira","Dosquebradas","Santa Rosa de Cabal","La Virginia",
+    "Apía","Balboa","Belén de Umbría","Guática","La Celia",
+    "Marsella","Mistrató","Pueblo Rico","Quinchía","Santuario"
+  ],
+
+  Quindío: [
+    "Armenia","Calarcá","Circasia","Córdoba","Filandia",
+    "Génova","La Tebaida","Montenegro","Pijao",
+    "Quimbaya","Salento","Buenavista"
+  ],
+
+  Caldas: [
+    "Manizales","Villamaría","Chinchiná","La Dorada","Riosucio",
+    "Anserma","Salamina","Aguadas","Supía","Neira",
+    "Aranzazu","Belalcázar","Filadelfia","La Merced","Marmato",
+    "Marquetalia","Marulanda","Norcasia","Pácora","Palestina",
+    "Pensilvania","Risaralda","Samaná","San José","Victoria","Viterbo"
+  ]
+
+};
+
+const departmentSelect = document.getElementById("department");
+const citySelect = document.getElementById("city");
+
+function cargarMunicipios(dept, selectedCity=null){
+
+  citySelect.innerHTML = "<option value=''>Selecciona municipio</option>";
+
+  if(municipios[dept]){
+
+    municipios[dept].forEach(function(municipio){
+
+      const option = document.createElement("option");
+
+      option.value = municipio;
+      option.textContent = municipio;
+
+      if(selectedCity === municipio){
+        option.selected = true;
+      }
+
+      citySelect.appendChild(option);
+
+    });
+
+  }
+
+}
+
+departmentSelect.addEventListener("change", function(){
+  cargarMunicipios(this.value);
+});
+
+window.addEventListener("load", function(){
+
+  const dept = departmentSelect.value;
+
+  const selectedCity = "{{ profile.city }}";
+
+  if(dept){
+    cargarMunicipios(dept, selectedCity);
+  }
+
+});
+
+</script>
+
 {% endblock %}

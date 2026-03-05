@@ -19,59 +19,63 @@
       {% endfor %}
     {% endif %}
 
-    <form method="POST" action="{% url 'tiendas:edit_address_store2' %}" class="address-store-form__form">
-      {% csrf_token %}
-      <div class="address-store-form__group">
-        <label for="department" class="address-store-form__label">
-          Departamento
-        </label>
+    <form method="POST"
+          action="{% url 'tiendas:edit_address_store2' %}"
+          class="address-store-form__form">
 
-        <select
-            id="department"
-            name="department"
-            class="address-store-form__input"
-            required
-        >
-            <option value="">Selecciona...</option>
-            {% for dep in departamentos %}
-                <option value="{{ dep }}"
-                  {% if form_data.department == dep or tienda.departamento == dep %}
-                    selected
-                  {% endif %}
-                >
-                    {{ dep }}
-                </option>
-            {% endfor %}
+      {% csrf_token %}
+
+      <!-- DEPARTAMENTO -->
+      <div class="address-store-form__group">
+        <label class="address-store-form__label">Departamento</label>
+
+        <select id="department"
+                name="department"
+                class="address-store-form__input"
+                required>
+
+          <option value="">Selecciona...</option>
+
+          {% for dep in departamentos %}
+          <option value="{{ dep }}">
+            {{ dep }}
+          </option>
+          {% endfor %}
+
         </select>
       </div>
-      
 
+      <!-- MUNICIPIO -->
       <div class="address-store-form__group">
         <label class="address-store-form__label">Municipio</label>
-        <input 
-          type="text"
-          name="city"
-          placeholder="Ej: Pereira"
-          class="address-store-form__input"
-          value="{{ form_data.city|default:tienda.municipio }}"
-          required
-        >
+
+        <select id="city"
+                name="city"
+                class="address-store-form__input"
+                required>
+
+          <option value="">Selecciona municipio</option>
+
+        </select>
+
       </div>
 
+      <!-- INFO ADICIONAL -->
       <div class="address-store-form__group address-store-form__group--full">
         <label class="address-store-form__label">Información adicional</label>
-        <input 
+
+        <input
           type="text"
           name="additional_info"
-          placeholder="Apartamento, interior, referencias, etc."
+          placeholder="Apartamento, interior, referencias..."
           class="address-store-form__input"
-          value="{{ form_data.additional_info|default:tienda.informacion_adicional }}"
+          value="{{ form_data.additional_info|default:'' }}"
         >
       </div>
 
       <div class="address-store-form__secondary">
-        <a href="{% url 'tiendas:edit_address_store' %}" 
-          class="btn-secundary btn-secundary-style">
+        <a href="{% url 'tiendas:edit_address_store' %}"
+           class="btn-secundary btn-secundary-style">
           Volver
           <img src="{% static 'assets/icons/return.svg' %}" class="btn-secundary__icon">
         </a>
@@ -87,4 +91,58 @@
     </form>
   </div>
 </section>
+
+<script>
+
+const municipios = {
+
+  "Risaralda": [
+    "Pereira","Dosquebradas","Santa Rosa de Cabal","La Virginia",
+    "Apía","Balboa","Belén de Umbría","Guática","La Celia",
+    "Marsella","Mistrató","Pueblo Rico","Quinchía","Santuario"
+  ],
+
+  "Quindío": [
+    "Armenia","Calarcá","Circasia","Córdoba","Filandia",
+    "Génova","La Tebaida","Montenegro","Pijao",
+    "Quimbaya","Salento","Buenavista"
+  ],
+
+  "Caldas": [
+    "Manizales","Villamaría","Chinchiná","La Dorada","Riosucio",
+    "Anserma","Salamina","Aguadas","Supía","Neira",
+    "Aranzazu","Belalcázar","Filadelfia","La Merced","Marmato",
+    "Marquetalia","Marulanda","Norcasia","Pácora","Palestina",
+    "Pensilvania","Risaralda","Samaná","San José","Victoria","Viterbo"
+  ]
+
+};
+
+const department = document.getElementById("department");
+const city = document.getElementById("city");
+
+department.addEventListener("change", function(){
+
+  const dept = this.value;
+
+  city.innerHTML = "<option value=''>Selecciona municipio</option>";
+
+  if(municipios[dept]){
+
+    municipios[dept].forEach(function(municipio){
+
+      const option = document.createElement("option");
+      option.value = municipio;
+      option.textContent = municipio;
+
+      city.appendChild(option);
+
+    });
+
+  }
+
+});
+
+</script>
+
 {% endblock %}
