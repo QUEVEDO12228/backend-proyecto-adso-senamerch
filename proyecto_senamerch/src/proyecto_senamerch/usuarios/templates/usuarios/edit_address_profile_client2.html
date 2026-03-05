@@ -21,31 +21,47 @@
 
       {% csrf_token %}
 
+      <!-- DEPARTAMENTO -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Departamento</label>
-        <select name="department"
+        <select id="department"
+                name="department"
                 class="edit-profile-user__input"
                 required>
+
           <option value="">Selecciona...</option>
           <option value="Risaralda">Risaralda</option>
-          <option value="Quindío">Quindío</option>
+          <option value="Quindio">Quindío</option>
           <option value="Caldas">Caldas</option>
+
         </select>
       </div>
 
+      <!-- MUNICIPIO -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Ciudad</label>
-        <input type="text"
-               name="city"
-               class="edit-profile-user__input"
-               required>
+
+        <select id="city"
+                name="city"
+                class="edit-profile-user__input"
+                required>
+
+          <option value="">Selecciona un departamento</option>
+
+        </select>
+
       </div>
 
+      <!-- INFO EXTRA -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Información adicional</label>
         <input type="text"
                name="extra_info"
                class="edit-profile-user__input">
+      </div>
+
+      <div class="edit-profile-user__group">
+        
       </div>
 
       <div class="edit-profile-user__secondary">
@@ -65,4 +81,99 @@
     </form>
   </div>
 </section>
+
+<script>
+
+const municipios = {
+
+  Risaralda: [
+    "Pereira",
+    "Dosquebradas",
+    "Santa Rosa de Cabal",
+    "La Virginia",
+    "Apía",
+    "Balboa",
+    "Belén de Umbría",
+    "Guática",
+    "La Celia",
+    "Marsella",
+    "Mistrató",
+    "Pueblo Rico",
+    "Quinchía",
+    "Santuario"
+  ],
+
+  Quindio: [
+    "Armenia",
+    "Calarcá",
+    "Circasia",
+    "Córdoba",
+    "Filandia",
+    "Génova",
+    "La Tebaida",
+    "Montenegro",
+    "Pijao",
+    "Quimbaya",
+    "Salento",
+    "Buenavista"
+  ],
+
+  Caldas: [
+    "Manizales",
+    "Villamaría",
+    "Chinchiná",
+    "La Dorada",
+    "Riosucio",
+    "Anserma",
+    "Salamina",
+    "Aguadas",
+    "Supía",
+    "Neira",
+    "Aranzazu",
+    "Belalcázar",
+    "Filadelfia",
+    "La Merced",
+    "Marmato",
+    "Marquetalia",
+    "Marulanda",
+    "Norcasia",
+    "Pácora",
+    "Palestina",
+    "Pensilvania",
+    "Risaralda",
+    "Samaná",
+    "San José",
+    "Victoria",
+    "Viterbo"
+  ]
+
+};
+
+const departmentSelect = document.getElementById("department");
+const citySelect = document.getElementById("city");
+
+departmentSelect.addEventListener("change", function(){
+
+  const dept = this.value;
+
+  citySelect.innerHTML = "<option value=''>Selecciona municipio</option>";
+
+  if(municipios[dept]){
+
+    municipios[dept].forEach(function(municipio){
+
+      const option = document.createElement("option");
+      option.value = municipio;
+      option.textContent = municipio;
+
+      citySelect.appendChild(option);
+
+    });
+
+  }
+
+});
+
+</script>
+
 {% endblock %}

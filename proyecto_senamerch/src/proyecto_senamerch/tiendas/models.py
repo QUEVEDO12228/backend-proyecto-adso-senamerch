@@ -22,9 +22,9 @@ class Tienda(models.Model):
         null=True
     )
 
-    # 🔥 DIRECCIÓN DE LA TIENDA
+    # DIRECCIÓN DE LA TIENDA
     barrio = models.CharField(max_length=100, blank=True)
-    numero_direccion = models.CharField(max_length=100, blank=True)  # 👈 ESTE FALTABA
+    numero_direccion = models.CharField(max_length=100, blank=True)  # ESTE FALTABA
     tipo_via = models.CharField(max_length=100, blank=True)
     departamento = models.CharField(max_length=100, blank=True)
     municipio = models.CharField(max_length=100, blank=True)

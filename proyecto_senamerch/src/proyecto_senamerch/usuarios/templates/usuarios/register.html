@@ -107,7 +107,7 @@ form.addEventListener('submit', function(e) {
 
   function goToAddress(e) {
     e.preventDefault(); // vita validación del form
-    window.location.href = "{% url 'add_address' %}";
+    window.location.href = "{% url 'usuarios:add_address' %}";
   }
 
   const hasAddress = "{{ request.session.address_full|yesno:'true,false' }}" === "true";

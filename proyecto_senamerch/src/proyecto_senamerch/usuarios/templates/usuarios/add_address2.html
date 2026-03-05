@@ -15,7 +15,6 @@
       </p>
     </header>
 
-    <!-- 🔥 MENSAJES (NO ROMPE DISEÑO) -->
     {% if messages %}
       <div class="address-store-form__messages">
         {% for message in messages %}
@@ -27,27 +26,26 @@
     <form class="address-store-form__form" method="post">
       {% csrf_token %}
 
+      <!-- DEPARTAMENTO -->
       <div class="address-store-form__group">
         <label class="address-store-form__label">Departamento</label>
-        <select name="department" class="address-store-form__input" required>
+        <select id="department" name="department" class="address-store-form__input" required>
           <option value="">Selecciona...</option>
           <option value="Risaralda">Risaralda</option>
-          <option value="Quindío">Quindío</option>
+          <option value="Quindio">Quindío</option>
           <option value="Caldas">Caldas</option>
         </select>
       </div>
 
+      <!-- MUNICIPIO -->
       <div class="address-store-form__group">
         <label class="address-store-form__label">Municipio</label>
-        <input
-          type="text"
-          name="city"
-          placeholder="Ej: Pereira"
-          class="address-store-form__input"
-          required
-        >
+        <select id="city" name="city" class="address-store-form__input" required>
+          <option value="">Selecciona un departamento primero</option>
+        </select>
       </div>
 
+      <!-- INFO ADICIONAL -->
       <div class="address-store-form__group address-store-form__group--full">
         <label class="address-store-form__label">Información adicional</label>
         <input
@@ -78,24 +76,98 @@
   </div>
 </section>
 
-<!-- 🔥 VALIDACIONES FRONTEND (PRO) -->
 <script>
-  const form = document.querySelector('.address-store-form__form');
 
-  form.addEventListener('submit', function(e) {
-    const department = document.querySelector('[name="department"]').value;
-    const city = document.querySelector('[name="city"]').value.trim();
+const municipios = {
 
-    if (!department || !city) {
-      e.preventDefault();
-      alert("Debes completar departamento y municipio");
-    }
+  Risaralda: [
+    "Pereira",
+    "Dosquebradas",
+    "Santa Rosa de Cabal",
+    "La Virginia",
+    "Apía",
+    "Balboa",
+    "Belén de Umbría",
+    "Guática",
+    "La Celia",
+    "Marsella",
+    "Mistrató",
+    "Pueblo Rico",
+    "Quinchía",
+    "Santuario"
+  ],
 
-    if (city.length < 3) {
-      e.preventDefault();
-      alert("El municipio debe tener al menos 3 caracteres");
-    }
-  });
+  Quindio: [
+    "Armenia",
+    "Calarcá",
+    "Circasia",
+    "Córdoba",
+    "Filandia",
+    "Génova",
+    "La Tebaida",
+    "Montenegro",
+    "Pijao",
+    "Quimbaya",
+    "Salento",
+    "Buenavista"
+  ],
+
+  Caldas: [
+    "Manizales",
+    "Villamaría",
+    "Chinchiná",
+    "La Dorada",
+    "Riosucio",
+    "Anserma",
+    "Salamina",
+    "Aguadas",
+    "Supía",
+    "Neira",
+    "Aranzazu",
+    "Belalcázar",
+    "Filadelfia",
+    "La Merced",
+    "Marmato",
+    "Marquetalia",
+    "Marulanda",
+    "Norcasia",
+    "Pácora",
+    "Palestina",
+    "Pensilvania",
+    "Risaralda",
+    "Samaná",
+    "San José",
+    "Victoria",
+    "Viterbo"
+  ]
+
+};
+
+const departmentSelect = document.getElementById("department");
+const citySelect = document.getElementById("city");
+
+departmentSelect.addEventListener("change", function(){
+
+  const dept = this.value;
+
+  citySelect.innerHTML = "<option value=''>Selecciona municipio</option>";
+
+  if(municipios[dept]){
+
+    municipios[dept].forEach(function(municipio){
+
+      const option = document.createElement("option");
+      option.value = municipio;
+      option.textContent = municipio;
+
+      citySelect.appendChild(option);
+
+    });
+
+  }
+
+});
+
 </script>
 
 {% endblock %}

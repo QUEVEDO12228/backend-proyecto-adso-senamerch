@@ -99,7 +99,7 @@ def create_store2(request):
             messages.error(request, 'Todos los campos son obligatorios.')
             return redirect('tiendas:create_store2')
 
-        # 🔥 AQUÍ SE CREA TODO JUNTO
+        # AQUÍ SE CREA TODO JUNTO
         Tienda.objects.create(
             propietario=request.user,
             nombre=store_data['name'],
@@ -117,7 +117,7 @@ def create_store2(request):
             informacion_adicional=store_address['additional_info'],
         )
 
-        # 🔥 LIMPIAR SESIÓN
+        # LIMPIAR SESIÓN
         request.session.pop('store_data', None)
         request.session.pop('store_address', None)
 
@@ -194,7 +194,7 @@ def add_address_store2(request):
             messages.error(request, 'El municipio debe tener mínimo 3 caracteres.')
             return redirect('tiendas:add_address_store2')
 
-        # 🔥 GUARDAR TODA LA DIRECCIÓN EN SESIÓN
+        # GUARDAR TODA LA DIRECCIÓN EN SESIÓN
         request.session['store_address'] = {
             **step_1,
             'department': department,
@@ -205,7 +205,7 @@ def add_address_store2(request):
         request.session.modified = True
         request.session.pop('store_address_step_1', None)
 
-        # 🔥 VOLVER A CREATE_STORE2
+        # VOLVER A CREATE_STORE2
         return redirect('tiendas:create_store2')
 
     return render(request, 'tiendas/add_address_store2.html')
@@ -239,7 +239,7 @@ def seller_catalog(request):
 
     return render(request, 'tiendas/seller_card.html', {
         'productos': productos,
-        'tienda': tienda   # 👈 IMPORTANTE
+        'tienda': tienda   # IMPORTANTE
     })
 
 @login_required
@@ -249,7 +249,7 @@ def edit_seller_profile(request):
 
     if request.method == 'POST':
 
-        # 🔥 GUARDAR EN SESIÓN (IMPORTANTE)
+        # GUARDAR EN SESIÓN (IMPORTANTE)
         request.session['edit_user_data'] = {
             "email": request.POST.get('email'),
             "first_name": request.POST.get('first_name'),
@@ -581,7 +581,7 @@ def edit_address_store2(request):
         request.session.pop("edit_store_address_step1", None)
 
         messages.success(request, "Dirección de la tienda actualizada correctamente.")
-        return redirect("tiendas:store_address")
+        return redirect("tiendas:edit_store_seller2")
 
     return render(request, "tiendas/add_address_store_edit2.html", {
         "tienda": tienda,
@@ -599,5 +599,5 @@ def list_products_store_seller(request):
 
     return render(request, 'tiendas/list_products_store_seller.html', {
         'productos': productos,
-        'tienda': tienda   # 👈 IMPORTANTE
+        'tienda': tienda   # IMPORTANTE
     })

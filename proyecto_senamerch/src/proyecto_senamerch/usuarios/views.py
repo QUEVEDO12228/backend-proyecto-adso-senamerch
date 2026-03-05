@@ -112,18 +112,6 @@ def login_view(request):
     return render(request, 'usuarios/login.html', context)
 
 
-# =========================
-# REGISTRO
-# =========================
-
-import re
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
-from .models import Address
-
 
 # ======================================
 # REGISTRO PASO 1
@@ -131,7 +119,7 @@ from .models import Address
 
 def register_view(request):
 
-    # 🔥 LIMPIAR SI ENTRA AL REGISTRO NUEVO
+    #  LIMPIAR SI ENTRA AL REGISTRO NUEVO
     if request.method == 'GET' and not request.GET.get('from_address'):
         request.session.pop('address_full', None)
         request.session.pop('address_step_1', None)
@@ -145,7 +133,7 @@ def register_view(request):
         phone = request.POST.get('phone', '').strip()
         email = request.POST.get('email', '').strip().lower()
 
-        # 🔥 GUARDAR SIEMPRE (para no perder datos)
+        # GUARDAR SIEMPRE (para no perder datos)
         request.session['register_temp'] = {
             'name': name,
             'phone': phone,
@@ -253,7 +241,7 @@ def register_step_2(request):
         request.session.pop('register_email', None)
         request.session.pop('address_full', None)
 
-        # 🔥 AQUÍ ESTÁ EL CAMBIO
+        # AQUÍ ESTÁ EL CAMBIO
         return render(request, 'usuarios/register2.html', {
             'success': True
         })
@@ -286,7 +274,7 @@ def add_address_view(request):
         }
         request.session.modified = True
 
-        return redirect('add_address_step_2')
+        return redirect('usuarios:add_address_step_2')
 
     return render(request, 'usuarios/add_address.html')
 
@@ -377,7 +365,7 @@ def forgot_password_view(request):
         )
 
         messages.success(request, 'Te enviamos un código a tu correo.')
-        return redirect('code_verify')
+        return redirect('usuarios:code_verify')
 
     return render(request, 'usuarios/forgot_password.html', context)
 
@@ -414,10 +402,10 @@ def code_verify_view(request):
         # Comparar códigos
         if code_entered != real_code:
             messages.error(request, 'Código incorrecto.')
-            return redirect('code_verify')
+            return redirect('usuarios:code_verify')
 
         # Si todo está bien → ir a resetear contraseña
-        return redirect('reset_password')
+        return redirect('usuarios:reset_password')
 
     return render(request, 'usuarios/code_verify.html')
 
@@ -474,7 +462,7 @@ def reset_password_view(request):
         # Validar sesión activa
         if not email:
             messages.error(request, 'Sesión expirada. Vuelve a solicitar el código.')
-            return redirect('forgot_password')
+            return redirect('usuarios:forgot_password')
 
         # Obtener usuario
         user = User.objects.get(email=email)
@@ -488,7 +476,7 @@ def reset_password_view(request):
         #evitando reutilización de códigos y mejorando la seguridad.
 
         messages.success(request, 'Contraseña actualizada correctamente.')
-        return redirect('login')
+        return redirect('usuarios:login')
 
     return render(request, 'usuarios/reset_password.html')
 
@@ -559,7 +547,7 @@ def profile_view(request):
     })
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect('usuarios:login')
 
 # ===============================
 # PASO 1
