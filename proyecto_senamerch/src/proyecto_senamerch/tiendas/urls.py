@@ -30,6 +30,8 @@ urlpatterns = [
 
     # 👉 CATÁLOGO (ESTA RUTA ESTÁ BIEN)
     path('catalogo/', views.seller_catalog, name='seller_catalog'),
+    # 👉 LISTADO DE PRODUCTOS DEL VENDEDOR
+    path('mis-productos/', views.list_products_store_seller, name='list_products_store_seller'),
 
     # =================================
     # EDITAR PERFIL VENDEDOR
@@ -63,11 +65,8 @@ urlpatterns = [
 
     path('direccion-tienda/', views.store_address_view, name='store_address'),
     path('direccion-vendedor/', views.seller_address_view, name='seller_address'),
-    path(
-        "perfil/<int:id>/",
-        views.profile_store_client,
-        name="profile_store_client"
-    ),
+    # urls.py (tiendas)
+    path("perfil/<int:tienda_id>/", views.profile_store_client, name="profile_store_client"),
     path('edit-address/', views.edit_address_seller, name='edit_address_seller'),
     path('edit-address-step2/', views.edit_address_seller2, name='edit_address_seller2'),
     path(
@@ -80,11 +79,6 @@ urlpatterns = [
         'tienda/direccion/editar/step-2/',
         views.edit_address_store2,
         name='edit_address_store2'
-    ),
-    path(
-        'mis-productos/',
-        views.list_products_store_seller,
-        name='list_products_store_seller'
     ),
 ]
 

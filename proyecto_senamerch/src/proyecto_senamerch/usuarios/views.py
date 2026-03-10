@@ -175,7 +175,7 @@ def register_view(request):
         request.session['register_phone'] = phone_clean
         request.session['register_email'] = email
 
-        return redirect('register_step_2')
+        return redirect('usuarios:register_step_2')
 
     return render(request, 'usuarios/register.html', {'data': data})
 
@@ -213,6 +213,10 @@ def register_step_2(request):
             messages.error(request, 'La sesión expiró.')
             return redirect('register')
 
+        if User.objects.filter(username=email).exists():
+            messages.error(request, 'Este correo ya fue registrado.')
+            return redirect('usuarios:login')
+
         user = User.objects.create_user(
             username=email,
             email=email,
@@ -220,9 +224,11 @@ def register_step_2(request):
             first_name=name
         )
 
-        Profile.objects.create(
+        Profile.objects.update_or_create(
             user=user,
-            phone=request.session.get('register_phone', '')
+            defaults={
+                'phone': request.session.get('register_phone', '')
+            }
         )
 
         Address.objects.create(
@@ -689,3 +695,12 @@ def edit_address_profile_user2(request):
         return redirect("usuarios:profile")
 
     return render(request, "usuarios/edit_address_profile_client2.html")
+
+
+def home_client_view(request):
+
+    productos = Producto.objects.select_related('tienda').prefetch_related('imagenes').all()
+
+    return render(request, 'usuarios/card_client.html', {
+        'productos': productos
+    })

@@ -1,0 +1,79 @@
+{% extends 'index_client_orders.html' %}
+{% load static %}
+
+{% block content %}
+
+<section class="edit-order-content"> 
+  <section class="edit-order edit-order--premium">
+
+    <!-- ENCABEZADO -->
+    <header class="edit-order__header">
+      <h2 class="edit-order__title">Editar pedido #{{ pedido.id }}</h2>
+
+      {% if tienda %}
+      <span class="edit-order__tag">Tienda {{ tienda.nombre }}</span>
+      {% endif %}
+
+      <p class="edit-order__subtitle">
+        Selecciona el tipo de entrega o gestiona el estado del pedido
+      </p>
+    </header>
+
+  <form method="post" class="edit-order__form">
+  {% csrf_token %}
+
+      <!-- TIPO DE ENVÍO -->
+      <div class="edit-order__section">
+        <h3 class="edit-order__product-title">Tipo de entrega</h3>
+
+        <div class="edit-order__row">
+          <label class="edit-order__label">Selecciona una opción:</label>
+
+          <select name="tipo_entrega" class="edit-order__unit">
+
+            <option value="contraentrega"
+            {% if pedido.tipo_entrega == "contraentrega" %}selected{% endif %}>
+            Contraentrega
+            </option>
+
+            <option value="recoger"
+            {% if pedido.tipo_entrega == "recoger" %}selected{% endif %}>
+            Recoger en tienda
+            </option>
+
+          </select>
+
+        </div>
+      </div>
+
+      <!-- ACCIONES DEL PEDIDO -->
+      <div class="edit-order__actions">
+
+        <!-- Volver a comprar -->
+        <button type="submit" name="recomprar" class="btn btn--primary edit-order__save">
+          Volver a comprar
+          <img src="{% static 'assets/icons/delivery.svg' %}" class="btn__icon">
+        </button>
+
+        <!-- Cancelar pedido -->
+        {% if pedido.estado == "pending" %}
+        <button type="submit" name="cancelar" class="btn-secundary btn-secundary-style edit-order__cancel">
+          Cancelar pedido
+          <img src="{% static 'assets/icons/cancel.svg' %}" class="btn-secundary__icon">
+        </button>
+        {% endif %}
+
+        <!-- Realizar pedido -->
+        <button type="submit" name="realizar" class="btn btn--primary edit-order__confirm">
+          Realizar pedido
+          <img src="{% static 'assets/icons/perform.svg' %}" class="btn__icon">
+        </button>
+
+      </div>
+
+  </form>
+
+  </section>
+</section>
+
+{% endblock %}

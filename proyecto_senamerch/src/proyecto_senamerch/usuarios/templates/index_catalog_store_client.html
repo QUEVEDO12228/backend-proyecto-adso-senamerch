@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Catálogo Tienda | SenaMerch</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+
+<body>
+
+  <!-- Navbar -->
+    {% include 'components/navabar_go_go.html' %}
+    {% include 'components/navbar_home_client.html' %}
+
+  <!-- Sidebar de comentarios -->
+  <section class="comments_users">
+    <div class="comments-userss-container">
+      {% include 'components/comments.html' %}
+    </div>
+    <div class="comments-overlay"></div>
+  </section>
+
+  <!-- Hero de la tienda -->
+  <section class="seller-hero-store">
+    {% include 'components/hero_seller.html' %}
+  </section>
+
+  <!-- Contenido principal -->
+  <section class="section-footer-content">
+
+    <!-- Buscador -->
+    <section class="seeker_products_list_client">
+      <h1 class="product-card__title--client">Catálogo de la tienda {{ tienda.nombre }}</h1>
+      {% include 'components/search_bar.html' %}
+    </section>
+
+    <!-- ❌ AQUÍ QUITAMOS -->
+    <!-- list_product_seller.html -->
+
+    <!-- Productos -->
+    <section class="products-cards">
+      <div class="seller-cards__container">
+        {% block main_content %}
+            {% include "components/store_products_client.html" %}
+        {% endblock %}
+      </div>
+    </section>
+
+  </section>
+
+  <!-- Footer -->
+  {% include 'components/footer.html' %}
+  {% include 'components/footer_go_go.html' %}
+
+  <script type="module">
+    import { initCommentsSidebar } from "{% static 'js/comments.js' %}";
+    initCommentsSidebar();
+  </script>
+
+</body>
+</html>

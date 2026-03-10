@@ -1,181 +1,91 @@
-{% extends 'index_client_orders.html' %}
+<div class="orders-panel__list">
 
-{% block title %}Mis Compras{% endblock %}
+{% if selected_status == "delivered" %}
 
-{% load static %}
+    <!-- =====================================
+         DETALLE DE COMPRAS ENTREGADAS
+    ===================================== -->
 
-{% block content %}
+    {% for pedido in pedidos %}
+    <section class="purchases-details">
 
-<section class="purchases">
+      <h2 class="purchases-details__title">Compra #{{ pedido.id }}</h2>
 
-  <div class="purchases__header">
+      <section class="purchases-details__section">
 
-    <button class="btn-secundary btn-secundary-style purchases-details__download-volver">
-      Volver
-      <img src="{% static 'assets/icons/return.svg' %}"
-           alt="Volver"
-           class="btn-secundary__icon">
-    </button>
+        <h3 class="purchases-details__subtitle">Productos</h3>
 
-    <h1 class="purchases__title">
-      Mis Compras
-    </h1>
+        <div class="purchases-details__grid">
+          {% for item in pedido.items.all %}
+          <div class="purchases-details__product-card">
 
-  </div>
+            <p><strong>Fecha:</strong> {{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
 
+            <p><strong>Producto:</strong> {{ item.producto.nombre }}</p>
 
-<!-- ===============================
-     COMPRA VACÍA
-================================ -->
+            <p><strong>Cantidad:</strong> {{ item.cantidad }}</p>
 
-<section class="purchases-details"> 
+            <p><strong>Precio:</strong> ${{ item.precio_unitario }}</p>
 
+          </div>
+          {% endfor %}
+        </div>
 
-<!-- SIDEBAR -->
-<aside class="purchases-details__sidebar">
+      </section>
 
-<h3 class="purchases-details__subtitle">
-Tienda
-</h3>
+      <div class="purchases-details__totals">
+        <p><strong>Total pagado:</strong> ${{ pedido.total }}</p>
+      </div>
 
-<p><strong>Nombre Tienda:</strong> ---</p>
+    </section>
+    {% endfor %}
 
-<p><strong>Teléfono Tienda:</strong>
----
-</p>
+{% else %}
 
-<p><strong>Correo Tienda:</strong>
----
-</p>
+    <!-- =====================================
+         LISTA NORMAL DE PEDIDOS
+    ===================================== -->
 
-<hr>
+    {% if pedidos %}
+      {% for pedido in pedidos %}
+      <article class="order-card">
 
+        <header class="order-card__top">
+          <div class="order-card__meta">
+            <h3 class="order-card__id">Pedido #{{ pedido.id }}</h3>
+            <p class="order-card__date">{{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
+          </div>
 
-<h3 class="purchases-details__subtitle">
-Vendedor
-</h3>
+          <span class="order-card__status order-card__status--{{ pedido.estado }}">
+            {{ pedido.estado }}
+          </span>
+        </header>
 
-<p><strong>Nombre:</strong>
----
-</p>
+        {% with first_item=pedido.items.first %}
+        <div class="order-card__store">
+          Tienda: <strong>{{ first_item.producto.tienda.nombre }}</strong>
+        </div>
+        {% endwith %}
 
-<p><strong>Teléfono:</strong>
----
-</p>
+        <div class="order-card__products">
+          {% for item in pedido.items.all %}
+          <div class="order-card__product">
+            <p class="order-card__product-name">{{ item.producto.nombre }}</p>
+            <p class="order-card__product-qty">x{{ item.cantidad }}</p>
+          </div>
+          {% endfor %}
+        </div>
 
-<p><strong>Correo:</strong>
----
-</p>
+        <div class="order-card__total">
+          Total del pedido: <strong>${{ pedido.total }}</strong>
+        </div>
 
-<hr>
+      </article>
+      {% endfor %}
+    {% else %}
+      <p>No hay pedidos con este estado.</p>
+    {% endif %}
 
-
-<h3 class="purchases-details__subtitle">
-Cliente
-</h3>
-
-<p><strong>Nombre Cliente:</strong>
----
-</p>
-
-<p><strong>Teléfono Cliente:</strong>
----
-</p>
-
-<p><strong>Correo Cliente:</strong>
----
-</p>
-
-</aside>
-
-
-
-<!-- CONTENIDO -->
-<div class="purchases-details__content">
-
-<h2 class="purchases-details__title">
-Mi compra
-</h2>
-
-
-
-<section class="purchases-details__section">
-
-<h3 class="purchases-details__subtitle">
-Productos
-</h3>
-
-
-<div class="purchases-details__grid">
-
-<div class="purchases-details__product-card">
-
-<p><strong>Fecha:</strong>
----
-</p>
-
-<p><strong>Producto:</strong>
----
-</p>
-
-<p><strong>Cantidad:</strong>
----
-</p>
-
-<p><strong>Precio * kg:</strong>
----
-</p>
-
-<p><strong>Total:</strong>
----
-</p>
+{% endif %}
 
 </div>
-
-</div>
-
-</section>
-
-
-
-
-<div class="purchases-details__totals">
-
-<p><strong>Base:</strong>
----
-</p>
-
-<p><strong>IVA:</strong>
----
-</p>
-
-<p><strong>Total pagado:</strong>
----
-</p>
-
-</div>
-
-
-
-<div class="purchases-details__actions--left">
-
-<button class="btn-secundary btn-secundary-style purchases-details__download">
-
-Descargar
-
-<img src="{% static 'assets/icons/save.svg' %}"
-class="btn-secundary__icon">
-
-</button>
-
-</div>
-
-
-</div>
-
-</section>
-
-
-</section>
-
-{% endblock %}

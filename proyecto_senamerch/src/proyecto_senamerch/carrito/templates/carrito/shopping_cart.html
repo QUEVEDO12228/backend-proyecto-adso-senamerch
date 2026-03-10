@@ -1,0 +1,81 @@
+{% extends "index_shopping_cart.html" %}
+{% load static %}
+
+{% block title %}Carrito de Compras{% endblock %}
+
+{% block main_content %}
+<section class="shopping-cart">
+  <h2 class="shopping-cart__title">Carrito de compras</h2>
+
+  <!-- Lista de productos -->
+  <ul class="shopping-cart__list">
+    {% if items %}
+      {% for item in items %}
+      <li class="shopping-cart__item">
+        <img 
+          src="{{ item.producto.imagen_principal }}" 
+          alt="{{ item.producto.nombre }}" 
+          class="shopping-cart__item-image"
+        />
+        <div class="shopping-cart__item-details">
+          <h3 class="shopping-cart__item-name">{{ item.producto.nombre }}</h3>
+          <p class="shopping-cart__item-price">
+            Precio unitario: ${{ item.producto.precio }} / {{ item.producto.unidad_medida }}
+          </p>
+          <p class="shopping-cart__item-quantity">Cantidad: {{ item.cantidad }}</p>
+          <p class="shopping-cart__item-subtotal">
+            Subtotal: ${{ item.subtotal }}
+          </p>
+          <p class="shopping-cart__item-unit-store">
+            Tienda: {{ item.producto.tienda.nombre }}
+          </p>
+        </div>
+
+        <!-- Botón eliminar -->
+        <form class="shopping-cart__remove-form" method="POST" action="{% url 'carrito:eliminar_producto' item.id %}">
+          {% csrf_token %}
+          <button type="submit" class="shopping-cart__remove-button" aria-label="Eliminar producto">
+            <img src="{% static 'assets/icons/delete.svg' %}" alt="Eliminar">
+          </button>
+        </form>
+      </li>
+      {% endfor %}
+    {% else %}
+      <p>Tu carrito está vacío.</p>
+    {% endif %}
+  </ul>
+
+  {% if items %}
+  <!-- Resumen del carrito -->
+  <div class="shopping-cart__summary">
+    <p class="shopping-cart__total">
+      Total: <strong class="shopping-cart__total-price">${{ carrito.get_total }}</strong>
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- Botones de acción -->
+  {% if items %}
+    <div class="shopping-cart__actions-buttons">
+
+      <!-- Volver al primer producto agregado -->
+      {% with first_item=items.0 %}
+      <a href="{% url 'productos:buy_product' producto_id=first_item.producto.id %}" class="btn-secundary btn-secundary-style shopping-cart__return">
+        Volver
+        <img src="{% static 'assets/icons/return.svg' %}" alt="Icono volver" class="btn-secundary__icon">
+      </a>
+      {% endwith %}
+
+      <!-- Continuar a compra -->
+      <div class="shopping-cart__actions-buttons--primary">
+        <a href="{% url 'usuarios:home_client' %}"  class="btn btn--primary shopping-cart__continue">
+          Continuar comprando
+          <img src="{% static 'assets/icons/shopping-cart-dollar.svg' %}" alt="Icono comprar" class="btn__icon">
+        </a>
+      </div>
+
+    </div>
+  {% endif %}
+
+</section>
+{% endblock %}

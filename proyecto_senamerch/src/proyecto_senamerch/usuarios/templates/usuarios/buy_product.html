@@ -1,0 +1,66 @@
+{% extends 'index_description_product_client.html' %}
+{% load static %}
+
+{% block main_content %}
+<section class="page-content">
+  <!-- Sección de compra del producto -->
+  <section class="product-purchase">
+    <h2 class="product-purchase__title">
+      Selecciona las opciones de compra: <br> {{ producto.nombre }}
+    </h2>
+
+    <!-- Formulario de compra -->
+    <form method="POST" action="{% url 'carrito:agregar_al_carrito' producto.id %}" class="product-purchase__form">
+      {% csrf_token %}
+
+      <!-- Tipo de envío -->
+      <div class="product-purchase__group">
+        <label class="product-purchase__label" for="tipo_envio">Tipo de envío</label>
+        <select id="tipo_envio" name="tipo_envio" class="product-purchase__input" required>
+          <option value="" selected disabled>Selecciona una opción</option>
+          <option value="contraentrega">Envío contraentrega</option>
+          <option value="tienda">Recibir en la tienda</option>
+        </select>
+      </div>
+
+      <!-- Cantidad editable -->
+      <div class="product-purchase__group">
+        <label class="product-purchase__label" for="cantidad">
+          Cantidad (en <span class="product-purchase__unit">{{ producto.unidad_medida }}</span>):
+        </label>
+        <input 
+          type="number" 
+          id="cantidad" 
+          name="cantidad" 
+          class="product-purchase__input" 
+          min="1" 
+          value="1" 
+          required
+        >
+      </div>
+
+      <!-- Botones de acción -->
+      <div class="product-purchase__actions-buttons">
+
+        <!-- Botón Volver -->
+        <div class="product-purchase__actions-buttons--secondary">
+          <a href="{% url 'productos:description_product_client' producto.id %}" 
+             class="btn-secundary btn-secundary-style product-purchase__return">
+            Volver
+            <img src="{% static 'assets/icons/return.svg' %}" alt="Icono volver" class="btn-secundary__icon">
+          </a>
+        </div>
+
+        <!-- Botón Agregar al carrito -->
+        <div class="product-purchase__actions-buttons--primary">
+          <button type="submit" class="btn btn--primary product-purchase__add">
+            Agregar al carrito
+            <img src="{% static 'assets/icons/shopping-cart-dollar.svg' %}" alt="Icono comprar" class="btn__icon">
+          </button>
+        </div>
+
+      </div>
+    </form>
+  </section>
+</section>
+{% endblock %}
