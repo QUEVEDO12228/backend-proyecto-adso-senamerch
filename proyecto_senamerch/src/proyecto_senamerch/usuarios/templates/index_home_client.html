@@ -31,7 +31,31 @@
     
     {% include 'components/footer.html' %}
     {% include 'components/footer_go_go.html' %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const links = document.querySelectorAll('.navbar_product_category__link');
+    const cards = document.querySelectorAll('.product-card');
 
+    links.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const cat = link.dataset.categoria;
+
+            cards.forEach(card => {
+                if(cat === 'all' || card.dataset.categoria === cat){
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            // Opcional: marcar el link activo
+            links.forEach(l => l.classList.remove('active'));
+            link.classList.add('active');
+        });
+    });
+});
+</script>
 </body>
 </html>
 

@@ -4,7 +4,7 @@
 {% block main_content %}
 
 {% for producto in productos %}
-<article class="product-card">
+<article class="product-card" data-categoria="{{ producto.categoria }}">
 
   <!-- Botones Me gusta / No me gusta -->
   <div class="product-card__actions">

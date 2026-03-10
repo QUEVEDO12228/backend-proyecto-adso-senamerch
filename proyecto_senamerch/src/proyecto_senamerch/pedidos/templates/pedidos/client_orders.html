@@ -81,20 +81,26 @@
 
           <!-- ACCIONES -->
           <div class="order-card__actions">
+
             {% if pedido.estado == "pending" %}
-            <form method="post" action="{% url 'pedidos:cancel_order' pedido.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn-secundary btn-secundary-style order-card__cancel">
-                Cancelar
-                <img src="{% static 'assets/icons/cancel.svg' %}" class="btn__icon" alt="Cancelar" />
-              </button>
-            </form>
+
+              <!-- Cancelar -->
+              <form method="post" action="{% url 'pedidos:cancel_order' pedido.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-secundary btn-secundary-style order-card__cancel">
+                  Cancelar
+                  <img src="{% static 'assets/icons/cancel.svg' %}" class="btn__icon" alt="Cancelar" />
+                </button>
+              </form>
+
+              <!-- Editar -->
+              <a href="{% url 'pedidos:edit_order' pedido.id %}" class="btn btn--primary order-card__edit">
+                Editar
+                <img src="{% static 'assets/icons/edit.svg' %}" class="btn__icon" alt="Editar" />
+              </a>
+
             {% endif %}
 
-            <a href="{% url 'pedidos:edit_order' pedido.id %}" class="btn btn--primary order-card__edit">
-              Editar
-              <img src="{% static 'assets/icons/edit.svg' %}" class="btn__icon" alt="Editar" />
-            </a>
           </div>
 
         </article>

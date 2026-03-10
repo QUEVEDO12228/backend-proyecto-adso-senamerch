@@ -6,25 +6,24 @@ from django.http import Http404
 
 @login_required
 def client_orders(request):
-    """
-    Vista para mostrar los pedidos del cliente según su estado:
-    'pending', 'delivered' o 'canceled'.
-    """
-    # Obtener el estado del query string; por defecto 'pending'
-    status = request.GET.get('status', 'pending')
 
-    # Validar estado
-    valid_statuses = ['pending', 'delivered', 'canceled']
-    if status not in valid_statuses:
-        status = 'pending'
+    status = request.GET.get("status", "pending")
 
-    # Filtrar pedidos del usuario según estado
-    pedidos = Pedido.objects.filter(usuario=request.user, estado=status).order_by('-creado_en')
+    estados_validos = ["pending", "delivered", "canceled"]
+    if status not in estados_validos:
+        status = "pending"
 
-    return render(request, 'pedidos/client_orders.html', {
-        'pedidos': pedidos,
-        'selected_status': status
-    })
+    pedidos = Pedido.objects.filter(
+        usuario=request.user,
+        estado=status
+    ).order_by("-creado_en")
+
+    context = {
+        "pedidos": pedidos,
+        "selected_status": status
+    }
+
+    return render(request, "pedidos/client_orders.html", context)
 
 @login_required
 def view_purchase(request, pedido_id):
@@ -132,33 +131,62 @@ def option_payment_method(request):
     return render(request, 'carrito/option_payment_method.html', {"carrito": carrito})
 
 
+from django.shortcuts import redirect
+from django.urls import reverse
+
 @login_required
 def cancel_order(request, pedido_id):
     pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
-    if request.method == "POST":
-        pedido.estado = "cancelled"
-        pedido.save()
-    return redirect('pedidos:client_orders')
 
-@login_required
+    if request.method == "POST":
+        pedido.estado = "canceled"
+        pedido.save()
+
+    url = reverse("pedidos:client_orders")
+    return redirect(f"{url}?status=canceled")
+
 def edit_order(request, pedido_id):
-    pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+
+    # Obtener tienda del primer producto
+    first_item = pedido.items.first()
+    tienda = first_item.producto.tienda if first_item else None
 
     if request.method == "POST":
-        # Aquí puedes procesar cambios en el pedido
-        # Por ejemplo: actualizar cantidades o estado
-        for item in pedido.items.all():
-            cantidad = int(request.POST.get(f'cantidad_{item.id}', item.cantidad))
-            item.cantidad = cantidad
-            item.save()
-        # Recalcular total
-        total = sum(item.cantidad * item.precio_unitario for item in pedido.items.all())
-        pedido.total = total
-        pedido.save()
-        return redirect('pedidos:client_orders')
+        tipo_entrega = request.POST.get("tipo_entrega")
 
-    # GET: mostrar formulario de edición
-    return render(request, 'pedidos/edit_order.html', {
-        'pedido': pedido,
-        'items': pedido.items.all()
-    })
+        if tipo_entrega:
+            pedido.tipo_entrega = tipo_entrega
+            pedido.save()
+
+        if "cancelar" in request.POST:
+            pedido.estado = "canceled"
+            pedido.save()
+            return redirect("pedidos:client_orders")
+
+        if "realizar" in request.POST:
+            pedido.estado = "pending"
+            pedido.save()
+            return redirect("pedidos:client_orders")
+
+        if "recomprar" in request.POST:
+            # lógica simple: duplicar pedido
+            nuevo_pedido = Pedido.objects.create(
+                usuario=request.user,
+                estado="pending",
+                tipo_entrega=pedido.tipo_entrega
+            )
+
+            for item in pedido.items.all():
+                item.pk = None
+                item.pedido = nuevo_pedido
+                item.save()
+
+            return redirect("pedidos:client_orders")
+
+    context = {
+        "pedido": pedido,
+        "tienda": tienda
+    }
+
+    return render(request, "pedidos/edit_order.html", context)

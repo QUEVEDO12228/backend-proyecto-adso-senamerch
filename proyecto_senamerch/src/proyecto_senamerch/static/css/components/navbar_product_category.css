@@ -263,6 +263,11 @@
     background-color: var(--tertiary-900);
     color: var(--secundary-200);
 }
+.navbar_product_category__link.active {
+    border: 2px solid var(--tertiary-950);
+    background-color: var(--primary-950);
+    border-radius: 8px;
+}
 
 @media (max-width: 768px) {
 

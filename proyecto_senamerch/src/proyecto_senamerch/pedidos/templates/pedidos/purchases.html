@@ -1,87 +1,91 @@
-{% extends 'index_client_orders.html' %}
-{% load static %}
+<div class="orders-panel__list">
 
-{% block title %}Mis Compras{% endblock %}
+{% if selected_status == "delivered" %}
 
-{% block content %}
-<section class="purchases">
+    <!-- =====================================
+         DETALLE DE COMPRAS ENTREGADAS
+    ===================================== -->
 
-  <!-- HEADER -->
-  <div class="purchases__header">
-    <a href="{% url 'pedidos:client_orders' %}" class="btn-secundary btn-secundary-style purchases-details__download-volver">
-      Volver
-      <img src="{% static 'assets/icons/return.svg' %}" alt="Volver" class="btn-secundary__icon">
-    </a>
-    <h1 class="purchases__title">Mis Compras</h1>
-  </div>
+    {% for pedido in pedidos %}
+    <section class="purchases-details">
 
-  {% if pedido %}
-  <!-- DETALLES DE LA COMPRA -->
-  <section class="purchases-details"> 
-
-    <!-- SIDEBAR -->
-    <aside class="purchases-details__sidebar">
-
-      <h3 class="purchases-details__subtitle">Tienda</h3>
-      <p><strong>Nombre Tienda:</strong> {{ pedido.tienda.nombre }}</p>
-      <p><strong>Teléfono Tienda:</strong> {{ pedido.tienda.telefono }}</p>
-      <p><strong>Correo Tienda:</strong> {{ pedido.tienda.correo }}</p>
-      <hr>
-
-      <h3 class="purchases-details__subtitle">Vendedor</h3>
-      <p><strong>Nombre:</strong> {{ pedido.tienda.vendedor.get_full_name }}</p>
-      <p><strong>Teléfono:</strong> {{ pedido.tienda.vendedor.telefono }}</p>
-      <p><strong>Correo:</strong> {{ pedido.tienda.vendedor.email }}</p>
-      <hr>
-
-      <h3 class="purchases-details__subtitle">Cliente</h3>
-      <p><strong>Nombre Cliente:</strong> {{ pedido.usuario.get_full_name }}</p>
-      <p><strong>Teléfono Cliente:</strong> {{ pedido.usuario.telefono }}</p>
-      <p><strong>Correo Cliente:</strong> {{ pedido.usuario.email }}</p>
-
-    </aside>
-
-    <!-- CONTENIDO -->
-    <div class="purchases-details__content">
-      <h2 class="purchases-details__title">Mi Compra</h2>
+      <h2 class="purchases-details__title">Compra #{{ pedido.id }}</h2>
 
       <section class="purchases-details__section">
+
         <h3 class="purchases-details__subtitle">Productos</h3>
+
         <div class="purchases-details__grid">
-          {% for item in pedido.productos.all %}
+          {% for item in pedido.items.all %}
           <div class="purchases-details__product-card">
-            <p><strong>Fecha:</strong> {{ pedido.fecha|date:"d/m/Y H:i" }}</p>
+
+            <p><strong>Fecha:</strong> {{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
+
             <p><strong>Producto:</strong> {{ item.producto.nombre }}</p>
-            <p><strong>Cantidad:</strong> {{ item.cantidad }} {{ item.producto.unidad_medida }}</p>
-            <p><strong>Precio * kg:</strong> ${{ item.precio_unitario }}</p>
-            <p><strong>Total:</strong> ${{ item.cantidad|floatformat:2|add:""|floatformat:2|floatformat:""|floatformat:""|add:item.precio_unitario|floatformat:2 }}</p>
+
+            <p><strong>Cantidad:</strong> {{ item.cantidad }}</p>
+
+            <p><strong>Precio:</strong> ${{ item.precio_unitario }}</p>
+
           </div>
           {% endfor %}
         </div>
+
       </section>
 
-      <!-- TOTALES -->
       <div class="purchases-details__totals">
-        <p><strong>Base:</strong> ${{ pedido.base }}</p>
-        <p><strong>IVA:</strong> ${{ pedido.iva }}</p>
         <p><strong>Total pagado:</strong> ${{ pedido.total }}</p>
       </div>
 
-      <!-- ACCIONES -->
-      <div class="purchases-details__actions--left">
-        <a href="{% url 'pedidos:download_invoice' pedido.id %}" class="btn-secundary btn-secundary-style purchases-details__download">
-          Descargar
-          <img src="{% static 'assets/icons/save.svg' %}" class="btn-secundary__icon">
-        </a>
-      </div>
+    </section>
+    {% endfor %}
 
-    </div>
+{% else %}
 
-  </section>
+    <!-- =====================================
+         LISTA NORMAL DE PEDIDOS
+    ===================================== -->
 
-  {% else %}
-  <p>No se encontraron compras entregadas.</p>
-  {% endif %}
+    {% if pedidos %}
+      {% for pedido in pedidos %}
+      <article class="order-card">
 
-</section>
-{% endblock %}
+        <header class="order-card__top">
+          <div class="order-card__meta">
+            <h3 class="order-card__id">Pedido #{{ pedido.id }}</h3>
+            <p class="order-card__date">{{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
+          </div>
+
+          <span class="order-card__status order-card__status--{{ pedido.estado }}">
+            {{ pedido.estado }}
+          </span>
+        </header>
+
+        {% with first_item=pedido.items.first %}
+        <div class="order-card__store">
+          Tienda: <strong>{{ first_item.producto.tienda.nombre }}</strong>
+        </div>
+        {% endwith %}
+
+        <div class="order-card__products">
+          {% for item in pedido.items.all %}
+          <div class="order-card__product">
+            <p class="order-card__product-name">{{ item.producto.nombre }}</p>
+            <p class="order-card__product-qty">x{{ item.cantidad }}</p>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="order-card__total">
+          Total del pedido: <strong>${{ pedido.total }}</strong>
+        </div>
+
+      </article>
+      {% endfor %}
+    {% else %}
+      <p>No hay pedidos con este estado.</p>
+    {% endif %}
+
+{% endif %}
+
+</div>

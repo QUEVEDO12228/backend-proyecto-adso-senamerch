@@ -30,6 +30,8 @@ urlpatterns = [
 
     # 👉 CATÁLOGO (ESTA RUTA ESTÁ BIEN)
     path('catalogo/', views.seller_catalog, name='seller_catalog'),
+    # 👉 LISTADO DE PRODUCTOS DEL VENDEDOR
+    path('mis-productos/', views.list_products_store_seller, name='list_products_store_seller'),
 
     # =================================
     # EDITAR PERFIL VENDEDOR
