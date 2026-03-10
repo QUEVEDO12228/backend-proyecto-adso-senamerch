@@ -94,8 +94,30 @@
     background-color: var(--tertiary-800);
     color: var(--white);
 }
+.navbar_product_category__link-category {
+    font-size: var(--fs-xs);
+    font-family: var(--font-primary-semibold);
+    color: var(--white);
+    text-decoration: none;
+    padding: 8px 8px;
+    border-radius: 6px;
+    border: 2px solid var(--secundary-400);
+    transition: all 0.2s ease-in-out;
+    margin-right: 2rem;
+}
+
+.navbar_product_category__link-category:hover {
+    background-color: var(--tertiary-800);
+    color: var(--white);
+}
 
 .navbar_product_category__link.active {
+    background-color: var(--primary-300);
+    color: var(--primary-950);
+    font-family: var(--font-primary-bold);
+    border-bottom: 2px solid var(--primary-700);
+}
+.navbar_product_category__link-category.active {
     background-color: var(--primary-300);
     color: var(--primary-950);
     font-family: var(--font-primary-bold);

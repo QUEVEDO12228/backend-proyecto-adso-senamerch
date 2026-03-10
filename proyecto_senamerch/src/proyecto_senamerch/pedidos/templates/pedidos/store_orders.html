@@ -1,0 +1,81 @@
+{% extends "index_store_orders.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="store-content">
+  <section class="store-orders">
+
+    <header class="store-orders__header">
+      <h2 class="store-orders__title">Pedidos recientes</h2>
+
+      <div class="store-orders__filters">
+        <form method="get">
+          <select name="estado" class="store-orders__filter" onchange="this.form.submit()">
+            <option value="">Todos los estados</option>
+            <option value="pending" {% if request.GET.estado == "pending" %}selected{% endif %}>Pendientes</option>
+            <option value="delivered" {% if request.GET.estado == "delivered" %}selected{% endif %}>Entregados</option>
+          </select>
+        </form>
+      </div>
+    </header>
+
+    <div class="store-orders__list">
+      {% if pedidos %}
+        {% for pedido in pedidos %}
+        <article class="store-orders__item">
+
+          <h3 class="store-orders__id">Pedido #{{ pedido.id }}</h3>
+          <p class="store-orders__date"><strong>Fecha:</strong> {{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
+
+          <div class="store-orders__status {% if pedido.estado == 'pending' %}store-orders__status--pending{% else %}store-orders__status--delivered{% endif %}">
+            {{ pedido.get_estado_display }}
+          </div>
+
+          <div class="store-orders__total">
+            Total: <strong>${{ pedido.total }}</strong>
+          </div>
+
+          <div class="store-orders__card store-orders__card--client">
+            <h3 class="store-orders__subtitle">Información del cliente</h3>
+            <p class="store-orders__client"><strong>Nombre:</strong> {{ pedido.usuario.username }}</p>
+            <p class="store-orders__client"><strong>Correo:</strong> {{ pedido.usuario.email }}</p>
+            {% if pedido.usuario.telefono %}
+            <p class="store-orders__client"><strong>Teléfono:</strong> {{ pedido.usuario.telefono }}</p>
+            {% endif %}
+          </div>
+
+          <div class="store-orders__products">
+            <h3 class="store-orders__product">Productos del pedido</h3>
+            {% for item in pedido.items.all %}
+            <div class="store-orders__card store-orders__card--product">
+              <p class="store-orders__product-name"><strong>{{ item.producto.nombre }}</strong></p>
+              <p class="store-orders__product-detail">Cantidad: {{ item.cantidad }}</p>
+              <p class="store-orders__product-detail">Precio: ${{ item.precio_unitario }}</p>
+            </div>
+            {% endfor %}
+          </div>
+
+          {% if pedido.estado == "pending" %}
+          <div class="store-orders__primary">
+            <form method="post" action="{% url 'pedidos:update_order_status' pedido.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn--primary store-orders__delivery">
+                Realizar
+                <img src="{% static 'assets/icons/perform.svg' %}" alt="Icono Enviar" class="btn__icon">
+              </button>
+            </form>
+          </div>
+          {% endif %}
+
+        </article>
+        {% endfor %}
+      {% else %}
+        <p style="padding:20px;">No hay pedidos todavía.</p>
+      {% endif %}
+    </div>
+
+  </section>
+</section>
+
+{% endblock %}

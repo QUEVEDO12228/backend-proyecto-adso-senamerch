@@ -3,17 +3,29 @@
 <nav class="navbar_product_category">
 
   <div class="navbar_left_group">
+
       <div class="navbar_product_category__actions--left">
+
           <a href="{% url 'usuarios:home' %}" class="navbar_product_category__link-image">
-            <img src="{% static 'assets/img/sena-logo.png' %}" class="navbar_product_category__img" alt="">
+
+            <img 
+            src="{% static 'assets/img/sena-logo.png' %}" 
+            class="navbar_product_category__img" 
+            alt="Logo Sena">
+
           </a>
+
       </div>  
 
       <!-- Línea negra -->
       <div class="navbar_separator"></div>
 
+
+      <!-- LOGO TEXTO -->
       <div class="navbar_product_category__logo--left">
+
         <h1 class="navbar_product_category__title--SenaMerch">
+
           <span class="navbar_product_category__letter navbar_product_category__letter--1">S</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--2">e</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--3">n</span>
@@ -23,50 +35,72 @@
           <span class="navbar_product_category__letter navbar_product_category__letter--7">r</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--8">c</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--9">h</span>
-          <img src="{% static 'assets/icons/wheat.svg' %}" alt="" class="navbar_product_category__icon">
+
+          <img 
+          src="{% static 'assets/icons/wheat.svg' %}" 
+          alt="Icono trigo"
+          class="navbar_product_category__icon">
+
         </h1>
+
       </div>
+
   </div>
 
+
+
+  <!-- ACCIONES NAVBAR -->
   <div class="navbar_product_category__actions">
 
-    <!-- PEDIDOS -->
-    <a href="{% url 'pedidos:client_orders' %}" 
+
+    <!-- PERFIL TIENDA -->
+    <a href="{% url 'tiendas:profile_store_seller' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/orders.svg' %}" 
-           class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Pedidos</span>
+
+      <img 
+      src="{% static 'assets/icons/store_profile.svg' %}" 
+      class="navbar_product_category__icon"
+      alt="Perfil tienda">
+
+      <span class="navbar_product_category__tooltip">
+        Perfil tienda
+      </span>
+
     </a>
 
-    <!-- CREAR TIENDA (solo si no tiene) -->
-    {% if request.user.is_authenticated and request.user.tiendas.count == 0 %}
-    <a href="{% url 'tiendas:create_store' %}" 
-       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/create_store.svg' %}" 
-           class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Crear tienda</span>
-    </a>
-    {% endif %}
 
-    <!-- LOGOUT -->
-    <a href="{% url 'usuarios:logout' %}" 
+    <!-- AÑADIR PRODUCTOS -->
+    <a href="{% url 'productos:create_product' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/exit.svg' %}" 
-           class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Salir</span>
+
+      <img 
+      src="{% static 'assets/icons/add_product.svg' %}" 
+      class="navbar_product_category__icon"
+      alt="Añadir producto">
+
+      <span class="navbar_product_category__tooltip">
+        Añadir Productos
+      </span>
+
     </a>
 
-    <!-- PERFIL -->
-    <a href="{% url 'usuarios:profile' %}" 
+
+    <!-- VOLVER -->
+    <a href="{% url 'tiendas:profile_store_seller' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/profile_user.svg' %}" 
-           class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Perfil</span>
+
+      <img 
+      src="{% static 'assets/icons/return.svg' %}" 
+      class="navbar_product_category__icon"
+      alt="Volver">
+
+      <span class="navbar_product_category__tooltip">
+        Volver
+      </span>
+
     </a>
+
 
   </div>
+
 </nav>
