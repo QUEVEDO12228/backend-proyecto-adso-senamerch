@@ -114,7 +114,9 @@
 .shopping-cart__actions-buttons--primary {
   justify-content: flex-end;
 }
-
+.shopping-cart__return{
+  width: fit-content;
+}
 /* Desktop */
 @media (width > 640px) {
   .shopping-cart__actions-buttons {

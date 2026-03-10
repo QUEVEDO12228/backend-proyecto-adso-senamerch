@@ -492,12 +492,6 @@ def seller_address_view(request):
     return render(request, "tiendas/seller_profile_address.html", {
         "profile": profile
     })
-def profile_store_client(request, id):
-    tienda = get_object_or_404(Tienda, id=id)
-
-    return render(request, "tiendas/profile_store_client.html", {
-        "tienda": tienda
-    })
 
 # ==========================================
 # EDITAR DIRECCIÓN TIENDA - PASO 1
@@ -600,4 +594,17 @@ def list_products_store_seller(request):
     return render(request, 'tiendas/list_products_store_seller.html', {
         'productos': productos,
         'tienda': tienda   # IMPORTANTE
+    })
+
+
+def profile_store_client(request, tienda_id):
+    tienda = get_object_or_404(Tienda, id=tienda_id)
+
+    productos = Producto.objects.filter(
+        tienda=tienda
+    ).select_related('tienda').prefetch_related('imagenes')
+
+    return render(request, 'usuarios/store_products_client.html', {
+        'productos': productos,
+        'tienda': tienda
     })

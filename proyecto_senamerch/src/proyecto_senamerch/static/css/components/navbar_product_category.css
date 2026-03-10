@@ -52,15 +52,25 @@
     font-family: var(--font-primary-bold);
 }
 
-.navbar_product_category__letter--1 { color: var(--secundary-300); }
-.navbar_product_category__letter--2 { color: var(--secundary-300); }
-.navbar_product_category__letter--3 { color: var(--secundary-300); }
-.navbar_product_category__letter--4 { color: var(--secundary-300); }
-.navbar_product_category__letter--5 { color: var(--secundary-300); }
-.navbar_product_category__letter--6 { color: var(--secundary-300); }
-.navbar_product_category__letter--7 { color: var(--secundary-300); }
-.navbar_product_category__letter--8 { color: var(--secundary-300); }
-.navbar_product_category__letter--9 { color: var(--secundary-300); }
+.navbar_product_category__letter--1 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+.navbar_product_category__letter--2 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+.navbar_product_category__letter--3 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+.navbar_product_category__letter--4 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+.navbar_product_category__letter--5 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+.navbar_product_category__letter--6 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+.navbar_product_category__letter--7 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+.navbar_product_category__letter--8 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+.navbar_product_category__letter--9 { color: var(--white); -webkit-text-stroke-width: 1px;
+  -webkit-text-stroke-color: var(--secundary-400);  }
+    
 
 /* Actions (login, register, contact) */
 .navbar_product_category__actions {

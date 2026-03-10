@@ -1,181 +1,87 @@
 {% extends 'index_client_orders.html' %}
+{% load static %}
 
 {% block title %}Mis Compras{% endblock %}
 
-{% load static %}
-
 {% block content %}
-
 <section class="purchases">
 
+  <!-- HEADER -->
   <div class="purchases__header">
-
-    <button class="btn-secundary btn-secundary-style purchases-details__download-volver">
+    <a href="{% url 'pedidos:client_orders' %}" class="btn-secundary btn-secundary-style purchases-details__download-volver">
       Volver
-      <img src="{% static 'assets/icons/return.svg' %}"
-           alt="Volver"
-           class="btn-secundary__icon">
-    </button>
-
-    <h1 class="purchases__title">
-      Mis Compras
-    </h1>
-
+      <img src="{% static 'assets/icons/return.svg' %}" alt="Volver" class="btn-secundary__icon">
+    </a>
+    <h1 class="purchases__title">Mis Compras</h1>
   </div>
 
+  {% if pedido %}
+  <!-- DETALLES DE LA COMPRA -->
+  <section class="purchases-details"> 
 
-<!-- ===============================
-     COMPRA VACÍA
-================================ -->
+    <!-- SIDEBAR -->
+    <aside class="purchases-details__sidebar">
 
-<section class="purchases-details"> 
+      <h3 class="purchases-details__subtitle">Tienda</h3>
+      <p><strong>Nombre Tienda:</strong> {{ pedido.tienda.nombre }}</p>
+      <p><strong>Teléfono Tienda:</strong> {{ pedido.tienda.telefono }}</p>
+      <p><strong>Correo Tienda:</strong> {{ pedido.tienda.correo }}</p>
+      <hr>
 
+      <h3 class="purchases-details__subtitle">Vendedor</h3>
+      <p><strong>Nombre:</strong> {{ pedido.tienda.vendedor.get_full_name }}</p>
+      <p><strong>Teléfono:</strong> {{ pedido.tienda.vendedor.telefono }}</p>
+      <p><strong>Correo:</strong> {{ pedido.tienda.vendedor.email }}</p>
+      <hr>
 
-<!-- SIDEBAR -->
-<aside class="purchases-details__sidebar">
+      <h3 class="purchases-details__subtitle">Cliente</h3>
+      <p><strong>Nombre Cliente:</strong> {{ pedido.usuario.get_full_name }}</p>
+      <p><strong>Teléfono Cliente:</strong> {{ pedido.usuario.telefono }}</p>
+      <p><strong>Correo Cliente:</strong> {{ pedido.usuario.email }}</p>
 
-<h3 class="purchases-details__subtitle">
-Tienda
-</h3>
+    </aside>
 
-<p><strong>Nombre Tienda:</strong> ---</p>
+    <!-- CONTENIDO -->
+    <div class="purchases-details__content">
+      <h2 class="purchases-details__title">Mi Compra</h2>
 
-<p><strong>Teléfono Tienda:</strong>
----
-</p>
+      <section class="purchases-details__section">
+        <h3 class="purchases-details__subtitle">Productos</h3>
+        <div class="purchases-details__grid">
+          {% for item in pedido.productos.all %}
+          <div class="purchases-details__product-card">
+            <p><strong>Fecha:</strong> {{ pedido.fecha|date:"d/m/Y H:i" }}</p>
+            <p><strong>Producto:</strong> {{ item.producto.nombre }}</p>
+            <p><strong>Cantidad:</strong> {{ item.cantidad }} {{ item.producto.unidad_medida }}</p>
+            <p><strong>Precio * kg:</strong> ${{ item.precio_unitario }}</p>
+            <p><strong>Total:</strong> ${{ item.cantidad|floatformat:2|add:""|floatformat:2|floatformat:""|floatformat:""|add:item.precio_unitario|floatformat:2 }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </section>
 
-<p><strong>Correo Tienda:</strong>
----
-</p>
+      <!-- TOTALES -->
+      <div class="purchases-details__totals">
+        <p><strong>Base:</strong> ${{ pedido.base }}</p>
+        <p><strong>IVA:</strong> ${{ pedido.iva }}</p>
+        <p><strong>Total pagado:</strong> ${{ pedido.total }}</p>
+      </div>
 
-<hr>
+      <!-- ACCIONES -->
+      <div class="purchases-details__actions--left">
+        <a href="{% url 'pedidos:download_invoice' pedido.id %}" class="btn-secundary btn-secundary-style purchases-details__download">
+          Descargar
+          <img src="{% static 'assets/icons/save.svg' %}" class="btn-secundary__icon">
+        </a>
+      </div>
 
+    </div>
 
-<h3 class="purchases-details__subtitle">
-Vendedor
-</h3>
+  </section>
 
-<p><strong>Nombre:</strong>
----
-</p>
-
-<p><strong>Teléfono:</strong>
----
-</p>
-
-<p><strong>Correo:</strong>
----
-</p>
-
-<hr>
-
-
-<h3 class="purchases-details__subtitle">
-Cliente
-</h3>
-
-<p><strong>Nombre Cliente:</strong>
----
-</p>
-
-<p><strong>Teléfono Cliente:</strong>
----
-</p>
-
-<p><strong>Correo Cliente:</strong>
----
-</p>
-
-</aside>
-
-
-
-<!-- CONTENIDO -->
-<div class="purchases-details__content">
-
-<h2 class="purchases-details__title">
-Mi compra
-</h2>
-
-
-
-<section class="purchases-details__section">
-
-<h3 class="purchases-details__subtitle">
-Productos
-</h3>
-
-
-<div class="purchases-details__grid">
-
-<div class="purchases-details__product-card">
-
-<p><strong>Fecha:</strong>
----
-</p>
-
-<p><strong>Producto:</strong>
----
-</p>
-
-<p><strong>Cantidad:</strong>
----
-</p>
-
-<p><strong>Precio * kg:</strong>
----
-</p>
-
-<p><strong>Total:</strong>
----
-</p>
-
-</div>
-
-</div>
+  {% else %}
+  <p>No se encontraron compras entregadas.</p>
+  {% endif %}
 
 </section>
-
-
-
-
-<div class="purchases-details__totals">
-
-<p><strong>Base:</strong>
----
-</p>
-
-<p><strong>IVA:</strong>
----
-</p>
-
-<p><strong>Total pagado:</strong>
----
-</p>
-
-</div>
-
-
-
-<div class="purchases-details__actions--left">
-
-<button class="btn-secundary btn-secundary-style purchases-details__download">
-
-Descargar
-
-<img src="{% static 'assets/icons/save.svg' %}"
-class="btn-secundary__icon">
-
-</button>
-
-</div>
-
-
-</div>
-
-</section>
-
-
-</section>
-
 {% endblock %}

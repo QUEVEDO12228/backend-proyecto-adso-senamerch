@@ -523,8 +523,6 @@ def description_product_seller(request, id):
         "producto": producto,
         "comentarios": comentarios
     })
-
-
 # =====================================================
 # 🔹 DESCRIPCIÓN CLIENTE
 # =====================================================
@@ -532,28 +530,9 @@ def description_product_client(request, id):
 
     producto = get_object_or_404(Producto, id=id)
 
-    return render(request, "productos/description_product_client.html", {
+    return render(request, "usuarios/description_product_client.html", {
         "producto": producto
     })
-
-
-# =====================================================
-# 🔹 COMPRAR PRODUCTO (VALIDA STOCK)
-# =====================================================
-@login_required
-def buy_product(request, id):
-
-    producto = get_object_or_404(Producto, id=id)
-
-    if producto.stock <= 0:
-        messages.error(request, "Producto agotado.")
-        return redirect("productos:description_product_client", id=id)
-
-    # 🔥 Aquí luego puedes integrar carrito o pedido
-
-    messages.success(request, "Producto agregado correctamente.")
-    return redirect("productos:description_product_client", id=id)
-
 
 # =====================================================
 # 🔹 ACTIVAR / DESACTIVAR PRODUCTO
@@ -576,3 +555,13 @@ def toggle_product_status(request, producto_id):
         messages.warning(request, "Producto deshabilitado correctamente.")
 
     return redirect("productos:description_product_seller", producto.id)
+
+def buy_product(request, producto_id):
+    producto = get_object_or_404(Producto, id=producto_id)
+    return render(request, 'usuarios/buy_product.html', {
+        'producto': producto
+    })
+
+def lista_productos(request):
+    productos = Producto.objects.filter(activo=True)
+    return render(request, 'productos/lista_productos.html', {'productos': productos})

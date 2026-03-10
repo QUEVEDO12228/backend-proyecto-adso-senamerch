@@ -3,13 +3,14 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Inicio | SenaMerch</title>
+  <title>Pantalla Principal Cliente</title>
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
     {% include 'components/navabar_go_go.html' %}
-    {% include 'components/navbar_client_view.html' %}
+    {% include 'components/navbar_home_store_seller.html' %}
     <section class="search-category-grid">
+
       <div class="search-bar-container">
         {% include 'components/search_bar.html' %}
       </div>
@@ -19,12 +20,18 @@
           {% include 'components/navbar_product_category.html' %}
         </div>
       </nav>
+
     </section>
-    <main class="main-content">
-    {% block content %}{% endblock %}
-    </main> 
+    
+    <section class="products-grid">
+      <div class="cards__container">
+          {% block main_content %}{% endblock %}
+      </div>
+    </section>
+    
     {% include 'components/footer.html' %}
     {% include 'components/footer_go_go.html' %}
 
 </body>
 </html>
+

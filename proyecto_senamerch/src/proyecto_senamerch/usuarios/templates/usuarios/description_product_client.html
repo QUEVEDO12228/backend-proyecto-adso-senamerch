@@ -1,0 +1,146 @@
+{% extends 'index_description_product_client.html' %}
+{% load static %}
+
+{% block main_content %}
+<section class="product-description">
+
+  <!-- GALERÍA -->
+  <div class="product-description__gallery">
+
+    <!-- IMAGEN PRINCIPAL -->
+    {% with producto.imagenes.first as imagen_principal %}
+      {% if imagen_principal %}
+        <img src="{{ imagen_principal.imagen.url }}" 
+             alt="{{ producto.nombre }}" 
+             class="product-description__image product-description__image--main" 
+             id="mainImage" />
+      {% else %}
+        <img src="{% static 'assets/img/default-product.jpg' %}" 
+             alt="Sin imagen" 
+             class="product-description__image product-description__image--main" 
+             id="mainImage" />
+      {% endif %}
+    {% endwith %}
+
+    <!-- MINIATURAS -->
+    <div class="product-description__thumbnails">
+      {% for imagen in producto.imagenes.all %}
+        <img src="{{ imagen.imagen.url }}" 
+             class="product-description__thumbnail"
+             onclick="changeMainImage(this)" />
+      {% empty %}
+        <img src="{% static 'assets/img/default-product.jpg' %}" 
+             class="product-description__thumbnail" />
+      {% endfor %}
+    </div>
+
+    <!-- BLOQUE DE COMENTARIOS -->
+    <div class="product-description__comments comments">
+      <h3 class="comments__title">Opiniones de los usuarios</h3>
+
+      <div class="comments__list">
+        {% for comentario in comentarios %}
+          <div class="comments__item">
+            <p class="comments__user">{{ comentario.usuario.username }} 
+              <span class="comments__date">• {{ comentario.creado_en|timesince }} atrás</span>
+            </p>
+            <p class="comments__text">{{ comentario.texto }}</p>
+          </div>
+        {% empty %}
+          <p>No hay comentarios aún.</p>
+        {% endfor %}
+      </div>
+
+      <!-- FORMULARIO PARA NUEVO COMENTARIO -->
+      {% if request.user.is_authenticated %}
+      <form id="formComentario" 
+            method="POST" 
+            data-producto-id="{{ producto.id }}" 
+            class="comments__form">
+        {% csrf_token %}
+        <label for="comentario" class="comments__label">Deja tu comentario:</label>
+        <textarea id="comentario" 
+                  name="comentario" 
+                  class="comments__textarea" 
+                  rows="3" 
+                  placeholder="Escribe tu opinión aquí..." 
+                  required></textarea>
+        <button type="submit" class="btn btn--primary comments__button">
+          Enviar comentario
+          <img src="{% static 'assets/icons/contact.svg' %}" 
+               alt="Icono Enviar" 
+               class="comments__icon btn__icon" />
+        </button>
+      </form>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- DETALLES DEL PRODUCTO Y BOTÓN COMPRAR -->
+  <div class="product-description__details details">
+    <div class="details__rating rating">
+      <p class="rating__text">
+        ★ ★ ★ ★ ★ <span class="rating__score">(4.5/5 promedio)</span>
+      </p>
+    </div>
+
+    <h2 class="details__title">{{ producto.nombre }}</h2>
+    <p class="details__price">${{ producto.precio }} / kilo</p>
+
+    <a href="{% url 'productos:buy_product' producto.id %}" class="btn btn--primary details__button">
+      Comprar
+      <img src="{% static 'assets/icons/cash-button.svg' %}" alt="Comprar" class="btn__icon product-card__icon">
+    </a>
+
+    <!-- DETALLES DEL PRODUCTO -->
+    <div class="details__info info">
+      <h3 class="info__subtitle">Características sobre este producto</h3>
+      <p class="info__text"><strong>Unidad de medida: </strong>{{ producto.unidad_medida }}</p>
+      <p class="info__text"><strong>Tipo de garantía: </strong>{{ producto.tipo_garantia }}</p>
+      <p class="info__text"><strong>Descripción: </strong>{{ producto.descripcion }}</p>
+      <p class="info__text"><strong>Fecha caducidad: </strong>{{ producto.fecha_caducidad }}</p>
+      <p class="info__text"><strong>Tipo de envío: </strong>{{ producto.tipo_envio }}</p>
+      <p class="info__text"><strong>Método de pago: </strong>{{ producto.metodo_pago }}</p>
+      <p class="info__text"><strong>Descuento: </strong>{{ producto.descuento }}%</p>
+    </div>
+    <!-- INFORMACIÓN ADICIONAL -->
+    <div class="details__info info">
+      <h3 class="info__subtitle">Más información</h3>
+      <p class="info__text">{{ producto.descripcion }}</p>
+    </div>
+
+    <!-- MÁS PRODUCTOS DEL VENDEDOR -->
+    <h3 class="info__subtitle">Más Productos</h3>
+    <div class="product-description__more-products">
+      {% for prod in otros_productos %}
+        <article class="product-card">
+          <div class="product-card__header">
+            <h2 class="product-card__title">{{ prod.nombre }}</h2>
+            <p class="product-card__price">${{ prod.precio }} / kilo</p>
+            <p class="product-card__discount">{{ prod.descuento }} % de descuento</p>
+          </div>
+          <a href="{% url 'productos:description_product_client' prod.id %}" class="product-card__image-link">
+            {% with prod.imagenes.first as img %}
+              {% if img %}
+                <img src="{{ img.imagen.url }}" alt="{{ prod.nombre }}" class="product-card__image">
+              {% else %}
+                <img src="{% static 'assets/img/default-product.jpg' %}" alt="Sin imagen" class="product-card__image">
+              {% endif %}
+            {% endwith %}
+          </a>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- SCRIPT PARA CAMBIAR IMAGEN PRINCIPAL -->
+<script>
+function changeMainImage(element) {
+    const mainImage = document.getElementById("mainImage");
+    mainImage.src = element.src;
+}
+</script>
+
+{% endblock %}

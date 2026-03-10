@@ -25,3 +25,17 @@
     width: 100%;
   }
 }
+.seeker_products_list_client{
+  display: flex;
+}
+.product-card__title--client{
+  display: flex;
+  justify-content: center;
+  font-size: var(--fs-sm);
+  color: var(--secundary-950);
+  font-family: var(--font-primary-semibold);
+  margin: 0 auto;
+  -webkit-text-stroke-width: 0.5px;
+  -webkit-text-stroke-color: var(--secundary-400); 
+
+}

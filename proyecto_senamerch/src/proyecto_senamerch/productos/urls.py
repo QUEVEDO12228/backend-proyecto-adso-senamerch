@@ -46,8 +46,9 @@ urlpatterns = [
         views.description_product_client,
         name="description_product_client"
     ),
+    # urls.py
     path(
-        "producto/<int:id>/comprar/",
+        "producto/<int:producto_id>/comprar/",
         views.buy_product,
         name="buy_product"
     ),
@@ -56,6 +57,7 @@ urlpatterns = [
         views.toggle_product_status,
         name='toggle_product_status'
     ),
+    path('', views.lista_productos, name='lista_productos'),
 ]
 
 if settings.DEBUG:
