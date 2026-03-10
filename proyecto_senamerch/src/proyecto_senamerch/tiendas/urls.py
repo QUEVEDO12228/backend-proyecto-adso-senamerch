@@ -26,8 +26,6 @@ urlpatterns = [
         name='profile_store_seller'
     ),
 
-    path('orders/', views.store_orders, name='store_orders'),
-
     # 👉 CATÁLOGO (ESTA RUTA ESTÁ BIEN)
     path('catalogo/', views.seller_catalog, name='seller_catalog'),
     # 👉 LISTADO DE PRODUCTOS DEL VENDEDOR

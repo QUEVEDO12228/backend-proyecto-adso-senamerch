@@ -8,27 +8,39 @@
   <div class="orders-panel__container">
 
     <!-- ========================================
-         TABS (DISEÑO PROFESIONAL)
+         TABS
     ======================================== -->
     <nav class="orders-panel__tabs">
       <button class="orders-panel__tab {% if selected_status == 'pending' %}orders-panel__tab--active{% endif %}" data-status="pending">
         Pendientes
       </button>
+
       <button class="orders-panel__tab {% if selected_status == 'delivered' %}orders-panel__tab--active{% endif %}" data-status="delivered">
         Entregados
       </button>
+
       <button class="orders-panel__tab {% if selected_status == 'canceled' %}orders-panel__tab--active{% endif %}" data-status="canceled">
         Cancelados
       </button>
     </nav>
 
-    <!-- Select adicional (responsive / accesibilidad) -->
+    <!-- SELECT RESPONSIVE -->
     <div class="orders-panel__filter">
       <form method="get" id="orders-filter-form">
-        <select name="status" class="orders-panel__select" onchange="document.getElementById('orders-filter-form').submit()">
-          <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pendientes</option>
-          <option value="delivered" {% if selected_status == 'delivered' %}selected{% endif %}>Entregados</option>
-          <option value="canceled" {% if selected_status == 'canceled' %}selected{% endif %}>Cancelados</option>
+        <select name="status" class="orders-panel__select" onchange="this.form.submit()">
+
+          <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>
+            Pendientes
+          </option>
+
+          <option value="delivered" {% if selected_status == 'delivered' %}selected{% endif %}>
+            Entregados
+          </option>
+
+          <option value="canceled" {% if selected_status == 'canceled' %}selected{% endif %}>
+            Cancelados
+          </option>
+
         </select>
       </form>
     </div>
@@ -36,77 +48,148 @@
     <!-- ========================================
          LISTA DE PEDIDOS
     ======================================== -->
+
     <div class="orders-panel__list">
 
       {% if pedidos %}
+
         {% for pedido in pedidos %}
+
         <article class="order-card" data-status="{{ pedido.estado }}">
 
+          <!-- HEADER -->
           <header class="order-card__top">
+
             <div class="order-card__meta">
-              <h3 class="order-card__id">Pedido #{{ pedido.id }}</h3>
-              <p class="order-card__date">{{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
+
+              <h3 class="order-card__id">
+                Pedido #{{ pedido.id }}
+              </h3>
+
+              <p class="order-card__date">
+                {{ pedido.creado_en|date:"d/m/Y H:i" }}
+              </p>
+
+              {% if pedido.estado == "pending" %}
+              <span class="order-card__timer"
+                    data-time="{{ pedido.tiempo_restante_cancelacion }}">
+              </span>
+              {% endif %}
+
             </div>
 
             <span class="order-card__status order-card__status--{{ pedido.estado }}">
-              {% if pedido.estado == "pending" %}Pendiente
-              {% elif pedido.estado == "delivered" %}Entregado
-              {% elif pedido.estado == "canceled" %}Cancelado
+
+              {% if pedido.estado == "pending" %}
+                Pendiente
+
+              {% elif pedido.estado == "delivered" %}
+                Entregado
+
+              {% elif pedido.estado == "canceled" %}
+                Cancelado
+
               {% endif %}
+
             </span>
+
           </header>
+
 
           <!-- TIENDA -->
           {% with first_item=pedido.items.first %}
           <div class="order-card__store">
-            Tienda: <strong>{{ first_item.producto.tienda.nombre }}</strong>
+            Tienda:
+            <strong>{{ first_item.producto.tienda.nombre }}</strong>
           </div>
           {% endwith %}
-                    
 
-          <!-- LISTA MINI DE PRODUCTOS -->
+
+          <!-- PRODUCTOS -->
           <div class="order-card__products">
+
             {% for item in pedido.items.all %}
+
             <div class="order-card__product">
-              <p class="order-card__product-name">{{ item.producto.nombre }}</p>
-              <p class="order-card__product-qty">x{{ item.cantidad }}</p>
+
+              <p class="order-card__product-name">
+                {{ item.producto.nombre }}
+              </p>
+
+              <p class="order-card__product-qty">
+                x{{ item.cantidad }}
+              </p>
+
             </div>
+
             {% endfor %}
+
           </div>
+
 
           <!-- TOTAL -->
           <div class="order-card__total">
-            Total del pedido: <strong>${{ pedido.total }}</strong>
+
+            Total del pedido:
+
+            <strong>
+              ${{ pedido.total }}
+            </strong>
+
           </div>
+
 
           <!-- ACCIONES -->
           <div class="order-card__actions">
 
             {% if pedido.estado == "pending" %}
 
-              <!-- Cancelar -->
+              <!-- CANCELAR -->
               <form method="post" action="{% url 'pedidos:cancel_order' pedido.id %}">
+
                 {% csrf_token %}
+
                 <button type="submit" class="btn-secundary btn-secundary-style order-card__cancel">
+
                   Cancelar
-                  <img src="{% static 'assets/icons/cancel.svg' %}" class="btn__icon" alt="Cancelar" />
+
+                  <img src="{% static 'assets/icons/cancel.svg' %}"
+                       class="btn__icon"
+                       alt="Cancelar">
+
                 </button>
+
               </form>
 
-              <!-- Editar -->
-              <a href="{% url 'pedidos:edit_order' pedido.id %}" class="btn btn--primary order-card__edit">
+
+              <!-- EDITAR -->
+              {% if pedido.puede_editar %}
+
+              <a href="{% url 'pedidos:edit_order' pedido.id %}"
+                 class="btn btn--primary order-card__edit">
+
                 Editar
-                <img src="{% static 'assets/icons/edit.svg' %}" class="btn__icon" alt="Editar" />
+
+                <img src="{% static 'assets/icons/edit.svg' %}"
+                     class="btn__icon"
+                     alt="Editar">
+
               </a>
+
+              {% endif %}
 
             {% endif %}
 
           </div>
 
         </article>
+
         {% endfor %}
+
       {% else %}
+
         <p>No hay pedidos con este estado.</p>
+
       {% endif %}
 
     </div>
@@ -114,24 +197,95 @@
   </div>
 </section>
 
-<!-- JS profesional para mantener la tab activa -->
+
+<!-- ================================
+     JS
+================================ -->
+
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const tabs = document.querySelectorAll('.orders-panel__tab');
-  const currentStatus = new URLSearchParams(window.location.search).get('status') || 'pending';
 
-  tabs.forEach(tab => {
-    const status = tab.dataset.status;
-    if (status === currentStatus) {
-      tab.classList.add('orders-panel__tab--active');
-    } else {
-      tab.classList.remove('orders-panel__tab--active');
-    }
+document.addEventListener('DOMContentLoaded', function(){
 
-    tab.addEventListener('click', () => {
-      window.location.search = `?status=${status}`;
-    });
-  });
-});
+/* -------------------------------
+   TABS
+-------------------------------- */
+
+const tabs = document.querySelectorAll('.orders-panel__tab')
+
+const currentStatus =
+new URLSearchParams(window.location.search)
+.get('status') || 'pending'
+
+
+tabs.forEach(tab => {
+
+const status = tab.dataset.status
+
+if(status === currentStatus){
+
+tab.classList.add('orders-panel__tab--active')
+
+}
+
+tab.addEventListener('click', () => {
+
+window.location.search = `?status=${status}`
+
+})
+
+})
+
+
+/* -------------------------------
+   CONTADOR REGRESIVO
+-------------------------------- */
+
+function formatTime(seconds){
+
+let h = Math.floor(seconds / 3600)
+
+let m = Math.floor((seconds % 3600) / 60)
+
+let s = seconds % 60
+
+return `${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`
+
+}
+
+
+document.querySelectorAll(".order-card__timer")
+.forEach(timer => {
+
+let seconds = parseInt(timer.dataset.time)
+
+function update(){
+
+if(isNaN(seconds)) return
+
+if(seconds <= 0){
+
+timer.innerText =
+"Pedido cancelado automáticamente"
+
+return
+
+}
+
+timer.innerText =
+"⏳ Se cancelará en " + formatTime(seconds)
+
+seconds--
+
+setTimeout(update,1000)
+
+}
+
+update()
+
+})
+
+})
+
 </script>
+
 {% endblock %}

@@ -226,8 +226,6 @@ def profile_store_seller(request):
         'tienda': tienda,
         'profile': profile
     })
-def store_orders(request):
-    return render(request, 'tiendas/seller_catalog.html')
 
 @login_required
 def seller_catalog(request):
@@ -608,3 +606,4 @@ def profile_store_client(request, tienda_id):
         'productos': productos,
         'tienda': tienda
     })
+
