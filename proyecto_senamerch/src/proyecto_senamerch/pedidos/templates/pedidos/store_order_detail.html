@@ -1,0 +1,96 @@
+{% extends "index_store_orders.html" %}
+{% load static %}
+
+{% block content %}
+<section class="store-order-detail-content"> 
+  <section class="store-order-detail">
+
+    <!-- Cabecera principal -->
+    <header class="store-order-detail__header">
+      <div class="store-order-detail__title-group">
+        <h2 class="store-order-detail__title">Pedido #{{ pedido.id|stringformat:"05d" }}</h2>
+        <p class="store-order-detail__date">{{ pedido.creado_en|date:"d \d\e F \d\e Y" }}</p>
+      </div>
+
+      <p class="store-order-detail__status store-order-detail__status--{{ pedido.estado }}">
+        {% if pedido.estado == "pending" %}Pendiente
+        {% elif pedido.estado == "delivered" %}Entregado
+        {% elif pedido.estado == "canceled" %}Cancelado
+        {% endif %}
+      </p>
+    </header>
+
+    <!-- Mini cards: Cliente y Dirección -->
+    <div class="store-order-detail__info">
+      <div class="store-order-detail__card store-order-detail__card--client">
+        <h3>Información del cliente</h3>
+        <p><strong>Nombre:</strong> {{ pedido.usuario.get_full_name|default:pedido.usuario.username }}</p>
+        <p><strong>Correo:</strong> {{ pedido.usuario.email }}</p>
+        {% if pedido.usuario.profile.phone %}
+        <p><strong>Teléfono:</strong> {{ pedido.usuario.profile.phone }}</p>
+        {% endif %}
+      </div>
+
+      <div class="store-order-detail__card store-order-detail__card--address">
+        <h3>Dirección del cliente</h3>
+        {% if address %}
+          <p><strong>Barrio:</strong> {{ address.neighborhood }}</p>
+          <p><strong>Dirección:</strong> {{ address.address_number }}</p>
+          <p><strong>Tipo de vía:</strong> {{ address.road_type|default:"—" }}</p>
+          <p><strong>Código postal:</strong> {{ address.postal_code|default:"—" }}</p>
+          <p><strong>Departamento:</strong> {{ address.department }}</p>
+          <p><strong>Municipio:</strong> {{ address.city }}</p>
+        {% else %}
+          <p>No hay dirección registrada.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div class="store-order-detail__products">
+      <h3>Productos</h3>
+      <div class="store-order-detail__products-grid">
+        {% for item in items %}
+          <div class="store-order-detail__product-card">
+            <p>{{ item.producto.nombre }}</p>
+            <p><strong>Cantidad:</strong> {{ item.cantidad }} {{ item.producto.unidad }}</p>
+            <p><strong>Precio:</strong> ${{ item.precio_unitario }}</p>
+          </div>
+        {% endfor %}
+        <div class="store-order-detail__product-total">
+          <p><strong>Total: ${{ total }}</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="store-order-detail__actions">
+      {% if pedido.estado == "pending" %}
+      <div class="store-order-detail__secondary">
+        <form method="post" action="{% url 'pedidos:cancel_order_store' pedido.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn-secundary btn-secundary-style">
+            Cancelar pedido
+            <img src="{% static 'assets/icons/cancel.svg' %}" alt="Icono Realizar" class="btn__icon">
+          </button>
+        </form>
+      </div>
+
+      <div class="store-order-detail__primary">
+        <form method="post" action="{% url 'pedidos:deliver_order_store' pedido.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn--primary">
+            Entregar pedido
+            <img src="{% static 'assets/icons/perform.svg' %}" alt="Icono Realizar" class="btn__icon">
+          </button>
+        </form>
+      </div>
+    {% else %}
+      <button class="btn-secundary btn-secundary-style" disabled>
+        Pedido {{ pedido.get_estado_display }}
+      </button>
+    {% endif %}
+
+  </section>
+</section>
+{% endblock %}
