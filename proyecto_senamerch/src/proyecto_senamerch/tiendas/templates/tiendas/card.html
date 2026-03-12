@@ -5,7 +5,11 @@
 
 {% for producto in productos %}
 {% if producto.tienda.id != request.user.tienda.id %}
-<article class="product-card">
+<article data-nombre="{{ producto.nombre|lower }}"
+          data-tienda="{{ producto.tienda.nombre|lower }}"
+          data-categoria="{{ producto.categoria|lower }}"
+          data-precio="{{ producto.precio }}"
+          >
 
   <!-- Botones Me gusta / No me gusta -->
   <div class="product-card__actions">

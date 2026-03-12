@@ -4,7 +4,7 @@ from productos.models import Producto
 from tiendas.models import Tienda  # Asegúrate de importar el modelo Tienda
 from django.utils import timezone
 from datetime import timedelta
-
+from decimal import Decimal
 class Pedido(models.Model):
     ESTADOS_PEDIDO = [
         ('pending', 'Pendiente'),
@@ -82,8 +82,16 @@ class PedidoItem(models.Model):
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
 
     def subtotal(self):
-        """Calcula el subtotal de este ítem (cantidad * precio unitario)."""
         return self.cantidad * self.precio_unitario
+
+    @property
+    def subtotal_con_descuento(self):
+
+        precio = self.producto.precio
+        descuento = (precio * Decimal(self.producto.descuento)) / Decimal(100)
+        precio_final = precio - descuento
+
+        return precio_final * self.cantidad
 
     def __str__(self):
         return f"{self.cantidad} x {self.producto.nombre} en Pedido #{self.pedido.id}"

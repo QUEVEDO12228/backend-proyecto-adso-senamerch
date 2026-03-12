@@ -78,6 +78,11 @@ urlpatterns = [
         views.edit_address_store2,
         name='edit_address_store2'
     ),
+    path(
+        "pedido-detalle/<int:pedido_id>/",
+        views.sales_details_order_store,
+        name="sales_details_order_store"
+    ),
 ]
 
 if settings.DEBUG:

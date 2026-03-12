@@ -19,6 +19,12 @@ from productos.models import Producto  # Modelo Producto para manejar los produc
 from django.contrib.auth.decorators import login_required  # Decorador para proteger vistas que requieren estar logueado.
 from .models import Address  # Modelo Address para almacenar direcciones de usuario.
 from django.contrib.auth import update_session_auth_hash  # Permite actualizar la sesión después de un cambio de contraseña.
+import random
+import time
+from django.core.validators import validate_email
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
 # =========================
 # Index SenaMerch
 # =========================
@@ -214,69 +220,110 @@ def add_address_step_2(request):
 #  Recuperar Contraseña Para Iniciar Sessión Ingresar correo
 # ===========================================================
 def forgot_password_view(request):
-    """ Vista para la recuperación de contraseña. Envia un código de verificación al correo del usuario para permitirle restablecer su contraseña. """
+    """
+    Vista para la recuperación de contraseña.
+    Envía un código de verificación de 6 dígitos al correo del usuario.
+    """
+
     context = {'form_submitted': False}
+
     if request.method == 'POST':
+
         context['form_submitted'] = True
-        # Obtener el correo ingresado
+
+        # Obtener correo
         email = request.POST.get('email', '').strip().lower()
-        # Validar que el campo de correo no esté vacío
+
         if not email:
             messages.error(request, 'El correo es obligatorio.')
             return render(request, 'usuarios/forgot_password.html', context)
-        # Validar formato del correo
+
+        # Validar formato
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Ingresa un correo válido.')
             return render(request, 'usuarios/forgot_password.html', context)
-        # Verificar que exista una cuenta con ese correo
+
+        # Verificar usuario
         if not User.objects.filter(email=email).exists():
             messages.error(request, 'No existe una cuenta con este correo.')
             return render(request, 'usuarios/forgot_password.html', context)
-        # Generar código aleatorio de 6 dígitos
+
+        # Generar código OTP
         code = random.randint(100000, 999999)
-        # Guardar código y correo en sesión temporal
+
+        # Guardar en sesión
         request.session['reset_code'] = str(code)
         request.session['reset_email'] = email
-        # Enviar correo con el código de recuperación
-        send_mail(
+        request.session['reset_code_time'] = time.time()
+
+        # Renderizar correo HTML
+        html_content = render_to_string(
+            'emails/reset_code_email.html',
+            {'code': code}
+        )
+
+        # Crear correo
+        email_message = EmailMultiAlternatives(
             'Código de recuperación - SenaMerch',
             f'Tu código de verificación es: {code}',
             settings.EMAIL_HOST_USER,
-            [email],
-            fail_silently=False,
+            [email]
         )
+
+        email_message.attach_alternative(html_content, "text/html")
+        email_message.send()
+
         messages.success(request, 'Te enviamos un código a tu correo.')
+
         return redirect('usuarios:code_verify')
+
     return render(request, 'usuarios/forgot_password.html', context)
 # ==========================================================================
 #  Recuperar Contraseña Para Iniciar Sessión Ingresar código de verificación
 # ==========================================================================
 def code_verify_view(request):
-    """ Vista para verificar el código enviado al correo del usuario para recuperar la contraseña. """
+    """
+    Vista para verificar el código enviado al correo.
+    Si es correcto permite restablecer la contraseña.
+    """
+
     if request.method == 'POST':
-        # Obtener el código ingresado por el usuario
+
         code_entered = request.POST.get('code', '').strip()
-        # Obtener el código guardado en sesión
+
         real_code = request.session.get('reset_code')
-        # Validar que el código no esté vacío y tenga la longitud correcta
+        code_time = request.session.get('reset_code_time')
+
+        # Validar campo vacío
         if not code_entered:
             messages.error(request, 'Debes ingresar el código completo.')
-            return redirect('code_verify')
+            return redirect('usuarios:code_verify')
+
+        # Validar formato
         if not code_entered.isdigit() or len(code_entered) != 6:
             messages.error(request, 'El código debe ser de 6 números.')
-            return redirect('code_verify')
-        # Validar que el código guardado en sesión aún esté disponible
-        if not real_code:
+            return redirect('usuarios:code_verify')
+
+        # Verificar existencia del código
+        if not real_code or not code_time:
             messages.error(request, 'El código expiró. Solicita uno nuevo.')
-            return redirect('forgot_password')
-        # Comparar el código ingresado con el guardado
+            return redirect('usuarios:forgot_password')
+
+        # Verificar expiración (5 minutos)
+        if time.time() - code_time > 300:
+            messages.error(request, 'El código expiró. Solicita uno nuevo.')
+            return redirect('usuarios:forgot_password')
+
+        # Comparar código
         if code_entered != real_code:
             messages.error(request, 'Código incorrecto.')
             return redirect('usuarios:code_verify')
-        # Si todo está bien, redirigir al usuario para restablecer su contraseña
+
+        # Código correcto
         return redirect('usuarios:reset_password')
+
     return render(request, 'usuarios/code_verify.html')
 # =====================================================================
 #  Recuperar Contraseña Para Iniciar Sessión Ingresar nueva contraseña

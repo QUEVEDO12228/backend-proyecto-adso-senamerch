@@ -1,0 +1,25 @@
+<h2>Resultados para "{{ query }}"</h2>
+
+<h3>Productos</h3>
+
+{% for producto in productos %}
+<div class="product-card">
+    <h4>{{ producto.nombre }}</h4>
+    <p>${{ producto.precio }}</p>
+    <p>{{ producto.tienda.nombre }}</p>
+</div>
+{% empty %}
+<p>No se encontraron productos</p>
+{% endfor %}
+
+
+<h3>Tiendas</h3>
+
+{% for tienda in tiendas %}
+<div class="store-card">
+    <h4>{{ tienda.nombre }}</h4>
+    <p>{{ tienda.categoria }}</p>
+</div>
+{% empty %}
+<p>No se encontraron tiendas</p>
+{% endfor %}

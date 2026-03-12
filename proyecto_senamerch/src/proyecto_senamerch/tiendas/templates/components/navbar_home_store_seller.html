@@ -46,7 +46,7 @@
             </a>
 
             <!-- 🔹 MIS PEDIDOS COMO USUARIO -->
-            <a href="{% url 'usuarios:client_orders' %}" 
+            <a href="{% url 'pedidos:client_orders' %}" 
                class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
               <img src="{% static 'assets/icons/orders_users.svg' %}" 
                    class="navbar_product_category__icon" alt="">
@@ -72,7 +72,7 @@
         {% else %}
 
             <!-- 🔹 SOLO USUARIO NORMAL -->
-            <a href="{% url 'usuarios:client_orders' %}" 
+            <a href="{% url 'pedidos:client_orders' %}" 
                class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
               <img src="{% static 'assets/icons/orders_users.svg' %}" 
                    class="navbar_product_category__icon" alt="">

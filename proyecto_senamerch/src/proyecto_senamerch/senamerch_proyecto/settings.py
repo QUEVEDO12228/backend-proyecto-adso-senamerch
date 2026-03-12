@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -130,28 +129,54 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Opcional si tienes una carpeta global de static
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / "static",
 ]
 
+# Para producción
+STATIC_ROOT = BASE_DIR / "staticfiles"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# ============================
+# CONFIGURACIÓN DE CORREO GMAIL
+# ============================
+# ============================
+# CONFIGURACIÓN CORREO GMAIL
+# ============================
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 465
-EMAIL_USE_SSL = True
-EMAIL_USE_TLS = False
+EMAIL_PORT = 587
+
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
 
 EMAIL_HOST_USER = 'senamerchapp@gmail.com'
-EMAIL_HOST_PASSWORD = 'jophrfedltipkcfx'
+EMAIL_HOST_PASSWORD = 'TU_CONTRASEÑA_DE_APLICACION'
 
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+# ============================
+# ARCHIVOS MEDIA
+# ============================
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
+# ============================
+# DJANGO DEFAULT FIELD
+# ============================
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# ============================
+# CONFIGURACIÓN CSRF
+# ============================
+
 CSRF_FAILURE_VIEW = 'django.views.csrf.csrf_failure'
-# settings.py
+
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_HTTPONLY = False
-CSRF_HEADER_NAME = 'X-Csrftoken'  # Asegúrate de que el nombre del encabezado esté configurado correctamente
+CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'

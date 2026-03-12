@@ -1,0 +1,84 @@
+{% extends "index_store_orders.html" %}
+{% load static %}
+
+{% block title %}Detalle del Pedido{% endblock %}
+
+{% block content %}
+
+<section class="sales-made-details">
+
+  <!-- Sidebar con información de tienda, vendedor y cliente -->
+  <aside class="sales-made-details__sidebar">
+    <h3 class="sales-made-details__subtitle">Tienda</h3>
+    <p><strong>Nombre Tienda:</strong> {{ pedido.tienda.nombre }}</p>
+    <p><strong>Teléfono:</strong> {{ pedido.tienda.telefono }}</p>
+    <p><strong>Correo:</strong> {{ pedido.tienda.email }}</p>
+
+    <hr>
+
+    <h3 class="sales-made-details__subtitle">Vendedor</h3>
+    <p><strong>Nombre:</strong> {{ pedido.tienda.propietario.get_full_name }}</p>
+    <p><strong>Correo:</strong> {{ pedido.tienda.propietario.email }}</p>
+
+    <hr>
+
+    <h3 class="sales-made-details__subtitle">Cliente</h3>
+    <p><strong>Nombre:</strong> {{ pedido.usuario.get_full_name }}</p>
+    <p><strong>Correo:</strong> {{ pedido.usuario.email }}</p>
+  </aside>
+
+  <!-- Contenido principal del pedido -->
+  <div class="sales-made-details__content">
+
+    <h2 class="sales-made-details__title">Detalle del Pedido #{{ pedido.id }}</h2>
+
+    <section class="sales-made-details__section">
+      <h3 class="sales-made-details__subtitle">Productos</h3>
+      <div class="sales-made-details__grid">
+        {% for item in pedido.items.all %}
+          <div class="sales-made-details__product-card">
+            <p><strong>Fecha:</strong> {{ pedido.creado_en|date:"d/m/Y" }}</p>
+            <p><strong>Producto:</strong> {{ item.producto.nombre }}</p>
+            <p><strong>Cantidad:</strong> {{ item.cantidad }}</p>
+            <p><strong>Precio unitario:</strong> ${{ item.producto.precio|floatformat:2 }}</p>
+
+            {% if item.producto.descuento > 0 %}
+              <p><strong>Descuento:</strong> {{ item.producto.descuento }}%</p>
+              <p><strong>Precio con descuento:</strong> ${{ item.producto.precio_con_descuento|floatformat:2 }}</p>
+              <p><strong>Total con descuento:</strong> ${{ item.subtotal_con_descuento|floatformat:2 }}</p>
+            {% else %}
+              <p><strong>Total:</strong> ${{ item.subtotal|floatformat:2 }}</p>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Totales -->
+    <div class="sales-made-details__totals">
+      <p><strong>Total pagado:</strong> ${{ pedido.total|floatformat:2 }}</p>
+    </div>
+
+    <!-- Botón para descargar PDF -->
+    <div class="sales-made-details__actions--left">
+      <button class="btn-secundary btn-secundary-style sales-made-details__button--download">
+        Descargar PDF
+        <img src="{% static 'assets/icons/save.svg' %}" class="btn-secundary__icon">
+      </button>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Carga el JS desde static -->
+<script src="{% static 'js/pdf_download.js' %}"></script>
+<!-- jsPDF y AutoTable primero -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<!-- Tu JS que usa jsPDF -->
+<script src="{% static 'js/pdf_download.js' %}"></script>
+{% endblock %}

@@ -5,25 +5,13 @@ from datetime import datetime
 from tiendas.models import Tienda
 from .models import Producto, ImagenProducto
 from comentarios.models import Comentario
-
-
+from django.db.models import Q
+from datetime import datetime, timedelta
+from django.utils import timezone
+from django.http import JsonResponse
 # =====================================================
 # 🔹 CREAR PRODUCTO - PASO 1
 # =====================================================
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from datetime import datetime, timedelta
-from django.utils import timezone
-from tiendas.models import Tienda
-from .models import Producto, ImagenProducto
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.utils import timezone
-from datetime import datetime, timedelta
-
-
 @login_required
 def create_product(request):
 
@@ -565,3 +553,89 @@ def buy_product(request, producto_id):
 def lista_productos(request):
     productos = Producto.objects.filter(activo=True)
     return render(request, 'productos/lista_productos.html', {'productos': productos})
+
+def buscar(request):
+
+    query = request.GET.get('q')
+
+    productos = []
+    tiendas = []
+
+    if query:
+
+        productos = Producto.objects.filter(
+            Q(nombre__icontains=query) |
+            Q(categoria__icontains=query) |
+            Q(descripcion__icontains=query),
+            activo=True
+        )
+
+        tiendas = Tienda.objects.filter(
+            Q(nombre__icontains=query) |
+            Q(categoria__icontains=query),
+            activa=True
+        )
+
+    context = {
+        "query": query,
+        "productos": productos,
+        "tiendas": tiendas
+    }
+
+    return render(request, "productos/busqueda.html", context)
+
+
+
+from django.http import JsonResponse
+import difflib
+
+def sugerencias_busqueda(request):
+
+    query = request.GET.get("q", "").lower()
+
+    productos_db = Producto.objects.filter(activo=True)
+
+    nombres_productos = [p.nombre.lower() for p in productos_db]
+
+    coincidencias = difflib.get_close_matches(
+        query,
+        nombres_productos,
+        n=5,
+        cutoff=0.4
+    )
+
+    productos = []
+
+    for producto in productos_db:
+
+        if (
+            query in producto.nombre.lower()
+            or producto.nombre.lower() in coincidencias
+        ):
+
+            imagen_url = ""
+
+            imagen = producto.imagenes.first()
+            if imagen:
+                imagen_url = imagen.imagen.url
+
+            productos.append({
+                "nombre": producto.nombre,
+                "precio": producto.precio,
+                "categoria": producto.categoria,
+                "imagen": imagen_url
+            })
+
+    productos = productos[:5]
+
+    tiendas = list(
+        Tienda.objects.filter(
+            nombre__icontains=query,
+            activa=True
+        ).values("nombre")[:5]
+    )
+
+    return JsonResponse({
+        "productos": productos,
+        "tiendas": tiendas
+    })

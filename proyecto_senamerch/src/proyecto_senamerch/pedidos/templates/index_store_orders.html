@@ -8,8 +8,6 @@
 </head>
 <body>
   {% include 'components/navabar_go_go.html' %}
-
-
   {% include 'components/navbar_store_orders.html' %}
 
   <main class="main-content">
@@ -18,8 +16,11 @@
   </main>
 
   {% include 'components/footer.html' %}
-
   {% include 'components/footer_go_go.html' %}
 
+  <!-- Bloque para JS extra -->
+  {% block extra_js %}
+
+  {% endblock %}
 </body>
 </html>

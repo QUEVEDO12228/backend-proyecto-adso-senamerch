@@ -64,15 +64,34 @@
           </div>
 
           <!-- Botón de acción para realizar el pedido -->
+          <!-- BOTONES DE ACCIÓN -->
           {% if pedido.estado == "pending" %}
           <div class="store-orders__primary">
-            <!-- Form GET hacia el detalle del pedido -->
-            <form method="get" action="{% url 'pedidos:store_order_detail' pedido.id %}">
-              <button type="submit" class="btn btn--primary store-orders__delivery">
-                  Realizar
-                  <img src="{% static 'assets/icons/perform.svg' %}" alt="Icono Realizar" class="btn__icon">
-              </button>
-            </form>
+
+          <form method="get" action="{% url 'pedidos:store_order_detail' pedido.id %}">
+          <button type="submit" class="btn btn--primary store-orders__delivery">
+          Realizar
+          <img src="{% static 'assets/icons/perform.svg' %}" alt="Icono Realizar" class="btn__icon">
+          </button>
+          </form>
+
+          </div>
+          {% endif %}
+
+
+          {% if pedido.estado == "delivered" %}
+          <div class="store-orders__primary">
+
+          <a href="{% url 'tiendas:sales_details_order_store' pedido.id %} " 
+            class="login__link">
+
+          Detalle del pedido
+
+          <img src="{% static 'assets/icons/details.svg' %}" 
+              alt="Detalle" 
+              class="flex">
+
+          </a>
           </div>
           {% endif %}
 

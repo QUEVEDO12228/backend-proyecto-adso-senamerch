@@ -1,7 +1,7 @@
 .search-category-grid {
   display: grid;
   grid-template-columns: 40% 60%;   /* buscador | categorías */
-  align-items: center;
+  grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-top:2.4rem;
   margin-right:2.4rem;

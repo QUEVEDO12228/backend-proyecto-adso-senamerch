@@ -4,7 +4,13 @@
 {% block main_content %}
 
 {% for producto in productos %}
-<article class="product-card" data-categoria="{{ producto.categoria }}">
+<article class="product-card"
+          data-nombre="{{ producto.nombre|lower }}"
+          data-tienda="{{ producto.tienda.nombre|lower }}"
+          data-categoria="{{ producto.categoria|lower }}"
+          data-precio="{{ producto.precio }}"
+          >
+
 
   <!-- Botones Me gusta / No me gusta -->
   <div class="product-card__actions">

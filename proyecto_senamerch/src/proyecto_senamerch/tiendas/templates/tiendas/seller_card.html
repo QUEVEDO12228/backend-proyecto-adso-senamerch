@@ -5,7 +5,7 @@
 
 {% for producto in productos %}
 
-<article class="product-card {% if not producto.activo %}product-card--disabled{% endif %}">
+<article class="product-card {% if not producto.activo %}product-card--disabled{% endif %}" data-nombre="{{ producto.nombre|lower }}">
 
   <!-- CONTENIDO VISUAL -->
   <div class="product-card__content">
