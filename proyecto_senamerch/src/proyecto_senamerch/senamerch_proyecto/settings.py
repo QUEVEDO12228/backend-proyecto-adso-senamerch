@@ -153,7 +153,7 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 
 EMAIL_HOST_USER = 'senamerchapp@gmail.com'
-EMAIL_HOST_PASSWORD = 'TU_CONTRASEÑA_DE_APLICACION'
+EMAIL_HOST_PASSWORD = 'pmpveldugjzaohns'
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # ============================

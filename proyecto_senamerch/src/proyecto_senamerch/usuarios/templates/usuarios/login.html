@@ -4,135 +4,124 @@
 {% block title %}Iniciar sesión{% endblock %}
 
 {% block content %}
-<section class="site-main-login">
-  <div class="login">
 
-    <h1 class="login__title">Iniciar Sesión</h1>
-    
-    <!-- 🔥 Mensajes SOLO si se envió el formulario -->
-    {% if form_submitted and messages %}
-      <div class="login__messages">
+<section class="site-main-login">
+	<div class="login">
+
+		<h1 class="login__title">Iniciar Sesión</h1>
+
+		<!-- 🔥 MENSAJES DJANGO -->
+		{% if messages %}
+      <div id="alert-container">
         {% for message in messages %}
-          <p class="login__error">
-            {{ message }}
-          </p>
+          <div class="alert {% if message.tags == 'success' %}alert--success{% else %}alert--error{% endif %}">
+            <div class="alert__content">
+              <span class="alert__icon">
+                {% if message.tags == 'success' %}✔{% else %}⚠{% endif %}
+              </span>
+              <p class="alert__message">{{ message }}</p>
+            </div>
+          </div>
         {% endfor %}
       </div>
     {% endif %}
 
-    <form method="post" class="login__form" id="loginForm">
-      {% csrf_token %}
+    <form method="post" class="login__form" id="loginForm" 
+      {% if redirect_url %} data-redirect-url="{{ redirect_url }}" {% endif %}>
 
-      <!-- 📧 EMAIL -->
-      <div class="login__field">
-        <label class="login__label" for="email">Correo electrónico</label>
-        <input
-          id="email"
-          class="login__input login__input--email"
-          type="email"
-          name="email"
-          placeholder="Correo electrónico"
-          value="{{ request.POST.email }}"
-          required
-        >
-        <small class="login__error-text" id="emailError"></small>
-      </div>
+			{% csrf_token %}
 
-      <!-- 🔒 PASSWORD -->
-      <div class="login__field">
-        <label class="login__label" for="password">Contraseña</label>
+			<!-- EMAIL -->
+			<div class="login__field">
 
-        <div class="login__password-wrapper">
-          <input
-            id="password"
-            class="login__input login__input--password"
-            type="password"
-            name="password"
-            placeholder="Contraseña"
-            required
-          >
-          <button type="button" class="login__toggle-password">
-            Mostrar
-          </button>
-        </div>
-        <small class="login__error-text" id="passwordError"></small>
-      </div>
+				<label class="login__label" for="email">
+					Correo electrónico
+				</label>
 
-      <!-- 🔘 BOTÓN -->
-      <div class="login__actions">
-        <button type="submit" class="btn btn--primary login__btn">
-          Ingresar
-          <img
-            src="{% static 'assets/icons/get_into.svg' %}" 
-            alt="Icono ingresar"
-            class="btn__icon login__btn-icon"
-          >
-        </button>
-      </div>
+				<input
+					id="email"
+					class="login__input login__input--email"
+					type="email"
+					name="email"
+					placeholder="Correo electrónico"
+					value="{{ request.POST.email }}"
+					required
+				>
 
-      <!-- 🔗 LINKS -->
-      <div class="login__content-links">
-        <a href="{% url 'usuarios:forgot_password' %}" class="login__link">¿Olvidó su contraseña?</a>
-        <a href="{% url 'usuarios:register' %}" class="login__link">¿No tienes cuenta? Regístrate</a>
-      </div>
+				<small class="login__error-text" id="emailError"></small>
 
-    </form>
-  </div>
+			</div>
+
+
+			<!-- PASSWORD -->
+			<div class="login__field">
+
+				<label class="login__label" for="password">
+					Contraseña
+				</label>
+
+				<div class="login__password-wrapper">
+
+					<input
+						id="password"
+						class="login__input login__input--password"
+						type="password"
+						name="password"
+						placeholder="Contraseña"
+						required
+					>
+
+					<button
+						type="button"
+						class="login__toggle-password">
+						Mostrar
+					</button>
+
+				</div>
+
+				<small class="login__error-text" id="passwordError"></small>
+
+			</div>
+
+
+			<!-- BOTÓN -->
+			<div class="login__actions">
+
+				<button type="submit" class="btn btn--primary login__btn">
+
+					Ingresar
+
+					<img
+						src="{% static 'assets/icons/get_into.svg' %}"
+						alt="Icono ingresar"
+						class="btn__icon login__btn-icon"
+					>
+
+				</button>
+
+			</div>
+
+
+			<!-- LINKS -->
+			<div class="login__content-links">
+
+				<a href="{% url 'usuarios:forgot_password' %}" class="login__link">
+					¿Olvidó su contraseña?
+				</a>
+
+				<a href="{% url 'usuarios:register' %}" class="login__link">
+					¿No tienes cuenta? Regístrate
+				</a>
+
+			</div>
+
+		</form>
+
+	</div>
 </section>
 
-<!-- ========================= -->
-<!-- JS -->
-<!-- ========================= -->
 
-<script>
-const toggleBtn = document.querySelector('.login__toggle-password');
-const passwordInput = document.getElementById('password');
-
-toggleBtn.addEventListener('click', () => {
-  const isPassword = passwordInput.type === 'password';
-  passwordInput.type = isPassword ? 'text' : 'password';
-  toggleBtn.textContent = isPassword ? 'Ocultar' : 'Mostrar';
-});
-</script>
-
-<script>
-const form = document.getElementById('loginForm');
-const emailInput = document.getElementById('email');
-const passwordInput2 = document.getElementById('password');
-
-const emailError = document.getElementById('emailError');
-const passwordError = document.getElementById('passwordError');
-
-form.addEventListener('submit', function(e) {
-
-  let valid = true;
-
-  const email = emailInput.value.trim();
-  const password = passwordInput2.value.trim();
-
-  //Validación EMAIL
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!emailRegex.test(email)) {
-    emailError.textContent = "Correo inválido";
-    valid = false;
-  } else {
-    emailError.textContent = "";
-  }
-
-  //Validación PASSWORD
-  if (password.length < 6) {
-    passwordError.textContent = "Mínimo 6 caracteres";
-    valid = false;
-  } else {
-    passwordError.textContent = "";
-  }
-
-  if (!valid) {
-    e.preventDefault();
-  }
-
-});
-</script>
+<!-- JS EXTERNO -->
+<script src="{% static 'js/login_alerts.js' %}"></script>
 
 {% endblock %}

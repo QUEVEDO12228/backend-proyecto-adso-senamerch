@@ -60,7 +60,21 @@
 
 /* TOOLTIP */
 
-.navbar_product_category__tooltip{position:absolute;bottom:-36px;left:50%;transform:translateX(-50%);background:var(--secundary-900);border:2px solid var(--secundary-400);color:var(--white);padding:4px 8px;font-size:var(--fs-xxxs);border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s ease;z-index:20}
+.navbar_product_category__tooltip{
+  position:absolute;
+  bottom:-36px;left:50%;
+  transform:translateX(-50%);
+  background:var(--secundary-900);
+  border:2px solid var(--secundary-400);
+  color:var(--white);
+  padding:4px 8px;
+  font-size:var(--fs-xxxs);
+  border-radius:6px;
+  white-space:nowrap;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease;
+  z-index:20}
 
 .navbar_product_category__link--icon-nav-bar:hover .navbar_product_category__tooltip{opacity:1}
 
@@ -92,7 +106,7 @@
 }
 
 /* Títulos */
-.navbar_product_category__title {
+.navbar_product_category__title--client {
     font-size: var(--fs-md);
     font-family: var(--font-primary-bold);
     color: var(--white);
@@ -153,9 +167,14 @@
     flex-direction: column;
     align-items: center;
     border-radius: 24px;
+    margin: 0 auto;
+  }
+  .navbar_product_category__logo--client{
+    margin: 0 auto;
+    margin-bottom: 0.2rem;
   }
 
-  .navbar_product_category--client .navbar_product_category__actions {
+  .navbar_product_category--client .navbar_product_category__actions--client {
     width: 100%;
     overflow-x: auto;
     flex-wrap: nowrap;
@@ -165,11 +184,11 @@
   }
 
   .navbar_product_category--client 
-  .navbar_product_category__actions::-webkit-scrollbar {
+  .navbar_product_category__actions--client::-webkit-scrollbar {
     display: none; /* Chrome */
   }
 
-  .navbar_product_category__link--icon-nav-bar {
+  .navbar_product_category--client {
     flex: 0 0 auto;
   }
 
@@ -183,7 +202,7 @@
   }
 
   .navbar_product_category--client 
-  .navbar_product_category__actions {
+  .navbar_product_category__actions--client {
     flex-wrap: wrap;     /* permite que bajen correctamente */
     justify-content: center;
   }

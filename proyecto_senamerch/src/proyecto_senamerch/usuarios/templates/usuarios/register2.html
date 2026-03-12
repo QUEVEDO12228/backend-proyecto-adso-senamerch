@@ -166,7 +166,7 @@ document.querySelector('form').addEventListener('submit', function(e) {
 {% if success %}
 <script>
   alert("Cuenta creada correctamente");
-  window.location.href = "{% url 'login' %}";
+  window.location.href = "{% url 'usuarios:login' %}";
 </script>
 {% endif %}
 
