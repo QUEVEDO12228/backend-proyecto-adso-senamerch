@@ -2,19 +2,19 @@
 {% load static %}
 
 {% block content %}
-
 <section class="store-content">
   <section class="store-orders">
 
+    <!-- Cabecera de los pedidos -->
     <header class="store-orders__header">
       <h2 class="store-orders__title">Pedidos recientes</h2>
 
       <div class="store-orders__filters">
         <form method="get">
           <select name="estado" class="store-orders__filter" onchange="this.form.submit()">
-            <option value="">Todos los estados</option>
             <option value="pending" {% if request.GET.estado == "pending" %}selected{% endif %}>Pendientes</option>
             <option value="delivered" {% if request.GET.estado == "delivered" %}selected{% endif %}>Entregados</option>
+            <option value="canceled" {% if request.GET.estado == "canceled" %}selected{% endif %}>Cancelados</option>
           </select>
         </form>
       </div>
@@ -28,7 +28,12 @@
           <h3 class="store-orders__id">Pedido #{{ pedido.id }}</h3>
           <p class="store-orders__date"><strong>Fecha:</strong> {{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
 
-          <div class="store-orders__status {% if pedido.estado == 'pending' %}store-orders__status--pending{% else %}store-orders__status--delivered{% endif %}">
+          <!-- Estado del pedido -->
+          <div class="store-orders__status 
+                      {% if pedido.estado == 'pending' %}store-orders__status--pending
+                      {% elif pedido.estado == 'delivered' %}store-orders__status--delivered
+                      {% elif pedido.estado == 'canceled' %}store-orders__status--canceled
+                      {% endif %}">
             {{ pedido.get_estado_display }}
           </div>
 
@@ -36,15 +41,17 @@
             Total: <strong>${{ pedido.total }}</strong>
           </div>
 
+          <!-- Información del cliente -->
           <div class="store-orders__card store-orders__card--client">
             <h3 class="store-orders__subtitle">Información del cliente</h3>
-            <p class="store-orders__client"><strong>Nombre:</strong> {{ pedido.usuario.username }}</p>
+            <p class="store-orders__client"><strong>Nombre:</strong> {{ pedido.usuario.get_full_name|default:pedido.usuario.username }}</p>
             <p class="store-orders__client"><strong>Correo:</strong> {{ pedido.usuario.email }}</p>
             {% if pedido.usuario.telefono %}
             <p class="store-orders__client"><strong>Teléfono:</strong> {{ pedido.usuario.telefono }}</p>
             {% endif %}
           </div>
 
+          <!-- Productos del pedido -->
           <div class="store-orders__products">
             <h3 class="store-orders__product">Productos del pedido</h3>
             {% for item in pedido.items.all %}
@@ -56,15 +63,35 @@
             {% endfor %}
           </div>
 
+          <!-- Botón de acción para realizar el pedido -->
+          <!-- BOTONES DE ACCIÓN -->
           {% if pedido.estado == "pending" %}
           <div class="store-orders__primary">
-            <form method="post" action="{% url 'pedidos:update_order_status' pedido.id %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn--primary store-orders__delivery">
-                Realizar
-                <img src="{% static 'assets/icons/perform.svg' %}" alt="Icono Enviar" class="btn__icon">
-              </button>
-            </form>
+
+          <form method="get" action="{% url 'pedidos:store_order_detail' pedido.id %}">
+          <button type="submit" class="btn btn--primary store-orders__delivery">
+          Realizar
+          <img src="{% static 'assets/icons/perform.svg' %}" alt="Icono Realizar" class="btn__icon">
+          </button>
+          </form>
+
+          </div>
+          {% endif %}
+
+
+          {% if pedido.estado == "delivered" %}
+          <div class="store-orders__primary">
+
+          <a href="{% url 'tiendas:sales_details_order_store' pedido.id %} " 
+            class="login__link">
+
+          Detalle del pedido
+
+          <img src="{% static 'assets/icons/details.svg' %}" 
+              alt="Detalle" 
+              class="flex">
+
+          </a>
           </div>
           {% endif %}
 
@@ -77,5 +104,4 @@
 
   </section>
 </section>
-
 {% endblock %}

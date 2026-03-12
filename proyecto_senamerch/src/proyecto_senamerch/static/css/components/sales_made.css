@@ -3,7 +3,7 @@
   margin: 40px auto;
   padding: var(--gap-md);
   background: var(--white);
-  border: 1px solid var(--secundary-900);
+  border: solid 2px var(--secundary-400);
   border-radius: 8px;
   color: var(--gray-950);
   font-family: var(--font-primary);
@@ -20,9 +20,9 @@
   grid-template-columns: 1fr 2fr;
   gap: var(--gap-lg);
   align-items: flex-start;
-  border: 1px solid var(--secundary-900);
+  border: solid 2px var(--secundary-400);
   padding: var(--gap-lg);
-  border-radius: 8px;
+  border-radius: 24px;
   background: var(--white);
   font-family: var(--font-primary);
   max-width: 1000px;
@@ -32,9 +32,9 @@
 }
 .sales-made-details__sidebar {
   background-color: var(--secundary-300);
-  border: 1px solid var(--secundary-900);
+  border: solid 2px var(--secundary-400);
   padding: var(--gap-md);
-  border-radius: 0.8rem;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   gap: var(--gap-xs);
@@ -56,13 +56,14 @@
   flex-direction: column;
   gap: var(--gap-md);
   padding: var(--gap-sm);
-  border: 1px solid var(--secundary-900);
+  border: solid 2px var(--secundary-400);
+  border-radius: 24px;
 }
 .sales-made-details__title {
   font-size: var(--fs-sm);
   text-align: center;
   color: var(--gray-950);
-  border-bottom: 1px solid var(--secundary-900);
+  border-bottom: 2px solid var(--secundary-400);
   padding-bottom: var(--gap-xs);
   margin-bottom: var(--gap-sm);
   font-family: var(--font-primary-semibold);
@@ -70,13 +71,14 @@
 .sales-made-details__subtitle {
   font-size: var(--fs-xs);
   font-weight: 600;
-  color: var(--white);
+  color: var(--secundary-900);
+  font-weight: 600;
   margin-bottom: var(--gap-xs);
-  border-left: 1px solid var(--secundary-900);
+  border-left: 2px solid var(--secundary-400);
   padding-left: var(--gap-xs);
 }
 .sales-made-details__section {
-  border-bottom: 1px solid var(--secundary-900);
+  border-bottom: 2px solid var(--secundary-400);
   padding-bottom: var(--gap-sm);
 }
 .sales-made-details__grid {
@@ -86,8 +88,8 @@
 }
 .sales-made-details__product-card {
   background: var(--secundary-300);
-  border: 1px solid var(--secundary-900);
-  border-radius: 0.8rem;
+  border: solid 2px var(--secundary-400);
+  border-radius: 12px;
   padding: var(--gap-md);
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   font-size: var(--fs-xxs);
@@ -102,7 +104,7 @@
 }
 .sales-made-details__totals {
   background: var(--secundary-300);
-  border-radius: 0.6rem;
+  border-radius: 12px;
   border: 1px solid var(--secundary-800);
   padding: var(--gap-md);
   font-size: var(--fs-xs);

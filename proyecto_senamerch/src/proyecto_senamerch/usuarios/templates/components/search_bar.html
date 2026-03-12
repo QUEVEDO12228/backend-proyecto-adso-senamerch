@@ -1,25 +1,29 @@
 {% load static %}
 
-<div class="search-bar">
+<form class="search-bar" onsubmit="return false;">
+  
   <button class="search-bar__button" aria-label="Buscar">
     <span class="search-bar__icon">
-      <img src="{% static 'assets/icons/icon_search.svg' %}" alt="Buscar" />
+      <img src="{% static 'assets/icons/icon_search.svg' %}" alt="Buscar">
     </span>
   </button>
 
   <input
     type="text"
+    id="searchInput"
     class="search-bar__input"
-    placeholder="Busca un productos o tiendas"
+    placeholder="Busca productos o tiendas"
   />
 
-  <button class="search-bar__button" aria-label="Cancelar búsqueda">
+  <div
+    id="searchSuggestions"
+    class="search-suggestions"
+    data-url="{% url 'productos:sugerencias_busqueda' %}">
+  </div>
+  <button type="reset" class="search-bar__button">
     <span class="search-bar__icon--close">
-      <img
-        src="{% static 'assets/icons/icon_cancel.svg' %}"
-        alt="Cancelar"
-        class="icon_cancel"
-      />
+      <img src="{% static 'assets/icons/icon_cancel.svg' %}" alt="Cancelar">
     </span>
   </button>
-</div>
+
+</form>

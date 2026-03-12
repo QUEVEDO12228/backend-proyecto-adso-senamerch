@@ -58,6 +58,8 @@ urlpatterns = [
         name='toggle_product_status'
     ),
     path('', views.lista_productos, name='lista_productos'),
+    path("buscar/", views.buscar, name="buscar"),
+    path("sugerencias/", views.sugerencias_busqueda, name="sugerencias_busqueda"),
 ]
 
 if settings.DEBUG:

@@ -607,3 +607,48 @@ def profile_store_client(request, tienda_id):
         'tienda': tienda
     })
 
+from django.shortcuts import render, get_object_or_404
+from pedidos.models import Pedido
+
+
+from django.shortcuts import render, get_object_or_404
+from pedidos.models import Pedido
+
+
+from decimal import Decimal
+from django.shortcuts import render, get_object_or_404
+from pedidos.models import Pedido
+
+
+# views.py
+from django.shortcuts import render, get_object_or_404
+# views.py
+from pedidos.models import Pedido
+
+def sales_details_order_store(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+
+    # Serializamos solo los datos que necesitamos
+    pedido_data = {
+        "id": pedido.id,
+        "fecha": pedido.creado_en.strftime("%d/%m/%Y"),
+        "cliente": pedido.usuario.get_full_name(),
+        "email": pedido.usuario.email,
+        "items": [
+            {
+                "producto": item.producto.nombre,
+                "cantidad": item.cantidad,
+                "precio": f"{item.producto.precio_con_descuento:.2f}",
+                "descuento": f"{item.producto.descuento}%",
+                "total": f"{item.subtotal_con_descuento:.2f}",
+            }
+            for item in pedido.items.all()
+        ],
+        "total": f"{pedido.total:.2f}",
+    }
+
+    context = {
+        "pedido": pedido,
+        "pedido_json": pedido_data,  # <- esto es seguro para json_script
+    }
+    return render(request, "tiendas/sales_details_order_store.html", context)

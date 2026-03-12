@@ -8,284 +8,124 @@
   <div class="orders-panel__container">
 
     <!-- ========================================
-         TABS
+         TABS (DISEÑO PROFESIONAL)
     ======================================== -->
     <nav class="orders-panel__tabs">
       <button class="orders-panel__tab {% if selected_status == 'pending' %}orders-panel__tab--active{% endif %}" data-status="pending">
         Pendientes
       </button>
-
       <button class="orders-panel__tab {% if selected_status == 'delivered' %}orders-panel__tab--active{% endif %}" data-status="delivered">
         Entregados
       </button>
-
       <button class="orders-panel__tab {% if selected_status == 'canceled' %}orders-panel__tab--active{% endif %}" data-status="canceled">
         Cancelados
       </button>
     </nav>
 
-    <!-- SELECT RESPONSIVE -->
+    <!-- Select adicional (responsive / accesibilidad) -->
     <div class="orders-panel__filter">
-      <form method="get" id="orders-filter-form">
-        <select name="status" class="orders-panel__select" onchange="this.form.submit()">
-
-          <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>
-            Pendientes
-          </option>
-
-          <option value="delivered" {% if selected_status == 'delivered' %}selected{% endif %}>
-            Entregados
-          </option>
-
-          <option value="canceled" {% if selected_status == 'canceled' %}selected{% endif %}>
-            Cancelados
-          </option>
-
-        </select>
-      </form>
+      <select class="orders-panel__select" onchange="this.form.submit()">
+        <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pendientes</option>
+        <option value="delivered" {% if selected_status == 'delivered' %}selected{% endif %}>Entregados</option>
+        <option value="canceled" {% if selected_status == 'canceled' %}selected{% endif %}>Cancelados</option>
+      </select>
     </div>
 
     <!-- ========================================
          LISTA DE PEDIDOS
     ======================================== -->
-
     <div class="orders-panel__list">
-
       {% if pedidos %}
-
         {% for pedido in pedidos %}
-
         <article class="order-card" data-status="{{ pedido.estado }}">
 
           <!-- HEADER -->
           <header class="order-card__top">
-
             <div class="order-card__meta">
-
-              <h3 class="order-card__id">
-                Pedido #{{ pedido.id }}
-              </h3>
-
-              <p class="order-card__date">
-                {{ pedido.creado_en|date:"d/m/Y H:i" }}
-              </p>
-
-              {% if pedido.estado == "pending" %}
-              <span class="order-card__timer"
-                    data-time="{{ pedido.tiempo_restante_cancelacion }}">
-              </span>
-              {% endif %}
-
+              <h3 class="order-card__id">Pedido #{{ pedido.id }}</h3>
+              <p class="order-card__date">{{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
             </div>
-
             <span class="order-card__status order-card__status--{{ pedido.estado }}">
-
-              {% if pedido.estado == "pending" %}
-                Pendiente
-
-              {% elif pedido.estado == "delivered" %}
-                Entregado
-
-              {% elif pedido.estado == "canceled" %}
-                Cancelado
-
-              {% endif %}
-
+              {% if pedido.estado == "pending" %}Pendiente{% elif pedido.estado == "delivered" %}Entregado{% else %}Cancelado{% endif %}
             </span>
-
           </header>
 
-
           <!-- TIENDA -->
-          {% with first_item=pedido.items.first %}
           <div class="order-card__store">
-            Tienda:
-            <strong>{{ first_item.producto.tienda.nombre }}</strong>
+            Tienda: <strong>{{ pedido.items.first.producto.tienda.nombre }}</strong>
           </div>
-          {% endwith %}
-
 
           <!-- PRODUCTOS -->
           <div class="order-card__products">
-
             {% for item in pedido.items.all %}
-
             <div class="order-card__product">
-
-              <p class="order-card__product-name">
-                {{ item.producto.nombre }}
-              </p>
-
-              <p class="order-card__product-qty">
-                x{{ item.cantidad }}
-              </p>
-
+              <p class="order-card__product-name">{{ item.producto.nombre }}</p>
+              <p class="order-card__product-qty">x{{ item.cantidad }}</p>
             </div>
-
             {% endfor %}
-
           </div>
-
 
           <!-- TOTAL -->
           <div class="order-card__total">
-
-            Total del pedido:
-
-            <strong>
-              ${{ pedido.total }}
-            </strong>
-
+            Total del pedido: <strong>${{ pedido.total }}</strong>
           </div>
 
+          <!-- TIEMPO RESTANTE PARA CANCELAR -->
+          {% if pedido.estado == "pending" %}
+            <div class="order-card__cancelation-time">
+              {% if pedido.tiempo_restante_cancelacion %}
+                <span>Tiempo restante para cancelar el pedido: 
+                  {% if pedido.horas_restantes > 0 %}
+                    {{ pedido.horas_restantes }} horas y {{ pedido.minutos_restantes }} minutos
+                  {% else %}
+                    Pedido cancelado automáticamente
+                  {% endif %}
+                </span>
+              {% else %}
+                <span>Pedido cancelado automáticamente</span>
+              {% endif %}
+            </div>
+          {% endif %}
 
           <!-- ACCIONES -->
           <div class="order-card__actions">
-
             {% if pedido.estado == "pending" %}
-
-              <!-- CANCELAR -->
-              <form method="post" action="{% url 'pedidos:cancel_order' pedido.id %}">
-
-                {% csrf_token %}
-
-                <button type="submit" class="btn-secundary btn-secundary-style order-card__cancel">
-
-                  Cancelar
-
-                  <img src="{% static 'assets/icons/cancel.svg' %}"
-                       class="btn__icon"
-                       alt="Cancelar">
-
-                </button>
-
-              </form>
-
-
-              <!-- EDITAR -->
-              {% if pedido.puede_editar %}
-
-              <a href="{% url 'pedidos:edit_order' pedido.id %}"
-                 class="btn btn--primary order-card__edit">
-
-                Editar
-
-                <img src="{% static 'assets/icons/edit.svg' %}"
-                     class="btn__icon"
-                     alt="Editar">
-
-              </a>
-
+                <form method="post" action="{% url 'pedidos:cancel_order' pedido.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn-secundary btn-secundary-style order-card__cancel">
+                    Cancelar
+                    <img src="{% static 'assets/icons/cancel.svg' %}" class="btn__icon" alt="Cancelar">
+                  </button>
+                </form>
               {% endif %}
-
-            {% endif %}
-
           </div>
 
         </article>
-
         {% endfor %}
-
       {% else %}
-
         <p>No hay pedidos con este estado.</p>
-
       {% endif %}
-
     </div>
 
   </div>
 </section>
 
-
-<!-- ================================
-     JS
-================================ -->
-
 <script>
-
-document.addEventListener('DOMContentLoaded', function(){
-
-/* -------------------------------
-   TABS
--------------------------------- */
-
-const tabs = document.querySelectorAll('.orders-panel__tab')
-
-const currentStatus =
-new URLSearchParams(window.location.search)
-.get('status') || 'pending'
-
-
-tabs.forEach(tab => {
-
-const status = tab.dataset.status
-
-if(status === currentStatus){
-
-tab.classList.add('orders-panel__tab--active')
-
-}
-
-tab.addEventListener('click', () => {
-
-window.location.search = `?status=${status}`
-
-})
-
-})
-
-
-/* -------------------------------
-   CONTADOR REGRESIVO
--------------------------------- */
-
-function formatTime(seconds){
-
-let h = Math.floor(seconds / 3600)
-
-let m = Math.floor((seconds % 3600) / 60)
-
-let s = seconds % 60
-
-return `${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`
-
-}
-
-
-document.querySelectorAll(".order-card__timer")
-.forEach(timer => {
-
-let seconds = parseInt(timer.dataset.time)
-
-function update(){
-
-if(isNaN(seconds)) return
-
-if(seconds <= 0){
-
-timer.innerText =
-"Pedido cancelado automáticamente"
-
-return
-
-}
-
-timer.innerText =
-"⏳ Se cancelará en " + formatTime(seconds)
-
-seconds--
-
-setTimeout(update,1000)
-
-}
-
-update()
-
-})
-
-})
-
+// Función para manejar la selección de estado en las tabs y el select
+document.addEventListener('DOMContentLoaded', function() {
+  const tabs = document.querySelectorAll('.orders-panel__tab');
+  const currentStatus = new URLSearchParams(window.location.search).get('status') || 'pending';
+  
+  tabs.forEach(tab => {
+    const status = tab.dataset.status;
+    if (status === currentStatus) {
+      tab.classList.add('orders-panel__tab--active');
+    }
+    tab.addEventListener('click', () => {
+      window.location.search = `?status=${status}`;
+    });
+  });
+});
 </script>
 
 {% endblock %}
