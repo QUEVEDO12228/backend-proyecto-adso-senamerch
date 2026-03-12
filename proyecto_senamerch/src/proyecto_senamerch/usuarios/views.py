@@ -38,33 +38,46 @@ def home_view(request):
 # =========================
 # Inicio de Sessión en SenaMerch
 # =========================
+from django.urls import reverse
+
 def login_view(request):
-    """ Vista de inicio de sesión. Valida los datos ingresados y redirige al usuario según tenga tienda o no. """
     context = {'form_submitted': False}
+    
     if request.method == 'POST':
         context['form_submitted'] = True
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
+        
         if not email or not password:
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'usuarios/login.html', context)
+
         try:
-            validate_email(email)  # Valida el formato del correo electrónico
+            validate_email(email)
         except ValidationError:
             messages.error(request, 'Ingresa un correo electrónico válido.')
             return render(request, 'usuarios/login.html', context)
-        user = authenticate(request, username=email, password=password)  # Autenticación del usuario
+
+        user = authenticate(request, username=email, password=password)
         if user is None:
             messages.error(request, 'Correo o contraseña incorrectos.')
             return render(request, 'usuarios/login.html', context)
-        login(request, user)  # Inicia la sesión del usuario
-        # Verifica si el usuario tiene una tienda asociada
+
+        # LOGIN CORRECTO
+        # LOGIN CORRECTO
+        login(request, user)
+        messages.success(request, f'Bienvenido {user.username}')
+
+        # Determinar URL de redirección
         if Tienda.objects.filter(propietario=user).exists():
-            return redirect('tiendas:home_seller')
+            redirect_url = reverse('tiendas:home_seller')
         else:
-            return redirect('usuarios:home_client')
+            redirect_url = reverse('usuarios:home_client')
+
+        # Enviamos al template
+        context['redirect_url'] = redirect_url
+
     return render(request, 'usuarios/login.html', context)
-# ==========================================
 # Registro de usuario en SenaMerch (PASO 1)
 # ==========================================
 def register_view(request):
@@ -85,26 +98,26 @@ def register_view(request):
         # Validación de campos
         if not all([name, phone, email]):
             messages.error(request, 'Todos los campos son obligatorios.')
-            return redirect('register')
+            return redirect('usuarios:register')
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,}$', name):
             messages.error(request, 'Nombre inválido.')
-            return redirect('register')
+            return redirect('usuarios:register')
         phone_clean = phone.replace(' ', '').replace('-', '')
         if not re.match(r'^[0-9]{10}$', phone_clean):
             messages.error(request, 'Teléfono inválido.')
-            return redirect('register')
+            return redirect('usuarios:register')
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Correo inválido.')
-            return redirect('register')
+            return redirect('usuarios:register')
         if User.objects.filter(username=email).exists():
             messages.error(request, 'Correo ya registrado.')
-            return redirect('register')
+            return redirect('usuarios:register')
         # Validar que se haya ingresado una dirección
         if not request.session.get('address_full'):
             messages.error(request, 'Debes agregar una dirección antes de continuar.')
-            return redirect('register')
+            return redirect('usuarios:register')
         # Guardar los datos definitivos y continuar al siguiente paso
         request.session['register_name'] = name
         request.session['register_phone'] = phone_clean
@@ -121,21 +134,21 @@ def register_step_2(request):
         confirm_password = request.POST.get('confirm_password', '').strip()
         if not password or not confirm_password:
             messages.error(request, 'Debes completar ambos campos.')
-            return redirect('register_step_2')
+            return redirect('usuarios:register_step_2')
         if password != confirm_password:
             messages.error(request, 'Las contraseñas no coinciden.')
-            return redirect('register_step_2')
+            return redirect('usuarios:register_step_2')
         # Validación de seguridad para la contraseña
         if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.#_\-]).{8,}$', password):
             messages.error(request, 'Debe tener mínimo 8 caracteres, mayúscula, minúscula, número y símbolo.')
-            return redirect('register_step_2')
+            return redirect('usuarios:register_step_2')
         # Recuperar los datos de la sesión
         name = request.session.get('register_name')
         email = request.session.get('register_email')
         address = request.session.get('address_full')
         if not name or not email or not address:
             messages.error(request, 'La sesión expiró.')
-            return redirect('register')
+            return redirect('usuarios:register')
         if User.objects.filter(username=email).exists():
             messages.error(request, 'Este correo ya fue registrado.')
             return redirect('usuarios:login')
@@ -260,7 +273,7 @@ def forgot_password_view(request):
 
         # Renderizar correo HTML
         html_content = render_to_string(
-            'emails/reset_code_email.html',
+            'usuarios/reset_code_email.html',
             {'code': code}
         )
 
@@ -337,15 +350,15 @@ def reset_password_view(request):
         # Verificar que no haya campos vacíos
         if not password or not password_confirm:
             messages.error(request, 'Todos los campos son obligatorios.')
-            return redirect('reset_password')
+            return redirect('usuarios:reset_password')
         # Verificar que las contraseñas coincidan
         if password != password_confirm:
             messages.error(request, 'Las contraseñas no coinciden.')
-            return redirect('reset_password')
+            return redirect('usuarios:reset_password')
         # Validar que la contraseña cumpla con las reglas de seguridad
         if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.#-_]).{8,}$', password):
             messages.error(request, 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un símbolo.')
-            return redirect('reset_password')
+            return redirect('usuarios:reset_password')
         # Obtener el correo guardado en sesión
         email = request.session.get('reset_email')
         # Verificar que la sesión esté activa

@@ -56,24 +56,76 @@
 </section>
 
 <script>
+const inputs = document.querySelectorAll(".verify__input");
+
+/* =========================
+   CONTROL DE INPUTS OTP
+========================= */
+inputs.forEach((input, index) => {
+
+  // Cuando se escribe un número
+  input.addEventListener("input", (e) => {
+    const value = e.target.value;
+
+    // Permitir solo números
+    if (!/^[0-9]$/.test(value)) {
+      input.value = "";
+      return;
+    }
+
+    // Pasar al siguiente input
+    if (index < inputs.length - 1) {
+      inputs[index + 1].focus();
+    }
+  });
+
+  // Retroceder con backspace
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Backspace" && input.value === "" && index > 0) {
+      inputs[index - 1].focus();
+    }
+  });
+
+  // Pegar código completo
+  input.addEventListener("paste", (e) => {
+    e.preventDefault();
+
+    const pasteData = (e.clipboardData || window.clipboardData)
+      .getData("text")
+      .trim();
+
+    if (!/^\d{6}$/.test(pasteData)) return;
+
+    inputs.forEach((inp, i) => {
+      inp.value = pasteData[i] || "";
+    });
+
+    inputs[inputs.length - 1].focus();
+  });
+
+});
+
+/* =========================
+   COMBINAR CÓDIGO PARA DJANGO
+========================= */
 function combineCode() {
-  const inputs = document.querySelectorAll('.verify__input');
-  let code = '';
+  let code = "";
 
   for (let input of inputs) {
     if (!/^[0-9]$/.test(input.value)) {
-      alert('El código debe contener solo números');
+      alert("El código debe contener solo números");
       return false;
     }
     code += input.value;
   }
 
   if (code.length !== 6) {
-    alert('Debes ingresar los 6 dígitos del código');
+    alert("Debes ingresar los 6 dígitos del código");
     return false;
   }
 
-  document.getElementById('fullCode').value = code;
+  document.getElementById("fullCode").value = code;
+
   return true;
 }
 </script>

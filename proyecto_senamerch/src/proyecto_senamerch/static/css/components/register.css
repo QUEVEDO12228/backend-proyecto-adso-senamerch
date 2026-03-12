@@ -158,10 +158,11 @@
   right: 12px;      
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--secundary-600);
+  background-color: var(--secundary-950);
+  border: 2px solid var(--secundary-400);
   border: none;
-  padding: 4px 10px;
-  border-radius: 4px;
+  padding: 6px 10px;
+  border-radius: 8px;
   font-size: var(--fs-xxs);
   cursor: pointer;
   transition: background 0.3s, border-color 0.3s, transform 0.15s;

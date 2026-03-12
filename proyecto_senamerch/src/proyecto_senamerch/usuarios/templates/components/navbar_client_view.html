@@ -50,6 +50,14 @@
     </a>
     {% endif %}
 
+    <!-- PERFIL -->
+    <a href="{% url 'usuarios:profile' %}" 
+       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/profile_user.svg' %}" 
+           class="navbar_product_category__icon" 
+           alt="">
+      <span class="navbar_product_category__tooltip">Perfil</span>
+    </a>
     <!-- LOGOUT -->
     <a href="{% url 'usuarios:logout' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
@@ -59,14 +67,7 @@
       <span class="navbar_product_category__tooltip">Salir</span>
     </a>
 
-    <!-- PERFIL -->
-    <a href="{% url 'usuarios:profile' %}" 
-       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/profile_user.svg' %}" 
-           class="navbar_product_category__icon" 
-           alt="">
-      <span class="navbar_product_category__tooltip">Perfil</span>
-    </a>
+    
 
   </div>
 </nav>

@@ -25,9 +25,7 @@
     width: 100%;
   }
 }
-.seeker_products_list_client{
-  display: flex;
-}
+
 .product-card__title--client{
   display: flex;
   justify-content: center;
@@ -38,4 +36,18 @@
   -webkit-text-stroke-width: 0.5px;
   -webkit-text-stroke-color: var(--secundary-400); 
 
+}
+.seeker_products_list_client {
+  display: flex;
+}
+
+/* Responsive para pantallas menores a 640px */
+@media (max-width: 640px) {
+  .seeker_products_list_client {
+    flex-direction: column;  /* Apilar los elementos uno debajo de otro */
+    align-items: center;     /* Centrar horizontalmente cada elemento */
+  }
+  .product-card__title--client{
+    margin: 2.4rem;
+  }
 }
