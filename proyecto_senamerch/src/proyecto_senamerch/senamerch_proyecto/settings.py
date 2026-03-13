@@ -72,6 +72,7 @@ TEMPLATES = [
 
                 # 👇 ESTE ES EL QUE AGREGAS
                 'tiendas.context_processors.tienda_context',
+                'usuarios.context_processors.es_vendedor_context',
             ],
         },
     },

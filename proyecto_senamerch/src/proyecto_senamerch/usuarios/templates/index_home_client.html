@@ -7,57 +7,37 @@
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
-    {% include 'components/navabar_go_go.html' %}
-    {% include 'components/navbar_client_view.html' %}
-    <section class="search-category-grid">
 
+    {% include 'components/navabar_go_go.html' %}
+
+    <!-- Navbar dinámico según tipo de usuario -->
+    {% if es_vendedor %}
+        {% include 'components/navbar_home_store_seller.html' %}
+    {% else %}
+        {% include 'components/navbar_home_client.html' %}
+    {% endif %}
+
+    <section class="search-category-grid">
       <div class="search-bar-container">
         {% include 'components/search_bar.html' %}
       </div>
-
       <nav class="nav">
         <div class="navbar-product-category-container">
           {% include 'components/navbar_product_category.html' %}
         </div>
       </nav>
-
     </section>
-    
+
     <section class="products-grid">
       <div class="cards__container">
           {% block main_content %}{% endblock %}
       </div>
     </section>
-    
+
     {% include 'components/footer.html' %}
     {% include 'components/footer_go_go.html' %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const links = document.querySelectorAll('.navbar_product_category__link--client');
-    const cards_home = document.querySelectorAll('.product-card');
 
-    links.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const cat = link.dataset.categoria;
-
-            cards_home.forEach(card => {
-                if(cat === 'all' || card.dataset.categoria === cat){
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Opcional: marcar el link activo
-            links.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-        });
-    });
-});
-</script>
-<script src="{% static 'js/search_autocomplete.js' %}"></script>
 <script src="{% static 'js/cards.js' %}" defer></script>
+<script src="{% static 'js/search_autocomplete.js' %}"></script>
 </body>
 </html>
-

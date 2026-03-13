@@ -66,7 +66,7 @@ def login_view(request):
         # LOGIN CORRECTO
         # LOGIN CORRECTO
         login(request, user)
-        messages.success(request, f'Bienvenido {user.username}')
+        messages.success(request, f'Bienvenido { request.user.get_full_name }')
 
         # Determinar URL de redirección
         if Tienda.objects.filter(propietario=user).exists():

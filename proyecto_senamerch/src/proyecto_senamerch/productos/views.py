@@ -486,18 +486,28 @@ def description_product_client(request, id):
 
     user_rating = 0
     if request.user.is_authenticated:
-        calificacion = Calificacion.objects.filter(producto=producto, usuario=request.user).first()
+        calificacion = Calificacion.objects.filter(
+            producto=producto,
+            usuario=request.user
+        ).first()
+
         if calificacion:
             user_rating = calificacion.puntuacion
 
     otros_productos = producto.tienda.productos.exclude(id=producto.id)[:4]
     comentarios = producto.calificaciones.select_related("usuario").all()
 
+    # 🔥 DETECTAR SI ES VENDEDOR
+    es_vendedor = False
+    if request.user.is_authenticated:
+        es_vendedor = Tienda.objects.filter(propietario=request.user).exists()
+
     return render(request, "usuarios/description_product_client.html", {
         "producto": producto,
         "otros_productos": otros_productos,
         "comentarios": comentarios,
-        "user_rating": user_rating
+        "user_rating": user_rating,
+        "es_vendedor": es_vendedor
     })
 # =====================================================
 # 🔹 ACTIVAR / DESACTIVAR PRODUCTO

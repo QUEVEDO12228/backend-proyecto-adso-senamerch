@@ -12,7 +12,11 @@
 
   <!-- Navbar -->
     {% include 'components/navabar_go_go.html' %}
-    {% include 'components/navbar_home_client.html' %}
+    {% if es_vendedor %}
+    {% include 'components/navbar_home_store_seller.html' %}
+    {% else %}
+        {% include 'components/navbar_home_client.html' %}
+    {% endif %}
 
   <!-- Sidebar de comentarios -->
   <section class="comments_users">

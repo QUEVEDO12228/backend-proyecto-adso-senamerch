@@ -14,49 +14,38 @@ from tiendas.models import Tienda
 @login_required
 def client_orders(request):
     """
-    Vista que muestra los pedidos del cliente filtrados por estado.
-    Estados permitidos: pending, delivered, canceled.
+    Vista que muestra los pedidos del usuario actual (cliente o vendedor que compra),
+    filtrados por estado: pending, delivered, canceled.
     También calcula el tiempo restante para cancelar pedidos pendientes.
     """
 
-    # Estados permitidos
     ESTADOS_VALIDOS = ["pending", "delivered", "canceled"]
-
-    # Obtener estado desde la URL
     selected_status = request.GET.get("status", "pending")
 
-    # Validar estado
     if selected_status not in ESTADOS_VALIDOS:
         selected_status = "pending"
 
-    # Obtener pedidos del usuario
-    pedidos = (
-        Pedido.objects
-        .filter(usuario=request.user, estado=selected_status)
-        .prefetch_related("items__producto__tienda")
-        .order_by("-creado_en")
-    )
+    # Traemos solo los pedidos donde el usuario es el cliente
+    pedidos = Pedido.objects.filter(
+        usuario=request.user,
+        estado=selected_status
+    ).prefetch_related("items__producto__tienda").order_by("-creado_en")
 
-    # Calcular tiempo restante de cancelación
+    # Calculamos el tiempo restante para cancelar
     for pedido in pedidos:
-
         pedido.horas_restantes = 0
         pedido.minutos_restantes = 0
-
         if pedido.estado == "pending":
-
             tiempo_restante = pedido.tiempo_restante_cancelacion()
-
             if tiempo_restante > 0:
-                pedido.horas_restantes = tiempo_restante // 3600
-                pedido.minutos_restantes = (tiempo_restante % 3600) // 60
+                pedido.horas_restantes = int(tiempo_restante // 3600)
+                pedido.minutos_restantes = int((tiempo_restante % 3600) // 60)
 
-    context = {
+    return render(request, "pedidos/client_orders.html", {
         "pedidos": pedidos,
         "selected_status": selected_status,
-    }
+    })
 
-    return render(request, "pedidos/client_orders.html", context)
 # =========================
 #  Editar Pedido Cliente
 # =========================
@@ -337,3 +326,35 @@ def view_purchase(request, pedido_id):
     }
 
     return render(request, "pedidos/purchase_detail.html", context)
+
+@login_required
+def seller_orders(request):
+    ESTADOS_VALIDOS = ["pending", "delivered", "canceled"]
+    selected_status = request.GET.get("status", "pending")
+    if selected_status not in ESTADOS_VALIDOS:
+        selected_status = "pending"
+
+    # Obtener la tienda del vendedor
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+
+    # Pedidos que incluyen productos de su tienda
+    pedidos = Pedido.objects.filter(
+        items__producto__tienda=tienda,
+        estado=selected_status
+    ).distinct().prefetch_related("items__producto__tienda").order_by("-creado_en")
+
+    # Calcular tiempo restante de cancelación
+    for pedido in pedidos:
+        pedido.horas_restantes = 0
+        pedido.minutos_restantes = 0
+        if pedido.estado == "pending":
+            tiempo_restante = pedido.tiempo_restante_cancelacion()
+            if tiempo_restante > 0:
+                pedido.horas_restantes = tiempo_restante // 3600
+                pedido.minutos_restantes = (tiempo_restante % 3600) // 60
+
+    context = {
+        "pedidos": pedidos,
+        "selected_status": selected_status,
+    }
+    return render(request, "pedidos/client_orders.html", context)
