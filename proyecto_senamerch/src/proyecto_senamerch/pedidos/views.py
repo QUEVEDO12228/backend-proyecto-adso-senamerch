@@ -100,86 +100,115 @@ def edit_order(request, pedido_id):
 # ==========================
 #  Crear una compra cliente
 # ==========================
+from collections import defaultdict
+
 @login_required
 def buy_cart(request):
-    """ Vista para crear un pedido a partir de los artículos del carrito de compras. El carrito se vacía después de crear el pedido. """
-    try:
-        # Obtener el carrito del usuario (manejar excepciones si no existe)
-        carrito = Carrito.objects.get(usuario=request.user)
-    except Carrito.DoesNotExist:
-        messages.error(request, 'No tienes un carrito de compras.')
-        return redirect('productos:lista_productos')
-    # Obtener los artículos del carrito
-    items = carrito.items.all()
-    # Verificar si el carrito está vacío
+
+    carrito = get_object_or_404(Carrito, usuario=request.user)
+    items = carrito.items.select_related("producto__tienda")
+
     if not items.exists():
-        messages.error(request, 'Tu carrito está vacío. Agrega productos antes de realizar un pedido.')
         return redirect('productos:lista_productos')
-    # Crear un nuevo pedido
-    pedido = Pedido.objects.create(
-        usuario=request.user,
-        total=0,
-        estado='pending'
-    )
-    total = 0
-    # Crear los items del pedido y calcular el total
+
+    # AGRUPAR ITEMS POR TIENDA
+    tiendas_items = defaultdict(list)
+
     for item in items:
-        PedidoItem.objects.create(
-            pedido=pedido,
-            producto=item.producto,
-            cantidad=item.cantidad,
-            precio_unitario=item.producto.precio
-        )
-        total += item.subtotal()  # Aquí llamas al método 'subtotal' del carrito para calcular el precio total por producto.
-    # Asignar el total al pedido y guardarlo
-    pedido.total = total
-    pedido.save()
-    # Eliminar los items del carrito después de realizar el pedido
-    items.delete()
-    # Redirigir al usuario a la lista de pedidos
-    return redirect('pedidos:client_orders')
-# ================
-#  Método de pago
-# ================
-@login_required
-def option_payment_method(request):
-    """ Vista para seleccionar el método de pago. Crea un pedido con los artículos del carrito y lo asocia a la tienda del primer producto. El carrito se limpia después de crear el pedido. """
-    # Obtener el carrito del usuario actual
-    carrito = Carrito.objects.get(usuario=request.user)
-    items = carrito.items.all()
-    if request.method == "POST":
-        # Verificar que el carrito no esté vacío
-        if not items.exists():
-            return redirect('productos:lista_productos')  # Redirigir si el carrito está vacío
-        # Obtener la tienda asociada al primer producto del carrito
-        tienda = items.first().producto.tienda
-        if not tienda:
-            return redirect('productos:lista_productos')  # Redirigir si no se encuentra la tienda
-        # Crear un nuevo pedido en estado "pending"
+        tiendas_items[item.producto.tienda].append(item)
+
+    pedidos_creados = []
+
+    # CREAR UN PEDIDO POR TIENDA
+    for tienda, items_tienda in tiendas_items.items():
+
         pedido = Pedido.objects.create(
             usuario=request.user,
-            tienda=tienda,  # Asociamos la tienda al pedido
+            tienda=tienda,
             total=0,
             estado='pending'
         )
+
         total = 0
-        # Crear los items del pedido y calcular el total
-        for item in items:
+
+        for item in items_tienda:
+
             PedidoItem.objects.create(
                 pedido=pedido,
                 producto=item.producto,
                 cantidad=item.cantidad,
                 precio_unitario=item.producto.precio
             )
-            total += item.subtotal()  # Sumamos el subtotal del producto al total
-        # Actualizar el total del pedido
+
+            total += item.subtotal()
+
         pedido.total = total
         pedido.save()
-        # Limpiar el carrito después de crear el pedido
+
+        pedidos_creados.append(pedido)
+
+    # VACIAR CARRITO
+    items.delete()
+
+    return redirect('pedidos:client_orders')
+# ================
+#  Método de pago
+# ================
+from collections import defaultdict
+from django.shortcuts import redirect, get_object_or_404
+
+@login_required
+def option_payment_method(request):
+
+    carrito = get_object_or_404(Carrito, usuario=request.user)
+    items = carrito.items.select_related("producto__tienda")
+
+    if request.method == "POST":
+
+        if not items.exists():
+            return redirect("productos:lista_productos")
+
+        # AGRUPAR POR TIENDA
+        tiendas = defaultdict(list)
+
+        for item in items:
+            tienda = item.producto.tienda
+            tiendas[tienda].append(item)
+
+        # CREAR PEDIDOS
+        for tienda, items_tienda in tiendas.items():
+
+            pedido = Pedido.objects.create(
+                usuario=request.user,
+                tienda=tienda,
+                estado="pending",
+                total=0
+            )
+
+            total = 0
+
+            for item in items_tienda:
+
+                PedidoItem.objects.create(
+                    pedido=pedido,
+                    producto=item.producto,
+                    cantidad=item.cantidad,
+                    precio_unitario=item.producto.precio
+                )
+
+                total += item.subtotal()
+
+            pedido.total = total
+            pedido.save()
+
+        # LIMPIAR CARRITO
         items.delete()
-        # Redirigir al usuario a la página de pedidos
-        return redirect('pedidos:client_orders')
-    return render(request, 'carrito/option_payment_method.html', {"carrito": carrito})
+
+        return redirect("pedidos:client_orders")
+
+    return render(request, "carrito/option_payment_method.html", {
+        "carrito": carrito
+    })
 # ==========================
 #  Cancelar Pedido Cliente
 # ==========================
@@ -241,13 +270,17 @@ def store_orders(request):
 # ==================================
 @login_required
 def store_order_detail(request, pedido_id):
-    """ Vista que muestra los detalles de un pedido específico de la tienda, incluyendo los productos y el total de la compra. """
-    # Obtén el pedido solo si pertenece a la tienda del vendedor logueado
-    pedido = get_object_or_404(Pedido, id=pedido_id, items__producto__tienda__propietario=request.user)
-    # Obtener los items del pedido
-    items = pedido.items.all()
-    # Calcular el total sumando los subtotales de los productos
+
+    pedido = get_object_or_404(
+        Pedido,
+        id=pedido_id,
+        tienda__propietario=request.user
+    )
+
+    items = pedido.items.select_related("producto")
+
     total = sum(item.subtotal() for item in items)
+
     return render(request, 'pedidos/store_order_detail.html', {
         'pedido': pedido,
         'items': items,
@@ -272,15 +305,20 @@ def cancel_order_store(request, pedido_id):
 # ===============================================================
 @login_required
 def deliver_order_store(request, pedido_id):
-    """ Permite al vendedor marcar un pedido como entregado. """
+
     if request.method == "POST":
-        # Obtener el pedido solo si pertenece a la tienda del vendedor logueado
-        pedido = get_object_or_404(Pedido, id=pedido_id, items__producto__tienda__propietario=request.user)
-        # Si el pedido está en estado 'pending', cambiarlo a 'delivered'
-        if pedido.estado == 'pending':
-            pedido.estado = 'delivered'
+
+        pedido = get_object_or_404(
+            Pedido,
+            id=pedido_id,
+            tienda__propietario=request.user
+        )
+
+        if pedido.estado == "pending":
+            pedido.estado = "delivered"
             pedido.save()
-    return redirect('pedidos:store_orders')
+
+    return redirect("pedidos:store_orders")
 # ==================================
 #  Detalles de los pedidos clientes
 # ==================================

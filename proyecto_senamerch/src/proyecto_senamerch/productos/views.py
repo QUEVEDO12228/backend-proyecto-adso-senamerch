@@ -481,23 +481,30 @@ def description_product_seller(request, id):
 # =====================================================
 # 🔹 DESCRIPCIÓN CLIENTE
 # =====================================================
+from django.shortcuts import render, get_object_or_404
+from productos.models import Producto, Calificacion
+from tiendas.models import Tienda
+
 def description_product_client(request, id):
     producto = get_object_or_404(Producto, id=id)
 
+    # Calificación del usuario
     user_rating = 0
     if request.user.is_authenticated:
         calificacion = Calificacion.objects.filter(
             producto=producto,
             usuario=request.user
         ).first()
-
         if calificacion:
             user_rating = calificacion.puntuacion
 
-    otros_productos = producto.tienda.productos.exclude(id=producto.id)[:4]
+    # 🔹 Otros productos de la misma tienda, excluyendo el actual
+    otros_productos = producto.tienda.productos.exclude(id=producto.id)[:1]  # solo 1 producto más
+
+    # Comentarios del producto
     comentarios = producto.calificaciones.select_related("usuario").all()
 
-    # 🔥 DETECTAR SI ES VENDEDOR
+    # 🔥 Detectar si es vendedor
     es_vendedor = False
     if request.user.is_authenticated:
         es_vendedor = Tienda.objects.filter(propietario=request.user).exists()

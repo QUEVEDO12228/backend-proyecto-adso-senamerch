@@ -51,7 +51,6 @@
         {% endfor %}
       </div>
 
-      <!-- FORMULARIO PARA NUEVO COMENTARIO -->
       {% if request.user.is_authenticated %}
       <form id="formComentario" 
             method="POST" 
@@ -105,36 +104,103 @@
       <p class="info__text"><strong>Descuento: </strong>{{ producto.descuento }}%</p>
       <p class="info__text"><strong>Categoría: </strong>{{ producto.categoria }}</p>
     </div>
-    <!-- INFORMACIÓN ADICIONAL -->
+
     <div class="details__info info">
       <h3 class="info__subtitle">Más información</h3>
       <p class="info__text">{{ producto.descripcion }}</p>
     </div>
 
-    <!-- MÁS PRODUCTOS DEL VENDEDOR -->
+    <!-- MÁS PRODUCTOS DEL VENDEDOR (CARD COMPLETA) -->
     <h3 class="info__subtitle">Más Productos</h3>
     <div class="product-description__more-products">
       {% for prod in otros_productos %}
-        <article class="product-card">
+        <article class="product-card"
+                data-nombre="{{ prod.nombre|lower }}"
+                data-tienda="{{ prod.tienda.nombre|lower }}"
+                data-categoria="{{ prod.categoria|lower }}"
+                data-precio="{{ prod.precio }}">
+          
           <div class="product-card__actions">
-            <div class="product-card__header">
-              <h2 class="product-card__title">{{ prod.nombre }}</h2>
-              <p class="product-card__price">${{ prod.precio }} / kilo</p>
-              <p class="product-card__discount">{{ prod.descuento }} % de descuento</p>
+            <!-- Calificación con estrellas -->
+            <div class="product-card__rating" 
+                 data-producto="{{ prod.id }}" 
+                 data-user-rating="{{ prod.user_rating }}">
+              {% for i in "12345"|make_list %}
+                <span class="product-card__star {% if forloop.counter <= prod.user_rating %}product-card__star--active{% endif %}" 
+                      data-value="{{ forloop.counter }}">★</span>
+              {% endfor %}
             </div>
-            <a href="{% url 'productos:description_product_client' prod.id %}" class="product-card__image-link">
+            <!-- Menú de acciones -->
+            <div class="product-card__menu">
+              <button class="product-card__menu-btn">⋮</button>
+              <ul class="product-card__menu-dropdown">
+                <li>
+                  <a href="#" class="product-card__menu-item" data-action="open-comments">
+                    Dejar un comentario
+                    <img src="{% static 'assets/icons/contact.svg' %}" 
+                         alt="Comentario" 
+                         class="product-card__menu-item-icon">
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Header: nombre y precio -->
+          <div class="product-card__header">
+            <h2 class="product-card__title">{{ prod.nombre }}</h2>
+            <p class="product-card__price">$ {{ prod.precio }} / kilo</p>
+            <p class="product-card__discount">{{ prod.descuento }} % de descuento</p>
+          </div>
+
+          <!-- Foto redonda de la tienda -->
+          <a href="{% url 'tiendas:profile_store_client' tienda_id=prod.tienda.id %}" class="product-card__profile-store-link">
+            {% if prod.tienda.imagen_portada %}
+              <img src="{{ prod.tienda.imagen_portada.url }}" 
+                   alt="Logo de la tienda {{ prod.tienda.nombre }}" 
+                   class="product-card__store-logo">
+            {% else %}
+              <img src="{% static 'assets/img/default-store.jpg' %}" 
+                   alt="Sin imagen" 
+                   class="product-card__store-logo">
+            {% endif %}
+            <span class="product-card__profile-store-tooltip">
+              Visitar Tienda
+              <img src="{% static 'assets/icons/store_profile.svg' %}" 
+                   alt="Icono tienda" 
+                   class="product-card__profile-store-tooltip-icon">
+            </span>
+          </a>
+
+          <!-- Imagen principal del producto -->
+          <a href="{% url 'productos:description_product_client' prod.id %}" class="product-card__image-link">
+            <div class="product-card__image-wrapper">
               {% with prod.imagenes.first as img %}
                 {% if img %}
-                  <img src="{{ img.imagen.url }}" alt="{{ prod.nombre }}" class="product-card__image">
+                  <img src="{{ img.imagen.url }}" alt="Imagen de {{ prod.nombre }}" class="product-card__image">
                 {% else %}
                   <img src="{% static 'assets/img/default-product.jpg' %}" alt="Sin imagen" class="product-card__image">
                 {% endif %}
               {% endwith %}
+            </div>
+            <span class="product-card__image-tooltip">
+              Visualizar Producto
+              <img src="{% static 'assets/icons/eye.svg' %}" alt="Icono ver producto" class="product-card__image-tooltip-icon">
+            </span>
+          </a>
+
+          <!-- Botón Comprar -->
+          <div class="product-card__footer--end">
+            <a href="{% url 'productos:buy_product' producto_id=prod.id %}" class="btn btn--primary product-card__pay">
+                Comprar
+                <img src="{% static 'assets/icons/cash-button.svg' %}" alt="Comprar" class="btn__icon product-card__icon">
             </a>
           </div>
+
         </article>
       {% endfor %}
     </div>
+
   </div>
 </section>
 

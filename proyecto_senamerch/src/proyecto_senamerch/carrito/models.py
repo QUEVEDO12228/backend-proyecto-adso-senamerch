@@ -19,12 +19,24 @@ class Carrito(models.Model):
 
     def get_total(self):
         return sum(item.subtotal() for item in self.items.all())
-
-
+    
 class ItemCarrito(models.Model):
-    carrito = models.ForeignKey(Carrito, on_delete=models.CASCADE, related_name='items')
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+
+    carrito = models.ForeignKey(
+        Carrito,
+        on_delete=models.CASCADE,
+        related_name='items'
+    )
+
+    producto = models.ForeignKey(
+        Producto,
+        on_delete=models.CASCADE
+    )
+
     cantidad = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        unique_together = ("carrito", "producto")
 
     def subtotal(self):
         return self.cantidad * self.producto.precio
