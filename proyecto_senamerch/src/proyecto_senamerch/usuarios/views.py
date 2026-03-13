@@ -128,33 +128,40 @@ def register_view(request):
 # Registro de usuario en SenaMerch (PASO 2)
 # ==========================================
 def register_step_2(request):
-    """ Vista para el segundo paso del registro, donde se valida y guarda la contraseña."""
+
     if request.method == 'POST':
+
         password = request.POST.get('password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
+        image = request.FILES.get('cover_image')
+
         if not password or not confirm_password:
             messages.error(request, 'Debes completar ambos campos.')
             return redirect('usuarios:register_step_2')
+
         if password != confirm_password:
             messages.error(request, 'Las contraseñas no coinciden.')
             return redirect('usuarios:register_step_2')
-        # Validación de seguridad para la contraseña
-        if not re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&.#_\-]).{8,}$', password):
-            messages.error(request, 'Debe tener mínimo 8 caracteres, mayúscula, minúscula, número y símbolo.')
-            return redirect('usuarios:register_step_2')
-        # Recuperar los datos de la sesión
+
         name = request.session.get('register_name')
         email = request.session.get('register_email')
         address = request.session.get('address_full')
-        if not name or not email or not address:
-            messages.error(request, 'La sesión expiró.')
-            return redirect('usuarios:register')
-        if User.objects.filter(username=email).exists():
-            messages.error(request, 'Este correo ya fue registrado.')
-            return redirect('usuarios:login')
-        # Crear el usuario, perfil y dirección
-        user = User.objects.create_user(username=email, email=email, password=password, first_name=name)
-        Profile.objects.update_or_create(user=user, defaults={'phone': request.session.get('register_phone', '')})
+
+        user = User.objects.create_user(
+            username=email,
+            email=email,
+            password=password,
+            first_name=name
+        )
+
+        Profile.objects.update_or_create(
+            user=user,
+            defaults={
+                'phone': request.session.get('register_phone', ''),
+                'image': image
+            }
+        )
+
         Address.objects.create(
             user=user,
             neighborhood=address.get('neighborhood'),
@@ -165,11 +172,10 @@ def register_step_2(request):
             city=address.get('city'),
             extra_info=address.get('additional_info')
         )
-        # Limpiar sesión
-        request.session.pop('register_name', None)
-        request.session.pop('register_email', None)
-        request.session.pop('address_full', None)
+
         return render(request, 'usuarios/register2.html', {'success': True})
+
+    # 🔴 IMPORTANTE: siempre debe existir este return
     return render(request, 'usuarios/register2.html')
 # ==========================================
 #  Añadir Dirección para Registrarse (PASO 1)
@@ -523,9 +529,32 @@ def edit_address_profile_user2(request):
 # ==================================
 #  Vista Cliente Al Iniciar Sessión
 # ==================================
+from productos.models import Producto, Calificacion
+
 def home_client_view(request):
-    """ Vista principal para el cliente. Muestra los productos disponibles de todas las tiendas. """
-    productos = Producto.objects.select_related('tienda').prefetch_related('imagenes').all()
-    return render(request, 'usuarios/card_client.html', {
-        'productos': productos
+
+    productos = Producto.objects.select_related(
+        'tienda'
+    ).prefetch_related('imagenes')
+
+    if request.user.is_authenticated:
+
+        calificaciones = Calificacion.objects.filter(
+            usuario=request.user
+        )
+
+        cal_dict = {
+            c.producto_id: c.puntuacion
+            for c in calificaciones
+        }
+
+        for producto in productos:
+            producto.user_rating = cal_dict.get(producto.id, 0)
+
+    else:
+        for producto in productos:
+            producto.user_rating = 0
+
+    return render(request, "usuarios/card_client.html", {
+        "productos": productos
     })

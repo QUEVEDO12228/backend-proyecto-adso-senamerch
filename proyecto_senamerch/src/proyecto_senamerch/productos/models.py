@@ -2,6 +2,8 @@ from django.db import models
 from django.utils import timezone
 from tiendas.models import Tienda
 from decimal import Decimal
+from django.contrib.auth.models import User
+from django.db.models import Avg
 
 
 class Producto(models.Model):
@@ -139,6 +141,21 @@ class Producto(models.Model):
 
         return "/static/assets/img/default-product.jpg"
 
+    # ----------------------------
+    # PROMEDIO DE CALIFICACIONES
+    # ----------------------------
+    @property
+    def rating_promedio(self):
+        promedio = self.calificaciones.aggregate(promedio=Avg("puntuacion"))
+        return round(promedio["promedio"] or 0, 1)
+
+    # ----------------------------
+    # TOTAL DE CALIFICACIONES
+    # ----------------------------
+    @property
+    def total_calificaciones(self):
+        return self.calificaciones.count()
+
 
 class ImagenProducto(models.Model):
 
@@ -154,3 +171,36 @@ class ImagenProducto(models.Model):
 
     def __str__(self):
         return f"Imagen de {self.producto.nombre}"
+
+
+class Calificacion(models.Model):
+
+    producto = models.ForeignKey(
+        Producto,
+        on_delete=models.CASCADE,
+        related_name="calificaciones"
+    )
+
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    puntuacion = models.PositiveIntegerField(
+        choices=[
+            (1, "1 estrella"),
+            (2, "2 estrellas"),
+            (3, "3 estrellas"),
+            (4, "4 estrellas"),
+            (5, "5 estrellas"),
+        ]
+    )
+
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("producto", "usuario")
+        ordering = ["-creado_en"]
+
+    def __str__(self):
+        return f"{self.usuario.username} calificó {self.producto.nombre} con {self.puntuacion}"

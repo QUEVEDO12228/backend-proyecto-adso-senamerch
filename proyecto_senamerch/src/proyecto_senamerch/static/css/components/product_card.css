@@ -354,3 +354,68 @@
     left: 304px;
   }
 }
+/* =========================
+   SISTEMA DE CALIFICACIÓN
+========================= */
+
+/* En la card de producto */
+.product-card__rating {
+  position: absolute;
+  top: 320px;
+  left: 24px;
+  display: flex;
+  gap: 4px;
+  z-index: 40;
+}
+
+.product-card__star {
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--gray-400);
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.product-card__star:hover {
+  transform: scale(1.2);
+}
+
+.product-card__star--active {
+  color: #FFD700; /* dorado */
+}
+
+/* ESTRELLAS EN CELULAR: 3 ARRIBA Y 2 ABAJO */
+@media (max-width: 640px) {
+
+  .product-card__rating {
+    position: absolute;
+    top: 310px;
+    left: 24px;
+    display: grid;
+    grid-template-columns: repeat(3, auto); /* 3 en la primera fila */
+    gap: 0;
+  }
+}
+
+/* CARD */
+.product-card__star{
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--gray-400);
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.product-card__star--active{
+  color: #FFD700;
+}
+
+/* DESCRIPTION */
+.details__rating .star{
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--gray-400);
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.details__rating .star.filled{
+  color: #FFD700;
+}

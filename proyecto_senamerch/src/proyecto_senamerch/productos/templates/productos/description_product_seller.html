@@ -80,10 +80,13 @@
   <!-- DETALLES DEL PRODUCTO -->
   <div class="product-admin-description__details seller-details">
 
+    <!-- BADGE DE ESTADO PROFESIONAL -->
+    <div class="product-status-badge {% if producto.activo %}active{% else %}disabled{% endif %}">
+      {% if producto.activo %}Activo{% else %}Deshabilitado{% endif %}
+    </div>
+
     <!-- BOTONES ADMIN -->
     <div class="seller-details__actions">
-      <p class="product-admin-description__status">Estado: {% if producto.activo %}Activo{% else %}Deshabilitado{% endif %}</p>
-
       <form method="POST" action="{% url 'productos:toggle_product_status' producto.id %}">
         {% csrf_token %}
         {% if producto.activo %}
@@ -101,8 +104,19 @@
     </div>
 
     <!-- RATING -->
+    <!-- RATING VISUAL -->
     <div class="seller-details__rating rating">
-      <p class="rating__text">★ ★ ★ ★ ★ <span class="rating__score">(4.5/5)</span></p>
+      <p class="rating__text">
+        Promedio:
+        <span class="rating__score">({{ producto.total_calificaciones }} opiniones)</span>
+      </p>
+    </div>
+
+    <!-- ESTRELLAS INTERACTIVAS PARA CALIFICAR -->
+    <div class="details__rating rating" data-producto="{{ producto.id }}">
+      {% for i in "12345"|make_list %}
+        <span class="star {% if forloop.counter <= producto.rating_promedio|floatformat:0 %}filled{% endif %}" data-value="{{ forloop.counter }}">★</span>
+      {% endfor %}
     </div>
 
     <!-- INFORMACIÓN DEL PRODUCTO -->
@@ -120,6 +134,7 @@
       <p class="seller-info__text"><strong>Método de pago:</strong>{{ producto.metodo_pago }}</p>
       <p class="seller-info__text"><strong>Descuento:</strong>{{ producto.descuento }}%</p>
     </div>
+
     <div class="seller-comments__secondary">
       <a href="{% url 'productos:edit_product_seller' producto.id %}"
           class="btn-secundary btn-secundary-style seller-comments__edit">
@@ -132,7 +147,6 @@
   </div>
 </section>
 
-<!-- SCRIPT PARA CAMBIAR IMAGEN PRINCIPAL -->
 <script>
 function changeMainImage(element) {
     const mainImage = document.getElementById("mainImage");
@@ -140,15 +154,7 @@ function changeMainImage(element) {
 }
 </script>
 
-<!-- SCRIPT AJAX COMENTARIOS -->
 <script src="{% static 'js/description_product_seller.js' %}" defer></script>
-
-<style>
-/* Si el producto está deshabilitado, aplicamos opacidad y pointer-events none */
-.product--disabled {
-    opacity: 0.5;
-    pointer-events: none;
-}
-</style>
+<script src="{% static 'js/cards.js' %}" defer></script>
 
 {% endblock %}

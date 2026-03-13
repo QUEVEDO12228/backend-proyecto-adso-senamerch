@@ -158,38 +158,35 @@ def add_address_store(request):
     return render(request, 'tiendas/add_address_store.html')
 @login_required
 def add_address_store2(request):
-    # Recuperar datos del paso 1
+
     step_1 = request.session.get('store_address_step_1')
-    # Validar que el paso anterior esté completo
+
     if not step_1:
         messages.error(request, 'Debes completar el paso anterior.')
         return redirect('tiendas:add_address_store')
+
     if request.method == 'POST':
-        # Obtener datos del formulario
+
         department = request.POST.get('department', '').strip()
         city = request.POST.get('city', '').strip()
         additional_info = request.POST.get('additional_info', '').strip()
-        # Validar campos obligatorios
+
         if not department or not city:
             messages.error(request, 'Departamento y municipio obligatorios.')
             return redirect('tiendas:add_address_store2')
-        # Validar longitud mínima del municipio
-        if len(city) < 3:
-            messages.error(request, 'El municipio debe tener mínimo 3 caracteres.')
-            return redirect('tiendas:add_address_store2')
-        # Guardar dirección completa en sesión
+
         request.session['store_address'] = {
             **step_1,
             'department': department,
             'city': city,
             'additional_info': additional_info,
         }
+
         request.session.modified = True
-        # Eliminar datos temporales del paso 1
         request.session.pop('store_address_step_1', None)
-        # Volver al paso 2 de creación de tienda
+
         return redirect('tiendas:create_store2')
-    # Renderizar formulario de dirección paso 2
+
     return render(request, 'tiendas/add_address_store2.html')
 @login_required
 def profile_store_seller(request):

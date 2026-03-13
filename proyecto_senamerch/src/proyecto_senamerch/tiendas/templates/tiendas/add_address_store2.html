@@ -25,27 +25,26 @@
     <form class="address-store-form__form" method="post" id="storeAddressForm2">
       {% csrf_token %}
 
+      <!-- DEPARTAMENTO -->
       <div class="address-store-form__group">
         <label class="address-store-form__label">Departamento</label>
-        <select name="department" class="address-store-form__input" required>
+        <select id="department" name="department" class="address-store-form__input" required>
           <option value="">Selecciona...</option>
           <option value="Risaralda">Risaralda</option>
-          <option value="Quindío">Quindío</option>
+          <option value="Quindio">Quindío</option>
           <option value="Caldas">Caldas</option>
         </select>
       </div>
 
+      <!-- MUNICIPIO -->
       <div class="address-store-form__group">
         <label class="address-store-form__label">Municipio</label>
-        <input 
-          type="text"
-          name="city"
-          placeholder="Ej: Pereira"
-          class="address-store-form__input"
-          required
-        >
+        <select id="city" name="city" class="address-store-form__input" required>
+          <option value="">Selecciona un departamento primero</option>
+        </select>
       </div>
 
+      <!-- INFO ADICIONAL -->
       <div class="address-store-form__group address-store-form__group--full">
         <label class="address-store-form__label">Información adicional</label>
         <input 
@@ -53,25 +52,21 @@
           name="additional_info"
           placeholder="Apartamento, interior, referencias..."
           class="address-store-form__input"
+          maxlength="150"
         >
       </div>
 
       <div class="address-store-form__secondary">
         <a href="{% url 'tiendas:add_address_store' %}" class="btn-secundary btn-secundary-style">
           Volver
-          <img src="{% static 'assets/icons/return.svg' %}" 
-               alt=""
-               class="btn-secundary__icon"
-               aria-hidden="true"/>
+          <img src="{% static 'assets/icons/return.svg' %}" class="btn-secundary__icon">
         </a>
       </div>
+
       <div class="address-store-form__buttons">
         <button type="submit" class="btn btn--primary">
           Guardar
-          <img src="{% static 'assets/icons/save.svg' %}" 
-               alt=""
-               class="btn__icon edit-profile-admin__icon"
-               aria-hidden="true"/>
+          <img src="{% static 'assets/icons/save.svg' %}" class="btn__icon">
         </button>
       </div>
 
@@ -80,23 +75,119 @@
 </section>
 
 <script>
-const form2 = document.getElementById('storeAddressForm2');
 
-form2.addEventListener('submit', function(e){
+const municipios = {
 
-  const department = document.querySelector('[name="department"]').value;
-  const city = document.querySelector('[name="city"]').value.trim();
+  Risaralda: [
+    "Pereira",
+    "Dosquebradas",
+    "Santa Rosa de Cabal",
+    "La Virginia",
+    "Apía",
+    "Balboa",
+    "Belén de Umbría",
+    "Guática",
+    "La Celia",
+    "Marsella",
+    "Mistrató",
+    "Pueblo Rico",
+    "Quinchía",
+    "Santuario"
+  ],
 
-  if (!department || !city) {
-    e.preventDefault();
-    alert("Debes completar departamento y municipio");
+  Quindio: [
+    "Armenia",
+    "Calarcá",
+    "Circasia",
+    "Córdoba",
+    "Filandia",
+    "Génova",
+    "La Tebaida",
+    "Montenegro",
+    "Pijao",
+    "Quimbaya",
+    "Salento",
+    "Buenavista"
+  ],
+
+  Caldas: [
+    "Manizales",
+    "Villamaría",
+    "Chinchiná",
+    "La Dorada",
+    "Riosucio",
+    "Anserma",
+    "Salamina",
+    "Aguadas",
+    "Supía",
+    "Neira",
+    "Aranzazu",
+    "Belalcázar",
+    "Filadelfia",
+    "La Merced",
+    "Marmato",
+    "Marquetalia",
+    "Marulanda",
+    "Norcasia",
+    "Pácora",
+    "Palestina",
+    "Pensilvania",
+    "Risaralda",
+    "Samaná",
+    "San José",
+    "Victoria",
+    "Viterbo"
+  ]
+
+};
+
+const departmentSelect = document.getElementById("department");
+const citySelect = document.getElementById("city");
+
+departmentSelect.addEventListener("change", function(){
+
+  const dept = this.value;
+
+  citySelect.innerHTML = "<option value=''>Selecciona municipio</option>";
+
+  if(municipios[dept]){
+
+    municipios[dept].forEach(function(municipio){
+
+      const option = document.createElement("option");
+      option.value = municipio;
+      option.textContent = municipio;
+
+      citySelect.appendChild(option);
+
+    });
+
   }
 
-  if (city.length < 3) {
-    e.preventDefault();
-    alert("El municipio debe tener al menos 3 caracteres");
-  }
 });
+
+// Validación extra antes de enviar
+const form = document.getElementById("storeAddressForm2");
+
+form.addEventListener("submit", function(e){
+
+  const department = departmentSelect.value;
+  const city = citySelect.value;
+
+  if(!department){
+    e.preventDefault();
+    alert("Debes seleccionar un departamento");
+    return;
+  }
+
+  if(!city){
+    e.preventDefault();
+    alert("Debes seleccionar un municipio");
+    return;
+  }
+
+});
+
 </script>
 
 {% endblock %}

@@ -60,6 +60,7 @@ urlpatterns = [
     path('', views.lista_productos, name='lista_productos'),
     path("buscar/", views.buscar, name="buscar"),
     path("sugerencias/", views.sugerencias_busqueda, name="sugerencias_busqueda"),
+    path("calificar-producto/", views.calificar_producto, name="calificar_producto"),
 ]
 
 if settings.DEBUG:

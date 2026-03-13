@@ -11,6 +11,8 @@ from django.utils import timezone  # Manejo de zona horaria
 from django.http import JsonResponse  # Respuestas JSON para APIs o AJAX
 from tiendas.models import Tienda
 from .models import Producto, ImagenProducto
+from productos.models import Calificacion
+
 # =====================================================
 # 🔹 CREAR PRODUCTO - PASO 1
 # =====================================================
@@ -480,13 +482,22 @@ def description_product_seller(request, id):
 # 🔹 DESCRIPCIÓN CLIENTE
 # =====================================================
 def description_product_client(request, id):
-
-    # Obtener producto
     producto = get_object_or_404(Producto, id=id)
 
-    # Renderizar vista pública del producto
+    user_rating = 0
+    if request.user.is_authenticated:
+        calificacion = Calificacion.objects.filter(producto=producto, usuario=request.user).first()
+        if calificacion:
+            user_rating = calificacion.puntuacion
+
+    otros_productos = producto.tienda.productos.exclude(id=producto.id)[:4]
+    comentarios = producto.calificaciones.select_related("usuario").all()
+
     return render(request, "usuarios/description_product_client.html", {
-        "producto": producto
+        "producto": producto,
+        "otros_productos": otros_productos,
+        "comentarios": comentarios,
+        "user_rating": user_rating
     })
 # =====================================================
 # 🔹 ACTIVAR / DESACTIVAR PRODUCTO
@@ -609,3 +620,29 @@ def sugerencias_busqueda(request):
         "productos": productos,
         "tiendas": tiendas
     })
+
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from productos.models import Producto, Calificacion
+import json
+
+@login_required
+@csrf_exempt
+def calificar_producto(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        producto_id = data.get("producto_id")
+        puntuacion = data.get("puntuacion")
+
+        producto = get_object_or_404(Producto, id=producto_id)
+
+        calificacion, _ = Calificacion.objects.update_or_create(
+            producto=producto,
+            usuario=request.user,
+            defaults={"puntuacion": puntuacion}
+        )
+
+        return JsonResponse({"success": True, "puntuacion": calificacion.puntuacion})
+
+    return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)

@@ -344,3 +344,32 @@
     color: var(--secundary-600);
   }
 }
+/* =========================
+   SISTEMA DE CALIFICACIÓN
+========================= */
+.details__rating {
+  display: flex;
+  gap: 4px;
+  font-size: 22px;
+  cursor: pointer;
+  align-items: center;
+}
+
+.details__rating .star {
+  color: var(--gray-400);
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.details__rating .star:hover {
+  transform: scale(1.2);
+}
+
+.details__rating .star.filled {
+  color: #FFD700;
+}
+
+.rating__score {
+  font-size: var(--fs-xxs);
+  color: var(--gray-700);
+  margin-left: 0.5rem;
+}

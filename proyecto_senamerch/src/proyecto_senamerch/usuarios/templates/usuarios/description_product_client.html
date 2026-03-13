@@ -78,11 +78,11 @@
   </div>
 
   <!-- DETALLES DEL PRODUCTO Y BOTÓN COMPRAR -->
-  <div class="product-description__details details">
-    <div class="details__rating rating">
-      <p class="rating__text">
-        ★ ★ ★ ★ ★ <span class="rating__score">(4.5/5 promedio)</span>
-      </p>
+  <div class="product-description__details details" data-rating="{{ producto.rating_promedio }}">
+    <div class="details__rating rating" data-producto="{{ producto.id }}" data-user-rating="{{ user_rating }}">
+      {% for i in "12345"|make_list %}
+        <span class="star {% if forloop.counter <= user_rating %}filled{% endif %}" data-value="{{ forloop.counter }}">★</span>
+      {% endfor %}
     </div>
 
     <h2 class="details__title">{{ producto.nombre }}</h2>
@@ -116,20 +116,22 @@
     <div class="product-description__more-products">
       {% for prod in otros_productos %}
         <article class="product-card">
-          <div class="product-card__header">
-            <h2 class="product-card__title">{{ prod.nombre }}</h2>
-            <p class="product-card__price">${{ prod.precio }} / kilo</p>
-            <p class="product-card__discount">{{ prod.descuento }} % de descuento</p>
+          <div class="product-card__actions">
+            <div class="product-card__header">
+              <h2 class="product-card__title">{{ prod.nombre }}</h2>
+              <p class="product-card__price">${{ prod.precio }} / kilo</p>
+              <p class="product-card__discount">{{ prod.descuento }} % de descuento</p>
+            </div>
+            <a href="{% url 'productos:description_product_client' prod.id %}" class="product-card__image-link">
+              {% with prod.imagenes.first as img %}
+                {% if img %}
+                  <img src="{{ img.imagen.url }}" alt="{{ prod.nombre }}" class="product-card__image">
+                {% else %}
+                  <img src="{% static 'assets/img/default-product.jpg' %}" alt="Sin imagen" class="product-card__image">
+                {% endif %}
+              {% endwith %}
+            </a>
           </div>
-          <a href="{% url 'productos:description_product_client' prod.id %}" class="product-card__image-link">
-            {% with prod.imagenes.first as img %}
-              {% if img %}
-                <img src="{{ img.imagen.url }}" alt="{{ prod.nombre }}" class="product-card__image">
-              {% else %}
-                <img src="{% static 'assets/img/default-product.jpg' %}" alt="Sin imagen" class="product-card__image">
-              {% endif %}
-            {% endwith %}
-          </a>
         </article>
       {% endfor %}
     </div>
@@ -143,5 +145,5 @@ function changeMainImage(element) {
     mainImage.src = element.src;
 }
 </script>
-
+<script src="{% static 'js/cards.js' %}"></script>
 {% endblock %}
