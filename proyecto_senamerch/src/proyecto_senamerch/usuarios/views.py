@@ -105,7 +105,14 @@ def login_view(request):
         # LOGIN CORRECTO
         # LOGIN CORRECTO
         login(request, user)
-        messages.success(request, f'Bienvenido { request.user.get_full_name }')
+        nombre = user.get_full_name() or user.username
+
+        if Tienda.objects.filter(propietario=user).exists():
+            messages.success(request, f'Bienvenido vendedor {nombre} 👋')
+            redirect_url = reverse('tiendas:home_seller')
+        else:
+            messages.success(request, f'Bienvenido cliente {nombre} 👋')
+            redirect_url = reverse('usuarios:home_client')
 
         # Determinar URL de redirección
         if Tienda.objects.filter(propietario=user).exists():

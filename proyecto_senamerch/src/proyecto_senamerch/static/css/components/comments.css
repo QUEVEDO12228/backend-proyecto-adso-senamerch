@@ -181,3 +181,21 @@
   background:var(--secundary-400);
   border-radius:4px;
 }
+
+.comment-actions{
+display:flex;
+gap:10px;
+margin-top:6px;
+}
+
+.comment-actions button{
+background:none;
+border:none;
+font-size:12px;
+cursor:pointer;
+color:#666;
+}
+
+.comment-actions button:hover{
+color:#000;
+}

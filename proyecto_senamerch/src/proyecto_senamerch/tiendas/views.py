@@ -104,22 +104,27 @@ def create_store2(request):
     # Obtener datos guardados en sesión
     store_data = request.session.get('store_data')
     store_address = request.session.get('store_address')
+
     # Validar que el paso 1 esté completado
     if not store_data:
         messages.error(request, 'Debes completar el paso 1.')
         return redirect('tiendas:create_store')
+
     if request.method == 'POST':
         # Validar que la dirección esté agregada
         if not store_address:
             messages.error(request, 'Debes agregar la dirección.')
             return redirect('tiendas:add_address_store')
+
         # Obtener descripción e imagen
         descripcion = request.POST.get('description', '').strip()
         imagen = request.FILES.get('cover')
+
         # Validar campos obligatorios
         if not descripcion or not imagen:
             messages.error(request, 'Todos los campos son obligatorios.')
-            return redirect('tiendas:create_store2')
+            return render(request, 'tiendas/create_store2.html')
+
         # Crear la tienda con todos los datos recopilados
         Tienda.objects.create(
             propietario=request.user,
@@ -136,11 +141,15 @@ def create_store2(request):
             municipio=store_address['city'],
             informacion_adicional=store_address['additional_info'],
         )
+
         # Limpiar datos de sesión
         request.session.pop('store_data', None)
         request.session.pop('store_address', None)
+
+        # Mostrar mensaje de éxito en el mismo formulario
         messages.success(request, 'Tienda creada correctamente.')
-        return redirect('tiendas:home_seller')
+        return render(request, 'tiendas/create_store2.html')
+
     # Renderizar formulario del paso 2
     return render(request, 'tiendas/create_store2.html')
 # =====================================================

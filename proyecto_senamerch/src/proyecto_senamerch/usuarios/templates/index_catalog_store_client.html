@@ -58,13 +58,38 @@
   <!-- Footer -->
   {% include 'components/footer.html' %}
   {% include 'components/footer_go_go.html' %}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.querySelectorAll('.navbar_product_category__link--client');
+        const cards_home = document.querySelectorAll('.product-card');
 
-  <script type="module">
-    import { initCommentsSidebar } from "{% static 'js/comments.js' %}";
-    initCommentsSidebar();
-  </script>
-  
-  <script src="{% static 'js/cards.js' %}" defer></script>
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const cat = link.dataset.categoria;
+
+                cards_home.forEach(card => {
+                    if(cat === 'all' || card.dataset.categoria === cat){
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Opcional: marcar el link activo
+                links.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    });
+    </script>
+    <script src="{% static 'js/cards.js' %}" defer></script>
+    <script src="{% static 'js/search_autocomplete.js' %}"></script>
+    <script src="{% static 'js/comments_description.js' %}" defer></script>
+    <script type="module">
+        import { initCommentsSidebar } from "{% static 'js/comments.js' %}";
+        initCommentsSidebar();
+    </script>   
 
 </body>
 </html>
