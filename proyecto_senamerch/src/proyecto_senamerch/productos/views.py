@@ -455,15 +455,18 @@ def edit_product_step4(request, id):
     })
 # =====================================================
 # 🔹 DESCRIPCIÓN VENDEDOR
-# =====================================================
+# ===================================================== 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from productos.models import Producto, Comentario
+
 @login_required
 def description_product_seller(request, id):
     # Obtener producto
     producto = get_object_or_404(Producto, id=id)
+
     if request.method == "POST":
-        # Obtener texto del comentario
         texto = request.POST.get("comentario", "").strip()
-        # Crear comentario si hay contenido
         if texto:
             Comentario.objects.create(
                 producto=producto,
@@ -471,9 +474,11 @@ def description_product_seller(request, id):
                 texto=texto
             )
             return redirect("productos:description_product_seller", id=id)
-    # Obtener comentarios ordenados por fecha
-    comentarios = producto.comentarios.order_by("-creado_en")
-    # Renderizar vista de descripción para vendedor
+
+    # Obtener comentarios usando el related_name único
+    comentarios = producto.comentarios_producto.order_by("-creado_en")
+
+    # Renderizar la plantilla
     return render(request, "productos/description_product_seller.html", {
         "producto": producto,
         "comentarios": comentarios

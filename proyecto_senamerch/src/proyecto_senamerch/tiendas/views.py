@@ -14,13 +14,39 @@ from decimal import Decimal
 # ==========================================
 # INICIO DEL VENDEDOR
 # ==========================================
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from productos.models import Producto, Calificacion
+
+
 @login_required
 def home_seller(request):
+
     # Obtener productos activos que NO pertenezcan a la tienda del usuario
     productos = Producto.objects.exclude(
         tienda__propietario=request.user
-    ).filter(activo=True)
-    # Renderizar vista con los productos disponibles
+    ).filter(
+        activo=True
+    ).select_related(
+        'tienda'
+    ).prefetch_related(
+        'imagenes'
+    )
+
+    # Obtener calificaciones del usuario
+    calificaciones = Calificacion.objects.filter(
+        usuario=request.user
+    )
+
+    cal_dict = {
+        c.producto_id: c.puntuacion
+        for c in calificaciones
+    }
+
+    # Asignar la calificación del usuario a cada producto
+    for producto in productos:
+        producto.user_rating = cal_dict.get(producto.id, 0)
+
     return render(request, "tiendas/card.html", {
         "productos": productos
     })
@@ -526,14 +552,44 @@ def list_products_store_seller(request):
         'productos': productos,
         'tienda': tienda
     })
+from django.shortcuts import render, get_object_or_404
+from tiendas.models import Tienda
+from productos.models import Producto, Calificacion
+
+
 def profile_store_client(request, tienda_id):
+
     # Obtener tienda o devolver 404
     tienda = get_object_or_404(Tienda, id=tienda_id)
-    # Obtener productos de la tienda con relaciones optimizadas
+
+    # Obtener productos de la tienda
     productos = Producto.objects.filter(
         tienda=tienda
-    ).select_related('tienda').prefetch_related('imagenes')
-    # Renderizar productos para cliente
+    ).select_related(
+        'tienda'
+    ).prefetch_related(
+        'imagenes'
+    )
+
+    # Validar si el usuario está autenticado
+    if request.user.is_authenticated:
+
+        calificaciones = Calificacion.objects.filter(
+            usuario=request.user
+        )
+
+        cal_dict = {
+            c.producto_id: c.puntuacion
+            for c in calificaciones
+        }
+
+        for producto in productos:
+            producto.user_rating = cal_dict.get(producto.id, 0)
+
+    else:
+        for producto in productos:
+            producto.user_rating = 0
+
     return render(request, 'usuarios/store_products_client.html', {
         'productos': productos,
         'tienda': tienda

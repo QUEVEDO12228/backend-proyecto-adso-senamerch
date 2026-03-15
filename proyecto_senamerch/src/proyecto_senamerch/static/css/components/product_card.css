@@ -400,22 +400,22 @@
 .product-card__star{
   font-size: 22px;
   cursor: pointer;
-  color: var(--gray-400);
+  color: var(--secundary-950);
   transition: color 0.2s ease, transform 0.15s ease;
 }
 
 .product-card__star--active{
-  color: #FFD700;
+  color: var(--secundary-400);
 }
 
 /* DESCRIPTION */
 .details__rating .star{
   font-size: 22px;
   cursor: pointer;
-  color: var(--gray-400);
+  color: var(--secundary-400);
   transition: color 0.2s ease, transform 0.15s ease;
 }
 
 .details__rating .star.filled{
-  color: #FFD700;
+  color: var(--secundary-950);
 }

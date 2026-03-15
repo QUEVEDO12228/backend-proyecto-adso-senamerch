@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll(".product-card__rating, .details__rating").forEach(rating => {
 
     const productoId = rating.dataset.producto;
-    if (!productoId) return; // Si no tiene producto_id, ignorar
+    if (!productoId) return;
 
     const stars = rating.querySelectorAll("[data-value]");
     let currentRating = parseInt(rating.dataset.userRating || 0);
@@ -41,32 +41,50 @@ document.addEventListener("DOMContentLoaded", () => {
     function paintStars(value) {
       stars.forEach(star => {
         const starValue = parseInt(star.dataset.value);
+
         star.classList.toggle("filled", starValue <= value);
         star.classList.toggle("product-card__star--active", starValue <= value);
       });
     }
 
+    // =======================
     // ESTADO INICIAL
+    // =======================
     paintStars(currentRating);
 
     // =======================
     // EVENTOS POR CADA ESTRELLA
     // =======================
     stars.forEach(star => {
+
       const value = parseInt(star.dataset.value);
 
       // HOVER
-      star.addEventListener("mouseenter", () => paintStars(value));
+      star.addEventListener("mouseenter", () => {
+        paintStars(value);
+      });
 
       // QUITAR HOVER
-      star.addEventListener("mouseleave", () => paintStars(currentRating));
+      star.addEventListener("mouseleave", () => {
+        paintStars(currentRating);
+      });
 
       // CLICK PARA CALIFICAR
       star.addEventListener("click", () => {
-        currentRating = value;
+
+        let newRating = value;
+
+        // ⭐ SI HACE CLICK EN LA MISMA CALIFICACIÓN → SE QUITA
+        if (currentRating === value) {
+          newRating = 0;
+        }
+
+        currentRating = newRating;
         paintStars(currentRating);
 
-        // POST AL BACKEND
+        // =======================
+        // ENVIAR AL BACKEND
+        // =======================
         fetch("/products/calificar-producto/", {
           method: "POST",
           headers: {
@@ -76,19 +94,23 @@ document.addEventListener("DOMContentLoaded", () => {
           credentials: "same-origin",
           body: JSON.stringify({
             producto_id: productoId,
-            puntuacion: value
+            puntuacion: newRating
           })
         })
         .then(res => res.json())
         .then(data => {
+
           if (data.success) {
-            // Actualizar dataset para que al recargar hover se mantenga
             rating.dataset.userRating = data.puntuacion;
           } else {
             console.error("No se pudo guardar la calificación:", data.error);
           }
+
         })
-        .catch(error => console.error("Error al calificar:", error));
+        .catch(error => {
+          console.error("Error al calificar:", error);
+        });
+
       });
 
     });

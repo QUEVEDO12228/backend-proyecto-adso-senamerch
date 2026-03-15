@@ -28,13 +28,52 @@ from django.template.loader import render_to_string
 # =========================
 # Index SenaMerch
 # =========================
+from django.shortcuts import render
+from productos.models import Producto, Calificacion
+
 def home_view(request):
-    """ Vista principal de la página de inicio. Si el usuario está autenticado, excluye los productos de su propia tienda. """
+    """Vista principal de la página de inicio. 
+    Si el usuario está autenticado, excluye los productos de su propia tienda."""
+
     if request.user.is_authenticated:
-        productos = Producto.objects.exclude(tienda__propietario=request.user).filter(activo=True)
+        productos = Producto.objects.exclude(
+            tienda__propietario=request.user
+        ).filter(
+            activo=True
+        ).select_related(
+            "tienda"
+        ).prefetch_related(
+            "imagenes"
+        )
+
+        # Obtener calificaciones del usuario
+        calificaciones = Calificacion.objects.filter(
+            usuario=request.user
+        )
+
+        cal_dict = {
+            c.producto_id: c.puntuacion
+            for c in calificaciones
+        }
+
+        for producto in productos:
+            producto.user_rating = cal_dict.get(producto.id, 0)
+
     else:
-        productos = Producto.objects.filter(activo=True)
-    return render(request, "usuarios/cards_home.html", {"productos": productos})
+        productos = Producto.objects.filter(
+            activo=True
+        ).select_related(
+            "tienda"
+        ).prefetch_related(
+            "imagenes"
+        )
+
+        for producto in productos:
+            producto.user_rating = 0
+
+    return render(request, "usuarios/cards_home.html", {
+        "productos": productos
+    })
 # =========================
 # Inicio de Sessión en SenaMerch
 # =========================
