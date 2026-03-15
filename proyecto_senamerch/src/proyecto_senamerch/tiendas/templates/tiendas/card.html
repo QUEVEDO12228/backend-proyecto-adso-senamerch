@@ -9,6 +9,7 @@
           data-tienda="{{ producto.tienda.nombre|lower }}"
           data-categoria="{{ producto.categoria|lower }}"
           data-precio="{{ producto.precio }}"
+          data-product-id="{{ producto.id }}"
           class="product-card">
 
   <div class="product-card__actions">
@@ -26,7 +27,10 @@
       <button class="product-card__menu-btn">⋮</button>
       <ul class="product-card__menu-dropdown">
         <li>
-          <a href="#" class="product-card__menu-item" data-action="open-comments">
+          <a href="#"
+            class="product-card__menu-item"
+            data-action="open-comments"
+            data-product-id="{{ producto.id }}">
             Dejar un comentario
             <img src="{% static 'assets/icons/contact.svg' %}" 
                 alt="Comentario" 
@@ -101,6 +105,4 @@
 {% empty %}
 <p>No hay productos de otros vendedores disponibles.</p>
 {% endfor %}
-
-
 {% endblock %}

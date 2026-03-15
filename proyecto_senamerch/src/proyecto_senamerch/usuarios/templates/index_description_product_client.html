@@ -1,41 +1,31 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Catálogo Tienda | SenaMerch</title>
+  <title>Descripción Producto | SenaMerch</title>
+
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 
 <body>
 
-  <!-- Navbar -->
-    {% include 'components/navabar_go_go.html' %}
-    {% if es_vendedor %}
-    {% include 'components/navbar_home_store_seller.html' %}
-    {% else %}
-        {% include 'components/navbar_home_client.html' %}
-    {% endif %}
+  {% include 'components/navabar_go_go.html' %}
 
-  <!-- Sidebar de comentarios -->
-  <section class="comments_users">
-    <div class="comments-userss-container">
-      {% include 'components/comments.html' %}
-    </div>
+  {% if es_vendedor %}
+      {% include 'components/navbar_home_store_seller.html' %}
+  {% else %}
+      {% include 'components/navbar_home_client.html' %}
+  {% endif %}
 
-    {% block main_content %}
-    {% endblock %}
-    
-    
-  <!-- Footer -->
+  <main class="main-content">
+      {% block main_content %}
+      {% endblock %}
+  </main>
+
   {% include 'components/footer.html' %}
   {% include 'components/footer_go_go.html' %}
 
-  <script type="module">
-    import { initCommentsSidebar } from "{% static 'js/comments.js' %}";
-    initCommentsSidebar();
-  </script>
-
+  <script src="{% static 'js/comments_description.js' %}" defer></script>
 </body>
 </html>

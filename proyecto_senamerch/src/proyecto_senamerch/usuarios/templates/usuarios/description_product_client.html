@@ -34,50 +34,51 @@
       {% endfor %}
     </div>
 
-    <!-- BLOQUE DE COMENTARIOS -->
+    <!-- COMENTARIOS -->
     <div class="product-description__comments comments">
+
       <h3 class="comments__title">Opiniones de los usuarios</h3>
 
-      <div class="comments__list">
-        {% for comentario in comentarios %}
-          <div class="comments__item">
-            <p class="comments__user">{{ comentario.usuario.username }} 
-              <span class="comments__date">• {{ comentario.creado_en|timesince }} atrás</span>
-            </p>
-            <p class="comments__text">{{ comentario.texto }}</p>
-          </div>
-        {% empty %}
-          <p>No hay comentarios aún.</p>
-        {% endfor %}
+      <!-- LISTA DE COMENTARIOS (JS LA CONTROLA) -->
+      <div id="listaComentarios" class="comments__list">
+        <p>Cargando comentarios...</p>
       </div>
 
       {% if request.user.is_authenticated %}
       <form id="formComentario" 
-            method="POST" 
             data-producto-id="{{ producto.id }}" 
             class="comments__form">
+
         {% csrf_token %}
-        <label for="comentario" class="comments__label">Deja tu comentario:</label>
-        <textarea id="comentario" 
-                  name="comentario" 
-                  class="comments__textarea" 
-                  rows="3" 
-                  placeholder="Escribe tu opinión aquí..." 
+
+        <label for="comentario" class="comments__label">
+          Deja tu comentario:
+        </label>
+
+        <textarea id="comentario"
+                  name="texto"
+                  class="comments__textarea"
+                  rows="3"
+                  placeholder="Escribe tu opinión aquí..."
                   required></textarea>
+
         <button type="submit" class="btn btn--primary comments__button">
           Enviar comentario
           <img src="{% static 'assets/icons/contact.svg' %}" 
-               alt="Icono Enviar" 
-               class="comments__icon btn__icon" />
+               alt="Enviar"
+               class="btn__icon comments__icon"/>
         </button>
+
       </form>
       {% endif %}
+
     </div>
 
   </div>
 
-  <!-- DETALLES DEL PRODUCTO Y BOTÓN COMPRAR -->
+  <!-- DETALLES DEL PRODUCTO -->
   <div class="product-description__details details" data-rating="{{ producto.rating_promedio }}">
+
     <div class="details__rating rating" data-producto="{{ producto.id }}" data-user-rating="{{ user_rating }}">
       {% for i in "12345"|make_list %}
         <span class="star {% if forloop.counter <= user_rating %}filled{% endif %}" data-value="{{ forloop.counter }}">★</span>
@@ -89,20 +90,25 @@
 
     <a href="{% url 'productos:buy_product' producto.id %}" class="btn btn--primary details__button">
       Comprar
-      <img src="{% static 'assets/icons/cash-button.svg' %}" alt="Comprar" class="btn__icon product-card__icon">
+      <img src="{% static 'assets/icons/cash-button.svg' %}" 
+           alt="Comprar" 
+           class="btn__icon product-card__icon">
     </a>
 
-    <!-- DETALLES DEL PRODUCTO -->
+    <!-- INFORMACIÓN DEL PRODUCTO -->
     <div class="details__info info">
+
       <h3 class="info__subtitle">Características sobre este producto</h3>
-      <p class="info__text"><strong>Unidad de medida: </strong>{{ producto.unidad_medida }}</p>
-      <p class="info__text"><strong>Tipo de garantía: </strong>{{ producto.tipo_garantia }}</p>
-      <p class="info__text"><strong>Descripción: </strong>{{ producto.descripcion }}</p>
-      <p class="info__text"><strong>Fecha caducidad: </strong>{{ producto.fecha_caducidad }}</p>
-      <p class="info__text"><strong>Tipo de envío: </strong>{{ producto.tipo_envio }}</p>
-      <p class="info__text"><strong>Método de pago: </strong>{{ producto.metodo_pago }}</p>
-      <p class="info__text"><strong>Descuento: </strong>{{ producto.descuento }}%</p>
-      <p class="info__text"><strong>Categoría: </strong>{{ producto.categoria }}</p>
+
+      <p class="info__text"><strong>Unidad de medida:</strong> {{ producto.unidad_medida }}</p>
+      <p class="info__text"><strong>Tipo de garantía:</strong> {{ producto.tipo_garantia }}</p>
+      <p class="info__text"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+      <p class="info__text"><strong>Fecha caducidad:</strong> {{ producto.fecha_caducidad }}</p>
+      <p class="info__text"><strong>Tipo de envío:</strong> {{ producto.tipo_envio }}</p>
+      <p class="info__text"><strong>Método de pago:</strong> {{ producto.metodo_pago }}</p>
+      <p class="info__text"><strong>Descuento:</strong> {{ producto.descuento }}%</p>
+      <p class="info__text"><strong>Categoría:</strong> {{ producto.categoria }}</p>
+
     </div>
 
     <div class="details__info info">
@@ -110,106 +116,136 @@
       <p class="info__text">{{ producto.descripcion }}</p>
     </div>
 
-    <!-- MÁS PRODUCTOS DEL VENDEDOR (CARD COMPLETA) -->
+    <!-- MÁS PRODUCTOS -->
     <h3 class="info__subtitle">Más Productos</h3>
+
     <div class="product-description__more-products">
+
       {% for prod in otros_productos %}
-        <article class="product-card"
-                data-nombre="{{ prod.nombre|lower }}"
-                data-tienda="{{ prod.tienda.nombre|lower }}"
-                data-categoria="{{ prod.categoria|lower }}"
-                data-precio="{{ prod.precio }}">
-          
-          <div class="product-card__actions">
-            <!-- Calificación con estrellas -->
-            <div class="product-card__rating" 
-                 data-producto="{{ prod.id }}" 
-                 data-user-rating="{{ prod.user_rating }}">
-              {% for i in "12345"|make_list %}
-                <span class="product-card__star {% if forloop.counter <= prod.user_rating %}product-card__star--active{% endif %}" 
-                      data-value="{{ forloop.counter }}">★</span>
-              {% endfor %}
-            </div>
-            <!-- Menú de acciones -->
-            <div class="product-card__menu">
-              <button class="product-card__menu-btn">⋮</button>
-              <ul class="product-card__menu-dropdown">
-                <li>
-                  <a href="#" class="product-card__menu-item" data-action="open-comments">
-                    Dejar un comentario
-                    <img src="{% static 'assets/icons/contact.svg' %}" 
-                         alt="Comentario" 
-                         class="product-card__menu-item-icon">
-                  </a>
-                </li>
-              </ul>
-            </div>
+
+      <article class="product-card"
+               data-nombre="{{ prod.nombre|lower }}"
+               data-tienda="{{ prod.tienda.nombre|lower }}"
+               data-categoria="{{ prod.categoria|lower }}"
+               data-precio="{{ prod.precio }}">
+
+        <div class="product-card__actions">
+
+          <div class="product-card__rating"
+               data-producto="{{ prod.id }}"
+               data-user-rating="{{ prod.user_rating }}">
+
+            {% for i in "12345"|make_list %}
+            <span class="product-card__star {% if forloop.counter <= prod.user_rating %}product-card__star--active{% endif %}"
+                  data-value="{{ forloop.counter }}">★</span>
+            {% endfor %}
+
           </div>
 
-          <!-- Header: nombre y precio -->
-          <div class="product-card__header">
-            <h2 class="product-card__title">{{ prod.nombre }}</h2>
-            <p class="product-card__price">$ {{ prod.precio }} / kilo</p>
-            <p class="product-card__discount">{{ prod.descuento }} % de descuento</p>
+          <div class="product-card__menu">
+
+            <button class="product-card__menu-btn">⋮</button>
+
+            <ul class="product-card__menu-dropdown">
+
+              <li>
+                <a href="#" class="product-card__menu-item" data-action="open-comments">
+                  Dejar un comentario
+                  <img src="{% static 'assets/icons/contact.svg' %}"
+                       alt="Comentario"
+                       class="product-card__menu-item-icon">
+                </a>
+              </li>
+
+            </ul>
+
           </div>
 
-          <!-- Foto redonda de la tienda -->
-          <a href="{% url 'tiendas:profile_store_client' tienda_id=prod.tienda.id %}" class="product-card__profile-store-link">
-            {% if prod.tienda.imagen_portada %}
-              <img src="{{ prod.tienda.imagen_portada.url }}" 
-                   alt="Logo de la tienda {{ prod.tienda.nombre }}" 
-                   class="product-card__store-logo">
+        </div>
+
+        <div class="product-card__header">
+
+          <h2 class="product-card__title">{{ prod.nombre }}</h2>
+
+          <p class="product-card__price">$ {{ prod.precio }} / kilo</p>
+
+          <p class="product-card__discount">{{ prod.descuento }} % de descuento</p>
+
+        </div>
+
+        <a href="{% url 'tiendas:profile_store_client' tienda_id=prod.tienda.id %}" class="product-card__profile-store-link">
+
+          {% if prod.tienda.imagen_portada %}
+
+          <img src="{{ prod.tienda.imagen_portada.url }}"
+               alt="Logo tienda"
+               class="product-card__store-logo">
+
+          {% else %}
+
+          <img src="{% static 'assets/img/default-store.jpg' %}"
+               alt="Sin imagen"
+               class="product-card__store-logo">
+
+          {% endif %}
+
+        </a>
+
+        <a href="{% url 'productos:description_product_client' prod.id %}" class="product-card__image-link">
+
+          <div class="product-card__image-wrapper">
+
+            {% with prod.imagenes.first as img %}
+
+            {% if img %}
+
+            <img src="{{ img.imagen.url }}"
+                 alt="{{ prod.nombre }}"
+                 class="product-card__image">
+
             {% else %}
-              <img src="{% static 'assets/img/default-store.jpg' %}" 
-                   alt="Sin imagen" 
-                   class="product-card__store-logo">
+
+            <img src="{% static 'assets/img/default-product.jpg' %}"
+                 class="product-card__image">
+
             {% endif %}
-            <span class="product-card__profile-store-tooltip">
-              Visitar Tienda
-              <img src="{% static 'assets/icons/store_profile.svg' %}" 
-                   alt="Icono tienda" 
-                   class="product-card__profile-store-tooltip-icon">
-            </span>
-          </a>
 
-          <!-- Imagen principal del producto -->
-          <a href="{% url 'productos:description_product_client' prod.id %}" class="product-card__image-link">
-            <div class="product-card__image-wrapper">
-              {% with prod.imagenes.first as img %}
-                {% if img %}
-                  <img src="{{ img.imagen.url }}" alt="Imagen de {{ prod.nombre }}" class="product-card__image">
-                {% else %}
-                  <img src="{% static 'assets/img/default-product.jpg' %}" alt="Sin imagen" class="product-card__image">
-                {% endif %}
-              {% endwith %}
-            </div>
-            <span class="product-card__image-tooltip">
-              Visualizar Producto
-              <img src="{% static 'assets/icons/eye.svg' %}" alt="Icono ver producto" class="product-card__image-tooltip-icon">
-            </span>
-          </a>
+            {% endwith %}
 
-          <!-- Botón Comprar -->
-          <div class="product-card__footer--end">
-            <a href="{% url 'productos:buy_product' producto_id=prod.id %}" class="btn btn--primary product-card__pay">
-                Comprar
-                <img src="{% static 'assets/icons/cash-button.svg' %}" alt="Comprar" class="btn__icon product-card__icon">
-            </a>
           </div>
 
-        </article>
+        </a>
+
+        <div class="product-card__footer--end">
+
+          <a href="{% url 'productos:buy_product' producto_id=prod.id %}" class="btn btn--primary product-card__pay">
+
+            Comprar
+
+            <img src="{% static 'assets/icons/cash-button.svg' %}"
+                 class="btn__icon product-card__icon">
+
+          </a>
+
+        </div>
+
+      </article>
+
       {% endfor %}
+
     </div>
 
   </div>
+
 </section>
 
-<!-- SCRIPT PARA CAMBIAR IMAGEN PRINCIPAL -->
 <script>
 function changeMainImage(element) {
-    const mainImage = document.getElementById("mainImage");
-    mainImage.src = element.src;
+  const mainImage = document.getElementById("mainImage");
+  mainImage.src = element.src;
 }
 </script>
+
 <script src="{% static 'js/cards.js' %}"></script>
+
 {% endblock %}

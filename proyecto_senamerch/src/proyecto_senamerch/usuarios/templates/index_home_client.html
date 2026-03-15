@@ -16,6 +16,12 @@
     {% else %}
         {% include 'components/navbar_client_view.html' %}
     {% endif %}
+    <section class="comments_users">
+        <div class="comments-userss-container">
+        {% include 'components/comments.html' %}
+        </div>
+        <div class="comments-overlay"></div>
+    </section>
 
     <section class="search-category-grid">
       <div class="search-bar-container">
@@ -36,32 +42,38 @@
 
     {% include 'components/footer.html' %}
     {% include 'components/footer_go_go.html' %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const links = document.querySelectorAll('.navbar_product_category__link--client');
-    const cards_home = document.querySelectorAll('.product-card');
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const links = document.querySelectorAll('.navbar_product_category__link--client');
+        const cards_home = document.querySelectorAll('.product-card');
 
-    links.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const cat = link.dataset.categoria;
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const cat = link.dataset.categoria;
 
-            cards_home.forEach(card => {
-                if(cat === 'all' || card.dataset.categoria === cat){
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
+                cards_home.forEach(card => {
+                    if(cat === 'all' || card.dataset.categoria === cat){
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Opcional: marcar el link activo
+                links.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
             });
-
-            // Opcional: marcar el link activo
-            links.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
         });
     });
-});
-</script>
-<script src="{% static 'js/cards.js' %}" defer></script>
-<script src="{% static 'js/search_autocomplete.js' %}"></script>
+    </script>
+    <script src="{% static 'js/cards.js' %}" defer></script>
+    <script src="{% static 'js/search_autocomplete.js' %}"></script>
+    <script src="{% static 'js/comments_description.js' %}" defer></script>
+    <script type="module">
+        import { initCommentsSidebar } from "{% static 'js/comments.js' %}";
+        initCommentsSidebar();
+    </script>   
+</body>
 </body>
 </html>

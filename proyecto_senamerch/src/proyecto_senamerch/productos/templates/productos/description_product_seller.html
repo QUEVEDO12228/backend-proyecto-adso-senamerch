@@ -39,19 +39,20 @@
       <h3 class="comments__title">Comentarios de los usuarios</h3>
 
       <form id="formComentario" 
-            method="POST" 
             data-producto-id="{{ producto.id }}"
             class="seller-comments__form">
+
         {% csrf_token %}
 
         <label for="comentario" class="seller-comments__label">
           Escribe tu comentario
         </label>
 
-        <textarea id="comentario"
-                  name="comentario"
-                  class="seller-comments-products-store__textarea"
-                  required></textarea>
+        <textarea
+            id="comentario"
+            name="texto"
+            class="seller-comments-products-store__textarea"
+            required></textarea>
 
         <button type="submit" class="btn btn--primary comments-users-sidebar__pay">
           Enviar comentario
@@ -59,22 +60,14 @@
                alt="Icono enviar" 
                class="btn__icon comments-users-sidebar__icon"/>
         </button>
+
       </form>
 
-      <!-- LISTA COMENTARIOS -->
+      <!-- LISTA COMENTARIOS (SE LLENA CON JS) -->
       <div id="listaComentarios" class="seller-comments__list">
-        {% for comentario in comentarios %}
-          <div class="seller-comments__item">
-            <p class="seller-comments__user">
-              {{ comentario.usuario.username }}
-              <span class="comments__date">• {{ comentario.creado_en|timesince }} atrás</span>
-            </p>
-            <p class="seller-comments__text">{{ comentario.texto }}</p>
-          </div>
-        {% empty %}
-          <p>No hay comentarios aún.</p>
-        {% endfor %}
+        <p>Cargando comentarios...</p>
       </div>
+
     </div>
 
   </div>
@@ -114,7 +107,7 @@
       <p class="rating__count">Basado en {{ producto.total_calificaciones }} usuarios</p>
     </div>
 
-    <!-- ESTRELLAS VISUALES -->
+    <!-- ESTRELLAS -->
     <div class="details__rating rating" data-producto="{{ producto.id }}">
         {% for i in "12345"|make_list %}
             <span class="star {% if forloop.counter <= producto.rating_promedio|floatformat:0 %}filled{% endif %}" data-value="{{ forloop.counter }}">★</span>
@@ -154,8 +147,4 @@ function changeMainImage(element) {
   mainImage.src = element.src;
 }
 </script>
-
-<script src="{% static 'js/description_product_seller.js' %}" defer></script>
-<!-- <script src="{% static 'js/cards.js' %}" defer></script> -->
-
 {% endblock %}
