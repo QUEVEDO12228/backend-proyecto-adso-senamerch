@@ -9,30 +9,28 @@
           data-tienda="{{ producto.tienda.nombre|lower }}"
           data-categoria="{{ producto.categoria|lower }}"
           data-precio="{{ producto.precio }}"
+          data-product-id="{{ producto.id }}"
           >
 
   <div class="product-card__actions">
-  <!-- Botones Me gusta / No me gusta -->
-    <button class="product-card__like-btn" aria-label="Me gusta">
-      <img src="{% static 'assets/icons/heart.svg' %}" 
-          alt="Me gusta" 
-          class="product-card__like-icon">
-      <span class="product-card__like-tooltip">Me gusta</span>
-    </button>
-
-    <button class="product-card__like-btn--dislike" aria-label="No me gusta">
-      <img src="{% static 'assets/icons/heart-off.svg' %}" 
-          alt="No me gusta" 
-          class="product-card__like-icon--dislike">
-      <span class="product-card__dislike-tooltip">No me gusta</span>
-    </button>
-
+  <!-- Calificación con estrellas -->
+    <div class="product-card__rating" 
+        data-producto="{{ producto.id }}" 
+        data-user-rating="{{ producto.user_rating }}">
+      {% for i in "12345"|make_list %}
+        <span class="product-card__star {% if forloop.counter <= producto.user_rating %}product-card__star--active{% endif %}" 
+              data-value="{{ forloop.counter }}">★</span>
+      {% endfor %}
+    </div>
     <!-- Menú de acciones -->
     <div class="product-card__menu">
       <button class="product-card__menu-btn">⋮</button>
       <ul class="product-card__menu-dropdown">
         <li>
-          <a href="#" class="product-card__menu-item" data-action="open-comments">
+          <a href="#"
+            class="product-card__menu-item"
+            data-action="open-comments"
+            data-product-id="{{ producto.id }}">
             Dejar un comentario
             <img src="{% static 'assets/icons/contact.svg' %}" 
                 alt="Comentario" 
@@ -101,9 +99,7 @@
   </div>
 
 </article>
-
 {% empty %}
 <p>No hay productos disponibles en este momento.</p>
 {% endfor %}
-
 {% endblock %}

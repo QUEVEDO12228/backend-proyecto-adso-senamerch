@@ -14,39 +14,38 @@ from tiendas.models import Tienda
 @login_required
 def client_orders(request):
     """
-    Vista para mostrar los pedidos del cliente según el estado seleccionado (pending, delivered, canceled).
-    También muestra el tiempo restante para cancelar un pedido si está en estado 'pending'.
+    Vista que muestra los pedidos del usuario actual (cliente o vendedor que compra),
+    filtrados por estado: pending, delivered, canceled.
+    También calcula el tiempo restante para cancelar pedidos pendientes.
     """
-    # Obtener el estado de los pedidos desde la URL, por defecto es 'pending'
-    selected_status = request.GET.get('status', 'pending')
 
-    # Filtrar los pedidos según el estado seleccionado
-    if selected_status in ['pending', 'delivered', 'canceled']:
-        pedidos = Pedido.objects.filter(estado=selected_status, usuario=request.user)
-    else:
-        # Si el estado no es uno de los permitidos, se filtra por 'pending'
-        pedidos = Pedido.objects.filter(estado='pending', usuario=request.user)
+    ESTADOS_VALIDOS = ["pending", "delivered", "canceled"]
+    selected_status = request.GET.get("status", "pending")
 
-    # Calcular el tiempo restante para la cancelación de cada pedido en estado 'pending'
+    if selected_status not in ESTADOS_VALIDOS:
+        selected_status = "pending"
+
+    # Traemos solo los pedidos donde el usuario es el cliente
+    pedidos = Pedido.objects.filter(
+        usuario=request.user,
+        estado=selected_status
+    ).prefetch_related("items__producto__tienda").order_by("-creado_en")
+
+    # Calculamos el tiempo restante para cancelar
     for pedido in pedidos:
-        tiempo_restante = pedido.tiempo_restante_cancelacion()
+        pedido.horas_restantes = 0
+        pedido.minutos_restantes = 0
+        if pedido.estado == "pending":
+            tiempo_restante = pedido.tiempo_restante_cancelacion()
+            if tiempo_restante > 0:
+                pedido.horas_restantes = int(tiempo_restante // 3600)
+                pedido.minutos_restantes = int((tiempo_restante % 3600) // 60)
 
-        if tiempo_restante > 0:
-            horas = tiempo_restante // 3600  # Calcular las horas restantes
-            minutos = (tiempo_restante % 3600) // 60  # Calcular los minutos restantes
-            pedido.horas_restantes = horas
-            pedido.minutos_restantes = minutos
-        else:
-            pedido.horas_restantes = 0
-            pedido.minutos_restantes = 0
+    return render(request, "pedidos/client_orders.html", {
+        "pedidos": pedidos,
+        "selected_status": selected_status,
+    })
 
-    # Contexto para pasar a la plantilla
-    context = {
-        'pedidos': pedidos,
-        'selected_status': selected_status
-    }
-    
-    return render(request, 'pedidos/client_orders.html', context)
 # =========================
 #  Editar Pedido Cliente
 # =========================
@@ -98,113 +97,118 @@ def edit_order(request, pedido_id):
         "tienda": tienda
     }
     return render(request, "pedidos/edit_order.html", context)
-# ==================================
-#  Detalles de los pedidos clientes
-# ==================================
-@login_required
-def view_purchase(request, pedido_id):
-    """ Vista para ver los detalles de un pedido específico, incluyendo los productos y el total. Solo se permite ver pedidos entregados. """
-    # Obtener el pedido o devolver 404 si no existe o no pertenece al usuario
-    pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
-    # Verificar si el estado del pedido es 'delivered'
-    if pedido.estado != 'delivered':
-        return redirect("pedidos:client_orders")
-    # Obtener los ítems del pedido
-    items = PedidoItem.objects.filter(pedido=pedido)
-    # Calcular base, IVA y total
-    base = sum(item.precio_unitario * item.cantidad for item in items)
-    iva = base * 0.19
-    total = base + iva
-    return render(request, 'pedidos/view_purchases.html', {
-        'pedido': pedido,
-        'items': items,
-        'base': base,
-        'iva': iva,
-        'total': total
-    })
 # ==========================
 #  Crear una compra cliente
 # ==========================
+from collections import defaultdict
+
 @login_required
 def buy_cart(request):
-    """ Vista para crear un pedido a partir de los artículos del carrito de compras. El carrito se vacía después de crear el pedido. """
-    try:
-        # Obtener el carrito del usuario (manejar excepciones si no existe)
-        carrito = Carrito.objects.get(usuario=request.user)
-    except Carrito.DoesNotExist:
-        messages.error(request, 'No tienes un carrito de compras.')
-        return redirect('productos:lista_productos')
-    # Obtener los artículos del carrito
-    items = carrito.items.all()
-    # Verificar si el carrito está vacío
+
+    carrito = get_object_or_404(Carrito, usuario=request.user)
+    items = carrito.items.select_related("producto__tienda")
+
     if not items.exists():
-        messages.error(request, 'Tu carrito está vacío. Agrega productos antes de realizar un pedido.')
         return redirect('productos:lista_productos')
-    # Crear un nuevo pedido
-    pedido = Pedido.objects.create(
-        usuario=request.user,
-        total=0,
-        estado='pending'
-    )
-    total = 0
-    # Crear los items del pedido y calcular el total
+
+    # AGRUPAR ITEMS POR TIENDA
+    tiendas_items = defaultdict(list)
+
     for item in items:
-        PedidoItem.objects.create(
-            pedido=pedido,
-            producto=item.producto,
-            cantidad=item.cantidad,
-            precio_unitario=item.producto.precio
-        )
-        total += item.subtotal()  # Aquí llamas al método 'subtotal' del carrito para calcular el precio total por producto.
-    # Asignar el total al pedido y guardarlo
-    pedido.total = total
-    pedido.save()
-    # Eliminar los items del carrito después de realizar el pedido
-    items.delete()
-    # Redirigir al usuario a la lista de pedidos
-    return redirect('pedidos:client_orders')
-# ================
-#  Método de pago
-# ================
-@login_required
-def option_payment_method(request):
-    """ Vista para seleccionar el método de pago. Crea un pedido con los artículos del carrito y lo asocia a la tienda del primer producto. El carrito se limpia después de crear el pedido. """
-    # Obtener el carrito del usuario actual
-    carrito = Carrito.objects.get(usuario=request.user)
-    items = carrito.items.all()
-    if request.method == "POST":
-        # Verificar que el carrito no esté vacío
-        if not items.exists():
-            return redirect('productos:lista_productos')  # Redirigir si el carrito está vacío
-        # Obtener la tienda asociada al primer producto del carrito
-        tienda = items.first().producto.tienda
-        if not tienda:
-            return redirect('productos:lista_productos')  # Redirigir si no se encuentra la tienda
-        # Crear un nuevo pedido en estado "pending"
+        tiendas_items[item.producto.tienda].append(item)
+
+    pedidos_creados = []
+
+    # CREAR UN PEDIDO POR TIENDA
+    for tienda, items_tienda in tiendas_items.items():
+
         pedido = Pedido.objects.create(
             usuario=request.user,
-            tienda=tienda,  # Asociamos la tienda al pedido
+            tienda=tienda,
             total=0,
             estado='pending'
         )
+
         total = 0
-        # Crear los items del pedido y calcular el total
-        for item in items:
+
+        for item in items_tienda:
+
             PedidoItem.objects.create(
                 pedido=pedido,
                 producto=item.producto,
                 cantidad=item.cantidad,
                 precio_unitario=item.producto.precio
             )
-            total += item.subtotal()  # Sumamos el subtotal del producto al total
-        # Actualizar el total del pedido
+
+            total += item.subtotal()
+
         pedido.total = total
         pedido.save()
-        # Limpiar el carrito después de crear el pedido
+
+        pedidos_creados.append(pedido)
+
+    # VACIAR CARRITO
+    items.delete()
+
+    return redirect('pedidos:client_orders')
+# ================
+#  Método de pago
+# ================
+from collections import defaultdict
+from django.shortcuts import redirect, get_object_or_404
+
+@login_required
+def option_payment_method(request):
+
+    carrito = get_object_or_404(Carrito, usuario=request.user)
+    items = carrito.items.select_related("producto__tienda")
+
+    if request.method == "POST":
+
+        if not items.exists():
+            return redirect("productos:lista_productos")
+
+        # AGRUPAR POR TIENDA
+        tiendas = defaultdict(list)
+
+        for item in items:
+            tienda = item.producto.tienda
+            tiendas[tienda].append(item)
+
+        # CREAR PEDIDOS
+        for tienda, items_tienda in tiendas.items():
+
+            pedido = Pedido.objects.create(
+                usuario=request.user,
+                tienda=tienda,
+                estado="pending",
+                total=0
+            )
+
+            total = 0
+
+            for item in items_tienda:
+
+                PedidoItem.objects.create(
+                    pedido=pedido,
+                    producto=item.producto,
+                    cantidad=item.cantidad,
+                    precio_unitario=item.producto.precio
+                )
+
+                total += item.subtotal()
+
+            pedido.total = total
+            pedido.save()
+
+        # LIMPIAR CARRITO
         items.delete()
-        # Redirigir al usuario a la página de pedidos
-        return redirect('pedidos:client_orders')
-    return render(request, 'carrito/option_payment_method.html', {"carrito": carrito})
+
+        return redirect("pedidos:client_orders")
+
+    return render(request, "carrito/option_payment_method.html", {
+        "carrito": carrito
+    })
 # ==========================
 #  Cancelar Pedido Cliente
 # ==========================
@@ -266,13 +270,17 @@ def store_orders(request):
 # ==================================
 @login_required
 def store_order_detail(request, pedido_id):
-    """ Vista que muestra los detalles de un pedido específico de la tienda, incluyendo los productos y el total de la compra. """
-    # Obtén el pedido solo si pertenece a la tienda del vendedor logueado
-    pedido = get_object_or_404(Pedido, id=pedido_id, items__producto__tienda__propietario=request.user)
-    # Obtener los items del pedido
-    items = pedido.items.all()
-    # Calcular el total sumando los subtotales de los productos
+
+    pedido = get_object_or_404(
+        Pedido,
+        id=pedido_id,
+        tienda__propietario=request.user
+    )
+
+    items = pedido.items.select_related("producto")
+
     total = sum(item.subtotal() for item in items)
+
     return render(request, 'pedidos/store_order_detail.html', {
         'pedido': pedido,
         'items': items,
@@ -297,12 +305,94 @@ def cancel_order_store(request, pedido_id):
 # ===============================================================
 @login_required
 def deliver_order_store(request, pedido_id):
-    """ Permite al vendedor marcar un pedido como entregado. """
+
     if request.method == "POST":
-        # Obtener el pedido solo si pertenece a la tienda del vendedor logueado
-        pedido = get_object_or_404(Pedido, id=pedido_id, items__producto__tienda__propietario=request.user)
-        # Si el pedido está en estado 'pending', cambiarlo a 'delivered'
-        if pedido.estado == 'pending':
-            pedido.estado = 'delivered'
+
+        pedido = get_object_or_404(
+            Pedido,
+            id=pedido_id,
+            tienda__propietario=request.user
+        )
+
+        if pedido.estado == "pending":
+            pedido.estado = "delivered"
             pedido.save()
-    return redirect('pedidos:store_orders')
+
+    return redirect("pedidos:store_orders")
+# ==================================
+#  Detalles de los pedidos clientes
+# ==================================
+@login_required
+def view_purchase(request, pedido_id):
+    """
+    Vista para que el cliente vea el detalle de su compra.
+    Solo puede ver pedidos que le pertenezcan y que estén entregados.
+    """
+
+    # Obtener pedido o devolver 404 si no pertenece al usuario
+    pedido = get_object_or_404(
+        Pedido,
+        id=pedido_id,
+        usuario=request.user
+    )
+
+    # Solo permitir ver pedidos entregados
+    if pedido.estado != "delivered":
+        return redirect("pedidos:client_orders")
+
+    # Serializar datos del pedido para usar en PDF o JS
+    pedido_data = {
+        "id": pedido.id,
+        "fecha": pedido.creado_en.strftime("%d/%m/%Y"),
+        "tienda": pedido.items.first().producto.tienda.nombre,
+        "items": [
+            {
+                "producto": item.producto.nombre,
+                "cantidad": item.cantidad,
+                "precio": f"{item.producto.precio_con_descuento:.2f}",
+                "descuento": f"{item.producto.descuento}%",
+                "total": f"{item.subtotal_con_descuento:.2f}",
+            }
+            for item in pedido.items.all()
+        ],
+        "total": f"{pedido.total:.2f}",
+    }
+
+    context = {
+        "pedido": pedido,
+        "pedido_json": pedido_data,
+    }
+
+    return render(request, "pedidos/purchase_detail.html", context)
+
+@login_required
+def seller_orders(request):
+    ESTADOS_VALIDOS = ["pending", "delivered", "canceled"]
+    selected_status = request.GET.get("status", "pending")
+    if selected_status not in ESTADOS_VALIDOS:
+        selected_status = "pending"
+
+    # Obtener la tienda del vendedor
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+
+    # Pedidos que incluyen productos de su tienda
+    pedidos = Pedido.objects.filter(
+        items__producto__tienda=tienda,
+        estado=selected_status
+    ).distinct().prefetch_related("items__producto__tienda").order_by("-creado_en")
+
+    # Calcular tiempo restante de cancelación
+    for pedido in pedidos:
+        pedido.horas_restantes = 0
+        pedido.minutos_restantes = 0
+        if pedido.estado == "pending":
+            tiempo_restante = pedido.tiempo_restante_cancelacion()
+            if tiempo_restante > 0:
+                pedido.horas_restantes = tiempo_restante // 3600
+                pedido.minutos_restantes = (tiempo_restante % 3600) // 60
+
+    context = {
+        "pedidos": pedidos,
+        "selected_status": selected_status,
+    }
+    return render(request, "pedidos/client_orders.html", context)

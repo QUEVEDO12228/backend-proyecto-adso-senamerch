@@ -11,6 +11,8 @@ from django.utils import timezone  # Manejo de zona horaria
 from django.http import JsonResponse  # Respuestas JSON para APIs o AJAX
 from tiendas.models import Tienda
 from .models import Producto, ImagenProducto
+from productos.models import Calificacion
+
 # =====================================================
 # 🔹 CREAR PRODUCTO - PASO 1
 # =====================================================
@@ -453,15 +455,18 @@ def edit_product_step4(request, id):
     })
 # =====================================================
 # 🔹 DESCRIPCIÓN VENDEDOR
-# =====================================================
+# ===================================================== 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from productos.models import Producto, Comentario
+
 @login_required
 def description_product_seller(request, id):
     # Obtener producto
     producto = get_object_or_404(Producto, id=id)
+
     if request.method == "POST":
-        # Obtener texto del comentario
         texto = request.POST.get("comentario", "").strip()
-        # Crear comentario si hay contenido
         if texto:
             Comentario.objects.create(
                 producto=producto,
@@ -469,9 +474,11 @@ def description_product_seller(request, id):
                 texto=texto
             )
             return redirect("productos:description_product_seller", id=id)
-    # Obtener comentarios ordenados por fecha
-    comentarios = producto.comentarios.order_by("-creado_en")
-    # Renderizar vista de descripción para vendedor
+
+    # Obtener comentarios usando el related_name único
+    comentarios = producto.comentarios_producto.order_by("-creado_en")
+
+    # Renderizar la plantilla
     return render(request, "productos/description_product_seller.html", {
         "producto": producto,
         "comentarios": comentarios
@@ -479,14 +486,40 @@ def description_product_seller(request, id):
 # =====================================================
 # 🔹 DESCRIPCIÓN CLIENTE
 # =====================================================
-def description_product_client(request, id):
+from django.shortcuts import render, get_object_or_404
+from productos.models import Producto, Calificacion
+from tiendas.models import Tienda
 
-    # Obtener producto
+def description_product_client(request, id):
     producto = get_object_or_404(Producto, id=id)
 
-    # Renderizar vista pública del producto
+    # Calificación del usuario
+    user_rating = 0
+    if request.user.is_authenticated:
+        calificacion = Calificacion.objects.filter(
+            producto=producto,
+            usuario=request.user
+        ).first()
+        if calificacion:
+            user_rating = calificacion.puntuacion
+
+    # 🔹 Otros productos de la misma tienda, excluyendo el actual
+    otros_productos = producto.tienda.productos.exclude(id=producto.id)[:1]  # solo 1 producto más
+
+    # Comentarios del producto
+    comentarios = producto.calificaciones.select_related("usuario").all()
+
+    # 🔥 Detectar si es vendedor
+    es_vendedor = False
+    if request.user.is_authenticated:
+        es_vendedor = Tienda.objects.filter(propietario=request.user).exists()
+
     return render(request, "usuarios/description_product_client.html", {
-        "producto": producto
+        "producto": producto,
+        "otros_productos": otros_productos,
+        "comentarios": comentarios,
+        "user_rating": user_rating,
+        "es_vendedor": es_vendedor
     })
 # =====================================================
 # 🔹 ACTIVAR / DESACTIVAR PRODUCTO
@@ -609,3 +642,29 @@ def sugerencias_busqueda(request):
         "productos": productos,
         "tiendas": tiendas
     })
+
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from productos.models import Producto, Calificacion
+import json
+
+@login_required
+@csrf_exempt
+def calificar_producto(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        producto_id = data.get("producto_id")
+        puntuacion = data.get("puntuacion")
+
+        producto = get_object_or_404(Producto, id=producto_id)
+
+        calificacion, _ = Calificacion.objects.update_or_create(
+            producto=producto,
+            usuario=request.user,
+            defaults={"puntuacion": puntuacion}
+        )
+
+        return JsonResponse({"success": True, "puntuacion": calificacion.puntuacion})
+
+    return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)

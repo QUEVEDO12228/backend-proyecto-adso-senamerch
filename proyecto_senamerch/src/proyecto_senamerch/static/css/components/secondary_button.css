@@ -51,3 +51,7 @@
 .btn-secundary:active {
   text-decoration: none;
 }
+.btn__icon--big{
+  width: 26px;
+  height: 26px;
+}

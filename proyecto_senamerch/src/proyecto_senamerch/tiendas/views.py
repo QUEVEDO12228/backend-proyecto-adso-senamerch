@@ -14,13 +14,39 @@ from decimal import Decimal
 # ==========================================
 # INICIO DEL VENDEDOR
 # ==========================================
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from productos.models import Producto, Calificacion
+
+
 @login_required
 def home_seller(request):
+
     # Obtener productos activos que NO pertenezcan a la tienda del usuario
     productos = Producto.objects.exclude(
         tienda__propietario=request.user
-    ).filter(activo=True)
-    # Renderizar vista con los productos disponibles
+    ).filter(
+        activo=True
+    ).select_related(
+        'tienda'
+    ).prefetch_related(
+        'imagenes'
+    )
+
+    # Obtener calificaciones del usuario
+    calificaciones = Calificacion.objects.filter(
+        usuario=request.user
+    )
+
+    cal_dict = {
+        c.producto_id: c.puntuacion
+        for c in calificaciones
+    }
+
+    # Asignar la calificación del usuario a cada producto
+    for producto in productos:
+        producto.user_rating = cal_dict.get(producto.id, 0)
+
     return render(request, "tiendas/card.html", {
         "productos": productos
     })
@@ -78,22 +104,27 @@ def create_store2(request):
     # Obtener datos guardados en sesión
     store_data = request.session.get('store_data')
     store_address = request.session.get('store_address')
+
     # Validar que el paso 1 esté completado
     if not store_data:
         messages.error(request, 'Debes completar el paso 1.')
         return redirect('tiendas:create_store')
+
     if request.method == 'POST':
         # Validar que la dirección esté agregada
         if not store_address:
             messages.error(request, 'Debes agregar la dirección.')
             return redirect('tiendas:add_address_store')
+
         # Obtener descripción e imagen
         descripcion = request.POST.get('description', '').strip()
         imagen = request.FILES.get('cover')
+
         # Validar campos obligatorios
         if not descripcion or not imagen:
             messages.error(request, 'Todos los campos son obligatorios.')
-            return redirect('tiendas:create_store2')
+            return render(request, 'tiendas/create_store2.html')
+
         # Crear la tienda con todos los datos recopilados
         Tienda.objects.create(
             propietario=request.user,
@@ -110,11 +141,15 @@ def create_store2(request):
             municipio=store_address['city'],
             informacion_adicional=store_address['additional_info'],
         )
+
         # Limpiar datos de sesión
         request.session.pop('store_data', None)
         request.session.pop('store_address', None)
+
+        # Mostrar mensaje de éxito en el mismo formulario
         messages.success(request, 'Tienda creada correctamente.')
-        return redirect('tiendas:home_seller')
+        return render(request, 'tiendas/create_store2.html')
+
     # Renderizar formulario del paso 2
     return render(request, 'tiendas/create_store2.html')
 # =====================================================
@@ -158,38 +193,35 @@ def add_address_store(request):
     return render(request, 'tiendas/add_address_store.html')
 @login_required
 def add_address_store2(request):
-    # Recuperar datos del paso 1
+
     step_1 = request.session.get('store_address_step_1')
-    # Validar que el paso anterior esté completo
+
     if not step_1:
         messages.error(request, 'Debes completar el paso anterior.')
         return redirect('tiendas:add_address_store')
+
     if request.method == 'POST':
-        # Obtener datos del formulario
+
         department = request.POST.get('department', '').strip()
         city = request.POST.get('city', '').strip()
         additional_info = request.POST.get('additional_info', '').strip()
-        # Validar campos obligatorios
+
         if not department or not city:
             messages.error(request, 'Departamento y municipio obligatorios.')
             return redirect('tiendas:add_address_store2')
-        # Validar longitud mínima del municipio
-        if len(city) < 3:
-            messages.error(request, 'El municipio debe tener mínimo 3 caracteres.')
-            return redirect('tiendas:add_address_store2')
-        # Guardar dirección completa en sesión
+
         request.session['store_address'] = {
             **step_1,
             'department': department,
             'city': city,
             'additional_info': additional_info,
         }
+
         request.session.modified = True
-        # Eliminar datos temporales del paso 1
         request.session.pop('store_address_step_1', None)
-        # Volver al paso 2 de creación de tienda
+
         return redirect('tiendas:create_store2')
-    # Renderizar formulario de dirección paso 2
+
     return render(request, 'tiendas/add_address_store2.html')
 @login_required
 def profile_store_seller(request):
@@ -529,14 +561,44 @@ def list_products_store_seller(request):
         'productos': productos,
         'tienda': tienda
     })
+from django.shortcuts import render, get_object_or_404
+from tiendas.models import Tienda
+from productos.models import Producto, Calificacion
+
+
 def profile_store_client(request, tienda_id):
+
     # Obtener tienda o devolver 404
     tienda = get_object_or_404(Tienda, id=tienda_id)
-    # Obtener productos de la tienda con relaciones optimizadas
+
+    # Obtener productos de la tienda
     productos = Producto.objects.filter(
         tienda=tienda
-    ).select_related('tienda').prefetch_related('imagenes')
-    # Renderizar productos para cliente
+    ).select_related(
+        'tienda'
+    ).prefetch_related(
+        'imagenes'
+    )
+
+    # Validar si el usuario está autenticado
+    if request.user.is_authenticated:
+
+        calificaciones = Calificacion.objects.filter(
+            usuario=request.user
+        )
+
+        cal_dict = {
+            c.producto_id: c.puntuacion
+            for c in calificaciones
+        }
+
+        for producto in productos:
+            producto.user_rating = cal_dict.get(producto.id, 0)
+
+    else:
+        for producto in productos:
+            producto.user_rating = 0
+
     return render(request, 'usuarios/store_products_client.html', {
         'productos': productos,
         'tienda': tienda
@@ -569,3 +631,5 @@ def sales_details_order_store(request, pedido_id):
     }
     # Renderizar detalle de venta
     return render(request, "tiendas/sales_details_order_store.html", context)
+from django.db.models import Q
+

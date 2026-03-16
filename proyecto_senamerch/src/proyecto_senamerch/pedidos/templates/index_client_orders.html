@@ -3,23 +3,29 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}Registro | SenaMerch{% endblock %}</title>
+  <title>{% block title %}Mis Pedidos{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
+
   {% include 'components/navabar_go_go.html' %}
 
-
-  {% include 'components/navbar_orders_client.html' %}
+  {# Navbar dinámico según si es vendedor o cliente #}
+  {% if es_vendedor %}
+      {% include 'components/navbar_orders_seller.html' %}
+  {% else %}
+      {% include 'components/navbar_orders_client.html' %}
+  {% endif %}
 
   <main class="main-content">
     {% block content %}
+    <!-- Aquí tu HTML de los pedidos (tabs, lista de pedidos, etc.) -->
     {% endblock %}
   </main>
 
   {% include 'components/footer.html' %}
-
   {% include 'components/footer_go_go.html' %}
 
+  {% block extra_js %}{% endblock %}
 </body>
 </html>

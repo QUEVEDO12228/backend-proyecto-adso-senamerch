@@ -15,7 +15,7 @@ urlpatterns = [
     # Acciones relacionadas con compras
     # ==========================
     path("editar/<int:pedido_id>/", views.edit_order, name="edit_order"),
-    path("purchases/<int:pedido_id>/", views.view_purchase, name="view_purchase"),
+    path("purchase_detail/<int:pedido_id>/", views.view_purchase, name="view_purchase"),
     path("buy-cart/", views.buy_cart, name="buy_cart"),
     path("payment-method/", views.option_payment_method, name="payment_method"),
 

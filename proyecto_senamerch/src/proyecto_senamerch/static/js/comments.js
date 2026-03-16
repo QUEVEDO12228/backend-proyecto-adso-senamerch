@@ -43,7 +43,7 @@ function initSidebar() {
   const sidebar = container.querySelector(".comments-users-sidebar");
   const overlay = document.querySelector(".comments-overlay");
   const closeBtn = container.querySelector(".comments-users-sidebar__close-btn");
-  const body = container.querySelector("#commentsSidebarBody");
+  const commentsList = container.querySelector("#commentsList");
   const form = container.querySelector("#commentForm");
   const productInput = container.querySelector("#producto_id");
 
@@ -55,7 +55,7 @@ function initSidebar() {
   function closeSidebar() {
     sidebar.classList.remove("comments-users-sidebar--active");
     overlay.classList.remove("comments-overlay--active");
-    body.innerHTML = "";
+    commentsList.innerHTML = "";
     form.reset();
   }
 
@@ -73,12 +73,10 @@ function initSidebar() {
     if (!productId) return;
 
     productInput.value = productId;
-    body.innerHTML = "<p>Cargando comentarios...</p>";
+    commentsList.innerHTML = "<p>Cargando comentarios...</p>";
 
     const comentarios = await obtenerComentarios(productId);
-    renderComentarios(body, comentarios);
-
-    body.appendChild(form);
+    renderComentarios(commentsList, comentarios);
     openSidebar();
   });
 
@@ -94,8 +92,7 @@ function initSidebar() {
     if (!res?.success) return;
 
     const comentarios = await obtenerComentarios(productId);
-    renderComentarios(body, comentarios);
-    body.appendChild(form);
+    renderComentarios(commentsList, comentarios);
     form.reset();
   });
 }

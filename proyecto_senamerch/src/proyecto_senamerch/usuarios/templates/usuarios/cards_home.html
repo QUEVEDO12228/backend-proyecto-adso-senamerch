@@ -5,31 +5,22 @@
 
 {% for producto in productos %}
 <article class="product-card"
-        data-nombre="{{ producto.nombre|lower }}"
-        data-tienda="{{ producto.tienda.nombre|lower }}"
-        data-categoria="{{ producto.categoria|lower }}"
-        data-precio="{{ producto.precio }}"
-        >
+          data-nombre="{{ producto.nombre|lower }}"
+          data-tienda="{{ producto.tienda.nombre|lower }}"
+          data-categoria="{{ producto.categoria|lower }}"
+          data-precio="{{ producto.precio }}"
+          >
 
   <div class="product-card__actions">
-
-    <!-- Like -->
-    <a href="{% url 'usuarios:login' %}" class="product-card__like-btn">
-      <img src="{% static 'assets/icons/heart.svg' %}" 
-           class="product-card__like-icon">
-      <span class="product-card__like-tooltip">
-        Me gusta
-      </span>
-    </a>
-
-    <!-- Dislike -->
-    <a href="{% url 'usuarios:login' %}" class="product-card__like-btn--dislike">
-      <img src="{% static 'assets/icons/heart-off.svg' %}" 
-           class="product-card__like-icon--dislike">
-      <span class="product-card__dislike-tooltip">
-        No me gusta
-      </span>
-    </a>
+  <!-- Calificación con estrellas -->
+    <div class="product-card__rating" 
+        data-producto="{{ producto.id }}" 
+        data-user-rating="{{ producto.user_rating }}">
+      {% for i in "12345"|make_list %}
+        <span class="product-card__star {% if forloop.counter <= producto.user_rating %}product-card__star--active{% endif %}" 
+              data-value="{{ forloop.counter }}">★</span>
+      {% endfor %}
+    </div>
 
     <!-- Menú -->
     <div class="product-card__menu">

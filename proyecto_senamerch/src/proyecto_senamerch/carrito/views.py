@@ -6,7 +6,10 @@ from .models import Carrito, ItemCarrito
 @login_required
 def shopping_cart(request):
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
-    items = carrito.items.select_related('producto').all()
+    items = carrito.items.select_related(
+        'producto',
+        'producto__tienda'
+    )
     return render(request, "carrito/shopping_cart.html", {
         "carrito": carrito,
         "items": items

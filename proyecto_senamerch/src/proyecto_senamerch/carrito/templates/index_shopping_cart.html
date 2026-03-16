@@ -18,7 +18,11 @@
     <!-- >>> Sección Navbar -->
     <nav class="navbar_shopping_cart">
       <div class="navbar-container-qqqq-qqq">
-        {% include 'components/navbar_home_client.html' %}
+        {% if es_vendedor %}
+            {% include 'components/navbar_home_store_seller.html' %}
+        {% else %}
+            {% include 'components/navbar_home_client.html' %}
+        {% endif %}
       </div>
     </nav>
     <!-- >>>  Sección main grid-->

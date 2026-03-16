@@ -16,10 +16,31 @@
       <div class="footer__section footer__section--links">
         <h5 class="footer__subtitle">Enlaces</h5>
         <ul class="footer__list">
-          <li><a href="#" class="footer__link">Inicio</a></li>
-          <li><a href="#" class="footer__link">Inicio de sesión</a></li>
-          <li><a href="#" class="footer__link">Contacto</a></li>
-          <li><a href="#" class="footer__link">Registrarse</a></li>
+
+          <li>
+            <a href="{% url 'usuarios:home' %}" class="footer__link">
+              Inicio
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'usuarios:login' %}" class="footer__link">
+              Inicio de sesión
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'usuarios:contact' %}" class="footer__link">
+              Contacto
+            </a>
+          </li>
+
+          <li>
+            <a href="{% url 'usuarios:register' %}" class="footer__link">
+              Registrarse
+            </a>
+          </li>
+
         </ul>
       </div>
 
@@ -36,17 +57,21 @@
       <!-- Redes sociales -->
       <div class="footer__section footer__section--social">
         <h5 class="footer__subtitle">Síguenos</h5>
+
         <div class="footer__social-icons">
-          <a href="#" class="footer__icon">
+
+          <a href="https://instagram.com" target="_blank" class="footer__icon">
             <img src="{% static 'assets/img/instagram.jpeg' %}" alt="Instagram">
           </a>
-          <a href="#" class="footer__icon">
+
+          <a href="https://facebook.com" target="_blank" class="footer__icon">
             <img src="{% static 'assets/img/facebook.png' %}" alt="Facebook">
           </a>
+
         </div>
       </div>
 
-      <!-- Columna de imagen -->
+      <!-- Imagen -->
       <div class="footer__image-column">
         <img src="{% static 'assets/img/sena-logo.png' %}"
              alt="Logo"
@@ -58,5 +83,6 @@
     <div class="footer__bottom">
       © 2025 Sena Merch - Todos los derechos reservados
     </div>
+
   </footer>
 </section>
