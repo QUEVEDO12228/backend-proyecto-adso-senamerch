@@ -32,7 +32,7 @@
         {% if request.session.address_full %}
           <p style="color: green;">✔ Dirección agregada</p>
         {% else %}
-          <p style="color: red;">⚠ Debes agregar tu dirección</p>
+          <p style="color: red;">⚠ Debes agregar tu dirección primero</p>
         {% endif %}
 
         <a href="{% url 'usuarios:add_address' %}" class="register__link" onclick="return goToAddress(event)">

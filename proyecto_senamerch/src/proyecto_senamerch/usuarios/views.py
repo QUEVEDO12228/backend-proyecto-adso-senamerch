@@ -429,21 +429,65 @@ def reset_password_view(request):
 # ===========================================================
 #  Contacto SenaMerch
 # ===========================================================
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.conf import settings
+from django.contrib import messages
+
+
+# ===========================================================
+#  Contacto SenaMerch
+# ===========================================================
 def contact_view(request):
-    """ Vista para enviar mensajes de contacto. Los usuarios pueden enviar sus consultas o comentarios. """
+
     if request.method == 'POST':
-        # Obtener los datos del formulario de contacto
+
         name = request.POST.get('name', '').strip()
-        email = request.POST.get('email', '').strip()
+        email = request.POST.get('email', '').strip().lower()
         query_type = request.POST.get('query_type', '').strip()
         message = request.POST.get('message', '').strip()
-        # Validar que todos los campos estén completos
+
+        # Validar campos
         if not name or not email or not query_type or not message:
             messages.error(request, 'Todos los campos son obligatorios.')
             return redirect('contact')
-        # Mostrar mensaje de éxito
+
+        # =========================
+        # CONTENIDO DEL CORREO
+        # =========================
+        html_content = render_to_string(
+            'usuarios/contact_email.html',
+            {
+                'name': name,
+                'email': email,
+                'query_type': query_type,
+                'message': message
+            }
+        )
+
+        # =========================
+        # CREAR CORREO
+        # =========================
+        email_message = EmailMultiAlternatives(
+            f'Nuevo mensaje de contacto - {query_type}',
+            f'''
+            Nombre: {name}
+            Correo: {email}
+            Tipo de consulta: {query_type}
+
+            Mensaje:
+            {message}
+            ''',
+            settings.EMAIL_HOST_USER,
+            [settings.EMAIL_HOST_USER]  # se envía al correo del proyecto
+        )
+
+        email_message.attach_alternative(html_content, "text/html")
+        email_message.send()
+
         messages.success(request, 'Tu mensaje fue enviado correctamente.')
-        return redirect('contact')
+
+        return redirect('usuarios:contact')
 
     return render(request, 'usuarios/contact.html')
 # =====================
