@@ -1,105 +1,133 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from productos.models import Producto
-from tiendas.models import Tienda  # Asegúrate de importar el modelo Tienda
+from tiendas.models import Tienda
 from django.utils import timezone
 from datetime import timedelta
 from decimal import Decimal
-class Pedido(models.Model):
+from core.models import BaseModel
+
+User = get_user_model()
+
+
+# ----------------------------
+# MODELO PEDIDO
+# ----------------------------
+class Pedido(BaseModel):
+
     ESTADOS_PEDIDO = [
         ('pending', 'Pendiente'),
         ('delivered', 'Entregado'),
         ('canceled', 'Cancelado'),
     ]
+
     TIPOS_ENTREGA = [
         ('domicilio', 'Domicilio'),
         ('recoger', 'Recoger en tienda'),
     ]
-    
+
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pedidos')
+    tienda = models.ForeignKey(Tienda, on_delete=models.CASCADE, related_name='pedidos')
+
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     estado = models.CharField(max_length=20, choices=ESTADOS_PEDIDO, default='pending')
     tipo_entrega = models.CharField(max_length=20, choices=TIPOS_ENTREGA, default='domicilio')
-    tienda = models.ForeignKey(Tienda, on_delete=models.CASCADE, related_name='pedidos', default=1)  # Relación con Tienda
+
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-creado_en"]
+        verbose_name = "Pedido"
+        verbose_name_plural = "Pedidos"
 
     def __str__(self):
         return f"Pedido #{self.id} - {self.usuario.username} - {self.estado}"
 
-    @property
-    def get_tienda(self):
-        """
-        Devuelve la tienda relacionada con los productos de este pedido.
-        Asume que todos los productos son de la misma tienda.
-        """
-        primer_item = self.items.first()
-        return primer_item.producto.tienda if primer_item else None
+    # ----------------------------
+    # LÓGICA
+    # ----------------------------
 
     @property
     def puede_editar(self):
-        """Determina si el pedido puede ser editado (2 horas de límite desde su creación)."""
-        return self.estado == 'pending' and (timezone.now() - self.creado_en).total_seconds() < 7200
+        """Se puede editar dentro de 2 horas"""
+        return (
+            self.estado == 'pending' and
+            (timezone.now() - self.creado_en).total_seconds() < 7200
+        )
 
     @property
     def debe_cancelarse(self):
-        """Determina si el pedido debe cancelarse automáticamente (6 horas de límite desde su creación)."""
+        """Se cancela automáticamente después de 6 horas"""
         return timezone.now() >= self.creado_en + timedelta(hours=6)
 
     def cancelar_si_expirado(self):
-        """Cancela automáticamente el pedido si ha pasado más de 6 horas desde su creación y está pendiente."""
         if self.estado == "pending" and self.debe_cancelarse:
             self.estado = "canceled"
             self.save()
 
     def tiempo_restante_cancelacion(self):
-        """Devuelve el tiempo restante en segundos para cancelar el pedido (6 horas de límite)."""
         if self.estado == 'pending':
-            # Si el pedido está pendiente, calcula los segundos restantes hasta las 6 horas
-            tiempo_restante = self.creado_en + timedelta(hours=6) - timezone.now()
-            return max(0, tiempo_restante.total_seconds())  # Asegurarse de que no devuelva un valor negativo
+            tiempo = self.creado_en + timedelta(hours=6) - timezone.now()
+            return max(0, tiempo.total_seconds())
         return 0
 
     def tiempo_restante_cancelacion_formateado(self):
-        """Devuelve el tiempo restante en formato legible (horas y minutos)."""
         if self.estado == 'pending':
-            tiempo_restante = self.creado_en + timedelta(hours=6) - timezone.now()
-            if tiempo_restante > timedelta():
-                horas = tiempo_restante.seconds // 3600
-                minutos = (tiempo_restante.seconds % 3600) // 60
-                return f"{horas} horas y {minutos} minutos"
-            else:
-                return "Pedido cancelado automáticamente"
+            tiempo = self.creado_en + timedelta(hours=6) - timezone.now()
+            if tiempo > timedelta():
+                horas = tiempo.seconds // 3600
+                minutos = (tiempo.seconds % 3600) // 60
+                return f"{horas}h {minutos}m"
+            return "Cancelado automáticamente"
         return None
 
+    def calcular_total(self):
+        """Recalcula el total del pedido"""
+        total = sum(item.subtotal_con_descuento for item in self.items.all())
+        self.total = total
+        self.save()
 
+
+# ----------------------------
+# ITEMS DEL PEDIDO
+# ----------------------------
 class PedidoItem(models.Model):
+
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name='items')
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+
     cantidad = models.PositiveIntegerField(default=1)
     precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = "Item de Pedido"
+        verbose_name_plural = "Items de Pedido"
+
+    def __str__(self):
+        return f"{self.cantidad} x {self.producto.nombre}"
+
+    # ----------------------------
+    # CÁLCULOS
+    # ----------------------------
 
     def subtotal(self):
         return self.cantidad * self.precio_unitario
 
     @property
     def subtotal_con_descuento(self):
-
         precio = self.producto.precio
         descuento = (precio * Decimal(self.producto.descuento)) / Decimal(100)
         precio_final = precio - descuento
-
         return precio_final * self.cantidad
 
-    def __str__(self):
-        return f"{self.cantidad} x {self.producto.nombre} en Pedido #{self.pedido.id}"
 
+# ----------------------------
+# DIRECCIÓN DEL PEDIDO
+# ----------------------------
+class AddressPedido(models.Model):
 
-# ✅ Nuevo modelo de dirección
-class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pedidos_addresses')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='direcciones_pedido')
+
     neighborhood = models.CharField(max_length=100)
     address_number = models.CharField(max_length=50)
     road_type = models.CharField(max_length=50, blank=True, null=True)
@@ -107,11 +135,12 @@ class Address(models.Model):
     department = models.CharField(max_length=100)
     city = models.CharField(max_length=100)
     extra_info = models.TextField(blank=True, null=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = "Dirección (Pedido)"
-        verbose_name_plural = "Direcciones (Pedidos)"
+        verbose_name = "Dirección de Pedido"
+        verbose_name_plural = "Direcciones de Pedido"
 
     def __str__(self):
-        return f"{self.user.username} - {self.city} ({self.neighborhood})"
+        return f"{self.user.username} - {self.city}"

@@ -631,5 +631,3 @@ def sales_details_order_store(request, pedido_id):
     }
     # Renderizar detalle de venta
     return render(request, "tiendas/sales_details_order_store.html", context)
-from django.db.models import Q
-
