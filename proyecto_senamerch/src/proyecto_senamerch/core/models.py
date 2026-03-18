@@ -6,4 +6,4 @@ class BaseModel(models.Model):
     actualizado_en = models.DateTimeField(auto_now=True)
 
     class Meta:
-        abstract = True
+        abstract = True 

@@ -7,4 +7,4 @@ deshabilitar.short_description = "Deshabilitar seleccionados"
 def habilitar(modeladmin, request, queryset):
     queryset.update(activo=True)
 
-habilitar.short_description = "Habilitar seleccionados"
+habilitar.short_description = "Habilitar seleccionados" 
