@@ -1,9 +1,23 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from productos.models import Producto
+from core.models import BaseModel
+from decimal import Decimal
 
-class Carrito(models.Model):
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='carrito')
+User = get_user_model()
+
+
+# ----------------------------
+# MODELO CARRITO
+# ----------------------------
+class Carrito(BaseModel):
+
+    usuario = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name='carrito'
+    )
+
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -13,12 +27,25 @@ class Carrito(models.Model):
     def __str__(self):
         return f"Carrito de {self.usuario.username}"
 
+    # ----------------------------
+    # PROPIEDADES
+    # ----------------------------
+
     @property
     def items_carrito(self):
-        return self.items.all()  # related_name 'items'
+        return self.items.all()
 
     def get_total(self):
+        """Total SIN descuento"""
         return sum(item.subtotal() for item in self.items.all())
+
+    def get_total_con_descuento(self):
+        """Total CON descuento 🔥"""
+        return sum(item.subtotal_con_descuento for item in self.items.all())
+
+    def total_items(self):
+        """Cantidad total de productos"""
+        return sum(item.cantidad for item in self.items.all())
     
 class ItemCarrito(models.Model):
 
@@ -37,9 +64,22 @@ class ItemCarrito(models.Model):
 
     class Meta:
         unique_together = ("carrito", "producto")
+        verbose_name = "Item de Carrito"
+        verbose_name_plural = "Items de Carrito"
+
+    def __str__(self):
+        return f"{self.producto.nombre} x {self.cantidad}"
+
+    # ----------------------------
+    # CÁLCULOS
+    # ----------------------------
 
     def subtotal(self):
         return self.cantidad * self.producto.precio
 
-    def __str__(self):
-        return f"{self.producto.nombre} x {self.cantidad}"
+    @property
+    def subtotal_con_descuento(self):
+        precio = self.producto.precio
+        descuento = (precio * Decimal(self.producto.descuento)) / Decimal(100)
+        precio_final = precio - descuento
+        return precio_final * self.cantidad

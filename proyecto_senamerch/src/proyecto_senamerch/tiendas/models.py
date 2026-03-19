@@ -1,8 +1,10 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.core.validators import RegexValidator
 from django.utils.text import slugify
+from core.models import BaseModel
 
+User = get_user_model()
 
 phone_validator = RegexValidator(
     regex=r'^\+?\d{7,15}$',
@@ -10,7 +12,7 @@ phone_validator = RegexValidator(
 )
 
 
-class Tienda(models.Model):
+class Tienda(BaseModel):
 
     CATEGORIA_CHOICES = [
         ("frutas", "Frutas"),
@@ -57,9 +59,7 @@ class Tienda(models.Model):
         default="otros"
     )
 
-    descripcion = models.TextField(
-        blank=True
-    )
+    descripcion = models.TextField(blank=True)
 
     # -------------------------
     # IMÁGENES
@@ -81,39 +81,13 @@ class Tienda(models.Model):
     # DIRECCIÓN
     # -------------------------
 
-    barrio = models.CharField(
-        max_length=120,
-        blank=True
-    )
-
-    numero_direccion = models.CharField(
-        max_length=100,
-        blank=True
-    )
-
-    tipo_via = models.CharField(
-        max_length=100,
-        blank=True
-    )
-
-    departamento = models.CharField(
-        max_length=100,
-        blank=True
-    )
-
-    municipio = models.CharField(
-        max_length=100,
-        blank=True
-    )
-
-    codigo_postal = models.CharField(
-        max_length=20,
-        blank=True
-    )
-
-    informacion_adicional = models.TextField(
-        blank=True
-    )
+    barrio = models.CharField(max_length=120, blank=True)
+    numero_direccion = models.CharField(max_length=100, blank=True)
+    tipo_via = models.CharField(max_length=100, blank=True)
+    departamento = models.CharField(max_length=100, blank=True)
+    municipio = models.CharField(max_length=100, blank=True)
+    codigo_postal = models.CharField(max_length=20, blank=True)
+    informacion_adicional = models.TextField(blank=True)
 
     # -------------------------
     # ESTADÍSTICAS
@@ -125,25 +99,7 @@ class Tienda(models.Model):
         default=0
     )
 
-    total_productos = models.PositiveIntegerField(
-        default=0
-    )
-
-    # -------------------------
-    # CONTROL
-    # -------------------------
-
-    activa = models.BooleanField(
-        default=True
-    )
-
-    creada_en = models.DateTimeField(
-        auto_now_add=True
-    )
-
-    actualizada_en = models.DateTimeField(
-        auto_now=True
-    )
+    total_productos = models.PositiveIntegerField(default=0)
 
     # -------------------------
     # META
@@ -152,11 +108,11 @@ class Tienda(models.Model):
     class Meta:
         verbose_name = "Tienda"
         verbose_name_plural = "Tiendas"
-        ordering = ["-creada_en"]
+        ordering = ["-creado_en"]  # 👈 BaseModel
         indexes = [
             models.Index(fields=["nombre"]),
             models.Index(fields=["categoria"]),
-            models.Index(fields=["activa"]),
+            models.Index(fields=["activo"]),  # 👈 cambiado
         ]
 
     # -------------------------
@@ -165,7 +121,16 @@ class Tienda(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.nombre)
+            base_slug = slugify(self.nombre)
+            slug = base_slug
+            contador = 1
+
+            while Tienda.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{contador}"
+                contador += 1
+
+            self.slug = slug
+
         super().save(*args, **kwargs)
 
     @property

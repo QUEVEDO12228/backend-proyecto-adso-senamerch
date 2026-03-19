@@ -81,46 +81,57 @@ from django.urls import reverse
 
 def login_view(request):
     context = {'form_submitted': False}
-    
+
     if request.method == 'POST':
         context['form_submitted'] = True
+
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
-        
+
+        # 🔹 Validar campos vacíos
         if not email or not password:
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'usuarios/login.html', context)
 
+        # 🔹 Validar formato de email
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Ingresa un correo electrónico válido.')
             return render(request, 'usuarios/login.html', context)
 
+        # 🔹 Autenticación
         user = authenticate(request, username=email, password=password)
+
         if user is None:
-            messages.error(request, 'Correo o contraseña incorrectos.')
+            # 🔍 Verificar si el usuario existe
+            if User.objects.filter(username=email).exists():
+                user_obj = User.objects.get(username=email)
+
+                if not user_obj.is_active:
+                    messages.error(request, 'Tu cuenta ha sido deshabilitada.')
+                else:
+                    messages.error(request, 'Correo o contraseña incorrectos.')
+            else:
+                messages.error(request, 'Correo o contraseña incorrectos.')
+
             return render(request, 'usuarios/login.html', context)
 
-        # LOGIN CORRECTO
-        # LOGIN CORRECTO
+        # 🔹 LOGIN CORRECTO
         login(request, user)
         nombre = user.get_full_name() or user.username
 
-        if Tienda.objects.filter(propietario=user).exists():
+        # 🔹 Determinar si es vendedor
+        es_vendedor = Tienda.objects.filter(propietario=user).exists()
+
+        if es_vendedor:
             messages.success(request, f'Bienvenido vendedor {nombre} 👋')
             redirect_url = reverse('tiendas:home_seller')
         else:
             messages.success(request, f'Bienvenido cliente {nombre} 👋')
             redirect_url = reverse('usuarios:home_client')
 
-        # Determinar URL de redirección
-        if Tienda.objects.filter(propietario=user).exists():
-            redirect_url = reverse('tiendas:home_seller')
-        else:
-            redirect_url = reverse('usuarios:home_client')
-
-        # Enviamos al template
+        # 🔹 Enviar URL al template (para redirección con JS si usas)
         context['redirect_url'] = redirect_url
 
     return render(request, 'usuarios/login.html', context)
