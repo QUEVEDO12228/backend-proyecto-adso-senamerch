@@ -83,6 +83,8 @@ urlpatterns = [
         views.sales_details_order_store,
         name="sales_details_order_store"
     ),
+    path('disable/', views.disable_store, name='disable_store'),
+    path('enable/', views.enable_store, name='enable_store'),
 ]
 
 if settings.DEBUG:

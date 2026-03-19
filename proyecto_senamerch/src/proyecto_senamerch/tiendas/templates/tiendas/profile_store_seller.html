@@ -15,21 +15,15 @@
       <div class="store-profile__header">
         <div class="store-profile__avatar">
           {% if tienda.imagen_portada %}
-            <img src="{{ tienda.imagen_portada.url }}" 
-                 alt="{{ tienda.nombre }}">
+            <img src="{{ tienda.imagen_portada.url }}" alt="{{ tienda.nombre }}">
           {% else %}
-            <img src="{% static 'img/store_default.jpg' %}" 
-                 alt="Imagen por defecto">
+            <img src="{% static 'img/store_default.jpg' %}" alt="Imagen por defecto">
           {% endif %}
         </div>
 
         <div class="store-profile__info">
-          <h1 class="store-profile__name">
-            {{ tienda.nombre }}
-          </h1>
-          <p class="store-profile__category">
-            {{ tienda.categoria }}
-          </p>
+          <h1 class="store-profile__name">{{ tienda.nombre }}</h1>
+          <p class="store-profile__category">{{ tienda.categoria }}</p>
         </div>
       </div>
 
@@ -38,23 +32,17 @@
 
         <div class="store-profile__field">
           <span class="store-profile__label">Correo electrónico:</span>
-          <span class="store-profile__value">
-            {{ tienda.email }}
-          </span>
+          <span class="store-profile__value">{{ tienda.email }}</span>
         </div>
 
         <div class="store-profile__field">
           <span class="store-profile__label">Teléfono:</span>
-          <span class="store-profile__value">
-            {{ tienda.telefono }}
-          </span>
+          <span class="store-profile__value">{{ tienda.telefono }}</span>
         </div>
 
         <div class="store-profile__field">
           <span class="store-profile__label">Categoría:</span>
-          <span class="store-profile__value">
-            {{ tienda.categoria }}
-          </span>
+          <span class="store-profile__value">{{ tienda.categoria }}</span>
         </div>
 
         <div class="store-profile__field">
@@ -66,9 +54,7 @@
 
         <div class="store-profile__field">
           <a href="{% url 'tiendas:store_address' %}">
-            <span class="store-profile__link">
-              Ver dirección
-            </span>
+            <span class="store-profile__link">Ver dirección</span>
           </a>
         </div>
 
@@ -77,20 +63,20 @@
       <!-- Acciones -->
       <div class="store-profile__actions-grid">
 
+        <!-- 🔥 BOTÓN FUNCIONAL -->
         <div class="store-profile__actions-secondary">
-          <button class="btn btn--warning store-profile__suspend">
-            Deshabilitar Tienda
-            <img src="{% static 'assets/icons/off.svg' %}" 
-                 class="btn__icon" />
-          </button>
+          <form action="{% url 'tiendas:disable_store' %}" method="POST">
+              {% csrf_token %}
+              <button type="submit" class="btn btn--warning store-profile__suspend">
+                  Deshabilitar Tienda <img src="{% static 'assets/icons/off.svg' %}" class="btn__icon" />
+              </button>
+          </form>
         </div>
-      
+
         <div class="store-profile__actions-primary">
-          <a href="{% url 'tiendas:edit_store_seller' %}" 
-             class="btn btn--primary store-profile__submit--store">
+          <a href="{% url 'tiendas:edit_store_seller' %}" class="btn btn--primary store-profile__submit--store">
             Editar datos
-            <img src="{% static 'assets/icons/edit.svg' %}" 
-                 class="btn__icon store-profile__icon">
+            <img src="{% static 'assets/icons/edit.svg' %}" class="btn__icon store-profile__icon">
           </a>
         </div>
 
@@ -100,7 +86,7 @@
   </section>
 
   <!-- ============================= -->
-  <!-- PANEL DEL USUARIO (VENDEDOR) -->
+  <!-- PANEL DEL USUARIO -->
   <!-- ============================= -->
   <section class="store-profile">
     <section class="store-profile__card">
@@ -115,12 +101,8 @@
         </div>
 
         <div class="store-profile__info">
-          <h1 class="store-profile__name">
-            @{{ request.user.first_name }}
-          </h1>
-          <p class="store-profile__role">
-            Vendedor
-          </p>
+          <h1 class="store-profile__name">@{{ request.user.first_name }}</h1>
+          <p class="store-profile__role">Vendedor</p>
         </div>
       </div>
 
@@ -128,9 +110,7 @@
 
         <div class="store-profile__field">
           <span class="store-profile__label">Correo electrónico:</span>
-          <span class="store-profile__value">
-            {{ request.user.email }}
-          </span>
+          <span class="store-profile__value">{{ request.user.email }}</span>
         </div>
 
         <div class="store-profile__field">
@@ -149,16 +129,12 @@
 
         <div class="store-profile__field">
           <span class="store-profile__label">Contraseña:</span>
-          <span class="store-profile__value">
-            ************
-          </span>
+          <span class="store-profile__value">************</span>
         </div>
-        
+
         <div class="store-profile__field">
           <a href="{% url 'tiendas:seller_address' %}">
-            <span class="store-profile__link">
-              Ver dirección
-            </span>
+            <span class="store-profile__link">Ver dirección</span>
           </a>
         </div>
 
@@ -166,11 +142,9 @@
 
       <div class="store-profile__actions-grid--seller">
         <div class="store-profile__actions-primary">
-          <a href="{% url 'tiendas:edit_seller_profile' %}" 
-             class="btn btn--primary store-profile__submit--seller">
+          <a href="{% url 'tiendas:edit_seller_profile' %}" class="btn btn--primary store-profile__submit--seller">
             Editar datos
-            <img src="{% static 'assets/icons/edit.svg' %}" 
-                 class="btn__icon store-profile__icon">
+            <img src="{% static 'assets/icons/edit.svg' %}" class="btn__icon store-profile__icon">
           </a>
         </div>
       </div>
@@ -180,4 +154,4 @@
 
 </section>
 
-{% endblock %}
+{% endblock %}  

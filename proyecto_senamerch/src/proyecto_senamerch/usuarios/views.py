@@ -32,21 +32,19 @@ from django.shortcuts import render
 from productos.models import Producto, Calificacion
 
 def home_view(request):
-    """Vista principal de la página de inicio. 
-    Si el usuario está autenticado, excluye los productos de su propia tienda."""
 
     if request.user.is_authenticated:
         productos = Producto.objects.exclude(
             tienda__propietario=request.user
         ).filter(
-            activo=True
+            activo=True,
+            tienda__activo=True  # 🔥 CLAVE
         ).select_related(
             "tienda"
         ).prefetch_related(
             "imagenes"
         )
 
-        # Obtener calificaciones del usuario
         calificaciones = Calificacion.objects.filter(
             usuario=request.user
         )
@@ -61,7 +59,8 @@ def home_view(request):
 
     else:
         productos = Producto.objects.filter(
-            activo=True
+            activo=True,
+            tienda__activo=True  # 🔥 CLAVE
         ).select_related(
             "tienda"
         ).prefetch_related(
@@ -78,6 +77,18 @@ def home_view(request):
 # Inicio de Sessión en SenaMerch
 # =========================
 from django.urls import reverse
+
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.urls import reverse
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+from tiendas.models import Tienda
+
+User = get_user_model()
+
 
 def login_view(request):
     context = {'form_submitted': False}
@@ -104,7 +115,6 @@ def login_view(request):
         user = authenticate(request, username=email, password=password)
 
         if user is None:
-            # 🔍 Verificar si el usuario existe
             if User.objects.filter(username=email).exists():
                 user_obj = User.objects.get(username=email)
 
@@ -121,17 +131,31 @@ def login_view(request):
         login(request, user)
         nombre = user.get_full_name() or user.username
 
-        # 🔹 Determinar si es vendedor
-        es_vendedor = Tienda.objects.filter(propietario=user).exists()
+        # 🔥 NUEVA LÓGICA CORRECTA
+        tienda = Tienda.objects.filter(propietario=user).first()
 
+        es_vendedor = False
+        tienda_inactiva = False
+
+        if tienda:
+            if tienda.activo:
+                es_vendedor = True
+            else:
+                tienda_inactiva = True
+
+        # 🔥 REDIRECCIÓN SEGÚN ESTADO
         if es_vendedor:
             messages.success(request, f'Bienvenido vendedor {nombre} 👋')
             redirect_url = reverse('tiendas:home_seller')
+
+        elif tienda_inactiva:
+            messages.success(request, f'Bienvenido {nombre} (tienda deshabilitada) 👋')
+            redirect_url = reverse('usuarios:home_client')
+
         else:
             messages.success(request, f'Bienvenido cliente {nombre} 👋')
             redirect_url = reverse('usuarios:home_client')
 
-        # 🔹 Enviar URL al template (para redirección con JS si usas)
         context['redirect_url'] = redirect_url
 
     return render(request, 'usuarios/login.html', context)
@@ -634,11 +658,25 @@ from productos.models import Producto, Calificacion
 
 def home_client_view(request):
 
+    es_vendedor = False
+    tienda_inactiva = False
+
     productos = Producto.objects.select_related(
         'tienda'
-    ).prefetch_related('imagenes')
+    ).prefetch_related('imagenes').filter(
+        activo=True,
+        tienda__activo=True  # 🔥 IMPORTANTE
+    )
 
     if request.user.is_authenticated:
+
+        tienda = Tienda.objects.filter(propietario=request.user).first()
+
+        if tienda:
+            if tienda.activo:
+                es_vendedor = True
+            else:
+                tienda_inactiva = True
 
         calificaciones = Calificacion.objects.filter(
             usuario=request.user
@@ -657,5 +695,7 @@ def home_client_view(request):
             producto.user_rating = 0
 
     return render(request, "usuarios/card_client.html", {
-        "productos": productos
+        "productos": productos,
+        "es_vendedor": es_vendedor,           # 🔥 CLAVE
+        "tienda_inactiva": tienda_inactiva    # 🔥 CLAVE
     })
