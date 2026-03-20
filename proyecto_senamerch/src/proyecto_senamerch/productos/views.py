@@ -187,17 +187,17 @@ def create_product_step3(request):
 # =====================================================
 @login_required
 def create_product_step4(request):
-    # Recuperar datos del producto desde sesión
     product_data = request.session.get("product_data")
     if not product_data:
         return redirect("productos:create_product")
+
     if request.method == "POST":
-        # Obtener tienda del usuario
+
         tienda = Tienda.objects.filter(propietario=request.user).first()
         if not tienda:
             messages.error(request, "Debes crear una tienda primero.")
             return redirect("tiendas:create_store")
-        # Crear producto en base de datos
+
         producto = Producto.objects.create(
             tienda=tienda,
             nombre=product_data.get("nombre"),
@@ -212,24 +212,28 @@ def create_product_step4(request):
             tipo_envio=product_data.get("tipo_envio"),
             stock=product_data.get("stock"),
         )
-        # Control para verificar si se subió al menos una imagen
+
         imagen_subida = False
-        # Recorrer posibles imágenes enviadas
+
         for i in range(1, 7):
             imagen = request.FILES.get(f"image{i}")
             if imagen:
                 ImagenProducto.objects.create(producto=producto, imagen=imagen)
                 imagen_subida = True
-        # Si no se subió ninguna imagen, eliminar producto
+
         if not imagen_subida:
             producto.delete()
             messages.error(request, "Debes subir al menos una imagen.")
             return redirect("productos:create_product_step4")
-        # Limpiar datos temporales de sesión
+
         request.session.pop("product_data", None)
+
+        # ✅ AQUÍ ESTÁ LA CLAVE
         messages.success(request, "Producto creado correctamente.")
-        return redirect("tiendas:seller_catalog")
-    # Renderizar formulario final
+        return render(request, "productos/create_product4.html", {
+            "redirect_url": "tiendas:seller_catalog"
+        })
+
     return render(request, "productos/create_product4.html")
 # =====================================================
 # 🔹 EDITAR PRODUCTO - PASO 1

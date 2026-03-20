@@ -15,10 +15,18 @@
       </p>
     </header>
 
+    <!-- 🔔 MENSAJES -->
     {% if messages %}
-      <div class="address-store-form__messages">
+      <div id="alert-container">
         {% for message in messages %}
-          <p class="address-store-form__error">{{ message }}</p>
+          <div class="alert {% if message.tags == 'success' %}alert--success{% else %}alert--error{% endif %}">
+            <div class="alert__content">
+              <span class="alert__icon">
+                {% if message.tags == 'success' %}✔{% else %}⚠{% endif %}
+              </span>
+              <p class="alert__message">{{ message }}</p>
+            </div>
+          </div>
         {% endfor %}
       </div>
     {% endif %}
@@ -31,9 +39,9 @@
         <label class="address-store-form__label">Departamento</label>
         <select id="department" name="department" class="address-store-form__input" required>
           <option value="">Selecciona...</option>
-          <option value="Risaralda">Risaralda</option>
-          <option value="Quindio">Quindío</option>
-          <option value="Caldas">Caldas</option>
+          <option value="Risaralda" {% if data.department == "Risaralda" %}selected{% endif %}>Risaralda</option>
+          <option value="Quindio" {% if data.department == "Quindio" %}selected{% endif %}>Quindío</option>
+          <option value="Caldas" {% if data.department == "Caldas" %}selected{% endif %}>Caldas</option>
         </select>
       </div>
 
@@ -41,7 +49,7 @@
       <div class="address-store-form__group">
         <label class="address-store-form__label">Municipio</label>
         <select id="city" name="city" class="address-store-form__input" required>
-          <option value="">Selecciona un departamento primero</option>
+          <option value="">Selecciona municipio</option>
         </select>
       </div>
 
@@ -53,6 +61,7 @@
           name="additional_info"
           placeholder="Apartamento, interior, referencias, etc."
           class="address-store-form__input"
+          value="{{ data.additional_info|default:'' }}"
         >
       </div>
 
@@ -77,68 +86,25 @@
 </section>
 
 <script>
-
 const municipios = {
 
   Risaralda: [
-    "Pereira",
-    "Dosquebradas",
-    "Santa Rosa de Cabal",
-    "La Virginia",
-    "Apía",
-    "Balboa",
-    "Belén de Umbría",
-    "Guática",
-    "La Celia",
-    "Marsella",
-    "Mistrató",
-    "Pueblo Rico",
-    "Quinchía",
-    "Santuario"
+    "Pereira","Dosquebradas","Santa Rosa de Cabal","La Virginia","Apía","Balboa",
+    "Belén de Umbría","Guática","La Celia","Marsella","Mistrató","Pueblo Rico",
+    "Quinchía","Santuario"
   ],
 
   Quindio: [
-    "Armenia",
-    "Calarcá",
-    "Circasia",
-    "Córdoba",
-    "Filandia",
-    "Génova",
-    "La Tebaida",
-    "Montenegro",
-    "Pijao",
-    "Quimbaya",
-    "Salento",
-    "Buenavista"
+    "Armenia","Calarcá","Circasia","Córdoba","Filandia","Génova",
+    "La Tebaida","Montenegro","Pijao","Quimbaya","Salento","Buenavista"
   ],
 
   Caldas: [
-    "Manizales",
-    "Villamaría",
-    "Chinchiná",
-    "La Dorada",
-    "Riosucio",
-    "Anserma",
-    "Salamina",
-    "Aguadas",
-    "Supía",
-    "Neira",
-    "Aranzazu",
-    "Belalcázar",
-    "Filadelfia",
-    "La Merced",
-    "Marmato",
-    "Marquetalia",
-    "Marulanda",
-    "Norcasia",
-    "Pácora",
-    "Palestina",
-    "Pensilvania",
-    "Risaralda",
-    "Samaná",
-    "San José",
-    "Victoria",
-    "Viterbo"
+    "Manizales","Villamaría","Chinchiná","La Dorada","Riosucio","Anserma",
+    "Salamina","Aguadas","Supía","Neira","Aranzazu","Belalcázar",
+    "Filadelfia","La Merced","Marmato","Marquetalia","Marulanda",
+    "Norcasia","Pácora","Palestina","Pensilvania","Risaralda",
+    "Samaná","San José","Victoria","Viterbo"
   ]
 
 };
@@ -146,28 +112,42 @@ const municipios = {
 const departmentSelect = document.getElementById("department");
 const citySelect = document.getElementById("city");
 
-departmentSelect.addEventListener("change", function(){
-
-  const dept = this.value;
+// 🔥 Función para cargar municipios
+function loadCities(selectedDept, selectedCity=null) {
 
   citySelect.innerHTML = "<option value=''>Selecciona municipio</option>";
 
-  if(municipios[dept]){
+  if (municipios[selectedDept]) {
 
-    municipios[dept].forEach(function(municipio){
+    municipios[selectedDept].forEach(function(municipio){
 
       const option = document.createElement("option");
       option.value = municipio;
       option.textContent = municipio;
 
+      if (municipio === selectedCity) {
+        option.selected = true;
+      }
+
       citySelect.appendChild(option);
-
     });
-
   }
+}
 
+// 🔹 Cambio manual
+departmentSelect.addEventListener("change", function(){
+  loadCities(this.value);
 });
 
+// 🔹 Cargar datos si ya existen (modo edición / error)
+window.addEventListener("DOMContentLoaded", function() {
+  const selectedDept = "{{ data.department|default:'' }}";
+  const selectedCity = "{{ data.city|default:'' }}";
+
+  if (selectedDept) {
+    loadCities(selectedDept, selectedCity);
+  }
+});
 </script>
 
 {% endblock %}

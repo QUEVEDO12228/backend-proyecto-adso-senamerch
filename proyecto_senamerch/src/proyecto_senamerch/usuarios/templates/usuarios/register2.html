@@ -16,6 +16,22 @@
       </p>
     </header>
 
+    <!-- 🔥 MENSAJES DJANGO -->
+    {% if messages %}
+      <div id="alert-container">
+        {% for message in messages %}
+          <div class="alert {% if message.tags == 'success' %}alert--success{% else %}alert--error{% endif %}">
+            <div class="alert__content">
+              <span class="alert__icon">
+                {% if message.tags == 'success' %}✔{% else %}⚠{% endif %}
+              </span>
+              <p class="alert__message">{{ message }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
     <form method="post" class="register__form" enctype="multipart/form-data">
       {% csrf_token %}
 
@@ -97,13 +113,14 @@
   </div>
 </section>
 
+<!-- 🔥 JS -->
 <script>
 // ELEMENTOS
 const pass = document.getElementById('password');
 const confirm = document.getElementById('confirm');
 const toggles = document.querySelectorAll('.register__toggle-password');
 
-// 🔥 MOSTRAR / OCULTAR PASSWORD
+// MOSTRAR / OCULTAR PASSWORD
 toggles.forEach((btn, index) => {
   btn.addEventListener('click', () => {
     const input = index === 0 ? pass : confirm;
@@ -118,7 +135,7 @@ toggles.forEach((btn, index) => {
   });
 });
 
-// 🔥 VALIDACIÓN PASSWORD
+// VALIDACIÓN PASSWORD
 pass.addEventListener('input', () => {
   const value = pass.value;
 
@@ -132,7 +149,7 @@ pass.addEventListener('input', () => {
   }
 });
 
-// 🔥 VALIDACIÓN CONFIRMAR
+// VALIDACIÓN CONFIRMAR
 confirm.addEventListener('input', () => {
   if (pass.value !== confirm.value) {
     document.getElementById('confirmError').textContent = "Las contraseñas no coinciden";
@@ -141,7 +158,7 @@ confirm.addEventListener('input', () => {
   }
 });
 
-// 🔥 VALIDACIÓN FINAL
+// VALIDACIÓN FINAL
 document.querySelector('form').addEventListener('submit', function(e) {
 
   let valid = true;
@@ -162,12 +179,5 @@ document.querySelector('form').addEventListener('submit', function(e) {
 
 });
 </script>
-
-{% if success %}
-<script>
-  alert("Cuenta creada correctamente");
-  window.location.href = "{% url 'usuarios:login' %}";
-</script>
-{% endif %}
 
 {% endblock %}

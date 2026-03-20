@@ -25,6 +25,15 @@ from django.core.validators import validate_email
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
+from django.urls import reverse
+from django.shortcuts import render
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+from django.urls import reverse
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+from tiendas.models import Tienda
 # =========================
 # Index SenaMerch
 # =========================
@@ -76,20 +85,7 @@ def home_view(request):
 # =========================
 # Inicio de Sessión en SenaMerch
 # =========================
-from django.urls import reverse
-
-from django.shortcuts import render
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-from django.urls import reverse
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.contrib.auth import get_user_model
-from tiendas.models import Tienda
-
 User = get_user_model()
-
-
 def login_view(request):
     context = {'form_submitted': False}
 
@@ -161,54 +157,99 @@ def login_view(request):
     return render(request, 'usuarios/login.html', context)
 # Registro de usuario en SenaMerch (PASO 1)
 # ==========================================
+import re
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.urls import reverse
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 def register_view(request):
-    """ Vista para el primer paso del registro de un nuevo usuario. Valida datos básicos como nombre, teléfono y correo electrónico. """
-    if request.method == 'GET' and not request.GET.get('from_address'):
-        # Limpiar datos temporales si no se llega desde una dirección
+    """
+    Vista para el primer paso del registro de un nuevo usuario.
+    """
+
+    # 🔥 CONTROL DE LIMPIEZA DE SESIÓN (CORREGIDO)
+    if request.method == 'GET' and not (
+        request.GET.get('from_address') or request.GET.get('error')
+    ):
         request.session.pop('address_full', None)
         request.session.pop('address_step_1', None)
         request.session.pop('register_temp', None)
+
+    # 🔹 Recuperar datos si hubo error previo
     data = request.session.get('register_temp', {})
+
     if request.method == 'POST':
+
         name = request.POST.get('name', '').strip()
         phone = request.POST.get('phone', '').strip()
         email = request.POST.get('email', '').strip().lower()
-        # Guardar los datos temporales
-        request.session['register_temp'] = {'name': name, 'phone': phone, 'email': email}
+
+        # 🔹 Guardar temporalmente
+        request.session['register_temp'] = {
+            'name': name,
+            'phone': phone,
+            'email': email
+        }
         request.session.modified = True
-        # Validación de campos
+
+        # 🔴 VALIDACIONES
+
         if not all([name, phone, email]):
             messages.error(request, 'Todos los campos son obligatorios.')
-            return redirect('usuarios:register')
+            return redirect(f"{reverse('usuarios:register')}?error=1")
+
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,}$', name):
             messages.error(request, 'Nombre inválido.')
-            return redirect('usuarios:register')
+            return redirect(f"{reverse('usuarios:register')}?error=1")
+
         phone_clean = phone.replace(' ', '').replace('-', '')
+
         if not re.match(r'^[0-9]{10}$', phone_clean):
             messages.error(request, 'Teléfono inválido.')
-            return redirect('usuarios:register')
+            return redirect(f"{reverse('usuarios:register')}?error=1")
+
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Correo inválido.')
-            return redirect('usuarios:register')
+            return redirect(f"{reverse('usuarios:register')}?error=1")
+
         if User.objects.filter(username=email).exists():
             messages.error(request, 'Correo ya registrado.')
-            return redirect('usuarios:register')
-        # Validar que se haya ingresado una dirección
+            return redirect(f"{reverse('usuarios:register')}?error=1")
+
+        # 🔴 VALIDACIÓN CLAVE (DIRECCIÓN)
         if not request.session.get('address_full'):
             messages.error(request, 'Debes agregar una dirección antes de continuar.')
-            return redirect('usuarios:register')
-        # Guardar los datos definitivos y continuar al siguiente paso
+            return redirect(f"{reverse('usuarios:register')}?error=address")
+
+        # ✅ TODO OK → guardar definitivo
         request.session['register_name'] = name
         request.session['register_phone'] = phone_clean
         request.session['register_email'] = email
+
         return redirect('usuarios:register_step_2')
-    return render(request, 'usuarios/register.html', {'data': data})
+
+    # 🔹 GET
+    return render(request, 'usuarios/register.html', {
+        'data': data
+    })
 # ==========================================
 # Registro de usuario en SenaMerch (PASO 2)
 # ==========================================
+User = get_user_model()
+
 def register_step_2(request):
+
+    # 🔹 Si no hay sesión, evitar errores
+    if not request.session.get('register_email'):
+        messages.error(request, 'Sesión expirada. Vuelve a registrarte.')
+        return redirect('usuarios:register')
 
     if request.method == 'POST':
 
@@ -216,6 +257,7 @@ def register_step_2(request):
         confirm_password = request.POST.get('confirm_password', '').strip()
         image = request.FILES.get('cover_image')
 
+        # 🔴 VALIDACIONES
         if not password or not confirm_password:
             messages.error(request, 'Debes completar ambos campos.')
             return redirect('usuarios:register_step_2')
@@ -224,39 +266,58 @@ def register_step_2(request):
             messages.error(request, 'Las contraseñas no coinciden.')
             return redirect('usuarios:register_step_2')
 
+        # 🔹 DATOS DE SESIÓN
         name = request.session.get('register_name')
         email = request.session.get('register_email')
         address = request.session.get('address_full')
 
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=password,
-            first_name=name
-        )
+        try:
+            # 🔥 CREAR USUARIO
+            user = User.objects.create_user(
+                username=email,
+                email=email,
+                password=password,
+                first_name=name
+            )
 
-        Profile.objects.update_or_create(
-            user=user,
-            defaults={
-                'phone': request.session.get('register_phone', ''),
-                'image': image
-            }
-        )
+            # 🔥 PERFIL
+            Profile.objects.update_or_create(
+                user=user,
+                defaults={
+                    'phone': request.session.get('register_phone', ''),
+                    'image': image
+                }
+            )
 
-        Address.objects.create(
-            user=user,
-            neighborhood=address.get('neighborhood'),
-            address_number=address.get('address_number'),
-            road_type=address.get('road_type'),
-            postal_code=address.get('postal_code'),
-            department=address.get('department'),
-            city=address.get('city'),
-            extra_info=address.get('additional_info')
-        )
+            # 🔥 DIRECCIÓN
+            if address:
+                Address.objects.create(
+                    user=user,
+                    neighborhood=address.get('neighborhood'),
+                    address_number=address.get('address_number'),
+                    road_type=address.get('road_type'),
+                    postal_code=address.get('postal_code'),
+                    department=address.get('department'),
+                    city=address.get('city'),
+                    extra_info=address.get('additional_info')
+                )
 
-        return render(request, 'usuarios/register2.html', {'success': True})
+            # 🔥 LIMPIAR SESIÓN (MUY IMPORTANTE)
+            request.session.pop('register_name', None)
+            request.session.pop('register_email', None)
+            request.session.pop('register_phone', None)
+            request.session.pop('address_full', None)
 
-    # 🔴 IMPORTANTE: siempre debe existir este return
+            # ✅ MENSAJE Y REDIRECCIÓN
+            messages.success(request, 'Cuenta creada correctamente')
+            return redirect('usuarios:login')
+
+        except Exception as e:
+            # 🔴 ERROR CONTROLADO
+            messages.error(request, 'Ocurrió un error al crear la cuenta.')
+            return redirect('usuarios:register_step_2')
+
+    # 🔹 GET
     return render(request, 'usuarios/register2.html')
 # ==========================================
 #  Añadir Dirección para Registrarse (PASO 1)
@@ -287,35 +348,70 @@ def add_address_view(request):
 # ==========================================
 #  Añadir Dirección para Registrarse (PASO 1)
 # ==========================================
+from django.urls import reverse
+from django.shortcuts import render, redirect
+from django.contrib import messages
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.urls import reverse
+
 def add_address_step_2(request):
-    """ Vista para el segundo paso del formulario de dirección. Recoge los datos finales de la dirección como departamento, ciudad y información adicional. """
+
+    # 🔹 Obtener datos del paso 1
     step_1 = request.session.get('address_step_1')
-    # Verificar que el paso 1 haya sido completado antes de continuar
+
+    # 🔴 Validar acceso correcto al paso
     if not step_1:
         messages.error(request, 'Debes completar el paso anterior.')
-        return redirect('add_address')
+        return redirect('usuarios:add_address')
+
     if request.method == 'POST':
-        # Obtener los campos del formulario
+
+        # 🔹 Obtener datos del formulario
         department = request.POST.get('department', '').strip()
         city = request.POST.get('city', '').strip()
         additional_info = request.POST.get('additional_info', '').strip()
-        # Validar que los campos esenciales no estén vacíos
+
+        # 🔴 Validaciones
         if not department or not city:
-            messages.error(request, 'Datos incompletos.')
-            return redirect('add_address_step_2')
-        # Guardar la dirección completa en la sesión
-        request.session['address_full'] = {
-            **step_1,
-            'department': department,
-            'city': city,
-            'additional_info': additional_info
-        }
-        request.session.modified = True
-        # Limpiar datos del paso 1
-        request.session.pop('address_step_1', None)
-        # Redirigir a la siguiente etapa sin borrar los datos
-        return redirect('/register?from_address=1')
-    return render(request, 'usuarios/add_address2.html')
+            messages.error(request, 'Debes seleccionar departamento y municipio.')
+            return redirect('usuarios:add_address_step_2')
+
+        if len(additional_info) > 120:
+            messages.error(request, 'La información adicional es demasiado larga.')
+            return redirect('usuarios:add_address_step_2')
+
+        try:
+            # 🔥 Guardar dirección completa en sesión
+            request.session['address_full'] = {
+                **step_1,
+                'department': department,
+                'city': city,
+                'additional_info': additional_info
+            }
+
+            # 🔹 Marcar sesión como modificada
+            request.session.modified = True
+
+            # 🔹 Limpiar paso 1 (ya no se necesita)
+            request.session.pop('address_step_1', None)
+
+            # ✅ Mensaje de éxito
+            messages.success(request, 'Dirección agregada correctamente')
+
+            # 🔥 Redirección controlada al registro
+            return redirect(f"{reverse('usuarios:register')}?from_address=1")
+
+        except Exception as e:
+            # 🔴 Error controlado
+            messages.error(request, 'Ocurrió un error al guardar la dirección.')
+            return redirect('usuarios:add_address_step_2')
+
+    # 🔹 GET (mostrar formulario)
+    return render(request, 'usuarios/add_address2.html', {
+        'data': step_1  # opcional: para rellenar datos si quieres
+    })
 # ===========================================================
 #  Recuperar Contraseña Para Iniciar Sessión Ingresar correo
 # ===========================================================
