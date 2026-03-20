@@ -17,23 +17,20 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from productos.models import Producto, Calificacion
-
-
 @login_required
 def home_seller(request):
 
-    # Obtener productos activos que NO pertenezcan a la tienda del usuario
     productos = Producto.objects.exclude(
         tienda__propietario=request.user
     ).filter(
-        activo=True
+        activo=True,
+        tienda__activo=True  # 🔥 CLAVE
     ).select_related(
         'tienda'
     ).prefetch_related(
         'imagenes'
     )
 
-    # Obtener calificaciones del usuario
     calificaciones = Calificacion.objects.filter(
         usuario=request.user
     )
@@ -43,7 +40,6 @@ def home_seller(request):
         for c in calificaciones
     }
 
-    # Asignar la calificación del usuario a cada producto
     for producto in productos:
         producto.user_rating = cal_dict.get(producto.id, 0)
 
@@ -101,31 +97,27 @@ def create_store_view(request):
 # ==========================================
 @login_required
 def create_store2(request):
-    # Obtener datos guardados en sesión
     store_data = request.session.get('store_data')
     store_address = request.session.get('store_address')
 
-    # Validar que el paso 1 esté completado
     if not store_data:
         messages.error(request, 'Debes completar el paso 1.')
         return redirect('tiendas:create_store')
 
     if request.method == 'POST':
-        # Validar que la dirección esté agregada
+
         if not store_address:
             messages.error(request, 'Debes agregar la dirección.')
             return redirect('tiendas:add_address_store')
 
-        # Obtener descripción e imagen
         descripcion = request.POST.get('description', '').strip()
         imagen = request.FILES.get('cover')
 
-        # Validar campos obligatorios
         if not descripcion or not imagen:
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'tiendas/create_store2.html')
 
-        # Crear la tienda con todos los datos recopilados
+        # 🔥 CREAR TIENDA
         Tienda.objects.create(
             propietario=request.user,
             nombre=store_data['name'],
@@ -142,15 +134,15 @@ def create_store2(request):
             informacion_adicional=store_address['additional_info'],
         )
 
-        # Limpiar datos de sesión
+        # 🔥 LIMPIAR SESIÓN
         request.session.pop('store_data', None)
         request.session.pop('store_address', None)
 
-        # Mostrar mensaje de éxito en el mismo formulario
         messages.success(request, 'Tienda creada correctamente.')
-        return render(request, 'tiendas/create_store2.html')
 
-    # Renderizar formulario del paso 2
+        # 🚀 REDIRECCIÓN CORRECTA
+        return redirect('tiendas:home_seller')
+
     return render(request, 'tiendas/create_store2.html')
 # =====================================================
 # DIRECCIÓN TIENDA - PASO 1
@@ -238,6 +230,32 @@ def profile_store_seller(request):
         'tienda': tienda,
         'profile': profile
     })
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+
+@login_required
+def disable_store(request):
+    if request.method == "POST":
+        tienda = Tienda.objects.get(propietario=request.user)
+
+        tienda.activo = False
+        tienda.save()
+
+        print("🔥 TIENDA DESHABILITADA:", tienda.activo)
+
+    return redirect('usuarios:home_client')
+@login_required
+def enable_store(request):
+    tienda = get_object_or_404(Tienda, propietario=request.user)
+
+    tienda.activo = True
+    tienda.save()
+
+    messages.success(request, "Tienda habilitada nuevamente.")
+
+    return redirect('tiendas:profile_store_seller')
 @login_required
 def seller_catalog(request):
     # Obtener la tienda del usuario

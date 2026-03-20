@@ -30,8 +30,11 @@ body {
   flex-direction: column;
 }
 
-.section-footer-content {
-  flex: 1; /* Empuja el footer al fondo */
+.section-footer-content-foter-footer {
+  flex: 1;
+  padding: 0;
+  gap: 0;
+  margin: 0;
 }
 
 

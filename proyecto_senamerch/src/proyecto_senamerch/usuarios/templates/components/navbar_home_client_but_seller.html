@@ -1,0 +1,76 @@
+{% load static %}
+
+<nav class="navbar_product_category">
+
+  <div class="navbar_left_group">
+      <div class="navbar_product_category__actions--left">
+          <a href="{% url 'usuarios:home_client' %}" class="navbar_product_category__link-image">
+            <img src="{% static 'assets/img/sena-logo.png' %}" 
+                 class="navbar_product_category__img" 
+                 alt="SenaMerch Logo">
+          </a>
+      </div>  
+      <!-- Línea negra -->
+      <div class="navbar_separator"></div>
+
+      <div class="navbar_product_category__logo--left">
+        <h1 class="navbar_product_category__title--SenaMerch">
+          <span class="navbar_product_category__letter navbar_product_category__letter--1">S</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--2">e</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--3">n</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--4">a</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--5">M</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--6">e</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--7">r</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--8">c</span>
+          <span class="navbar_product_category__letter navbar_product_category__letter--9">h</span>
+          <img src="{% static 'assets/icons/wheat.svg' %}" 
+               alt="Icono trigo" 
+               class="navbar_product_category__icon">
+        </h1>
+      </div>
+  </div>
+
+  <div class="navbar_product_category__actions">
+    <!-- PEDIDOS -->
+    <a href="{% url 'pedidos:client_orders' %}" 
+       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/orders_users.svg' %}" 
+           class="navbar_product_category__icon" 
+           alt="Pedidos">
+      <span class="navbar_product_category__tooltip">Pedidos</span> 
+    </a>
+
+    <!-- INICIO -->
+    <a href="{% url 'usuarios:home_client' %}" 
+       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/home.svg' %}" 
+           class="navbar_product_category__icon" 
+           alt="Inicio">
+      <span class="navbar_product_category__tooltip">Inicio</span>
+    </a>
+    <!-- PERFIL -->
+    <a href="{% url 'usuarios:profile' %}" 
+       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/profile_user.svg' %}" 
+           class="navbar_product_category__icon" 
+           alt="Perfil">
+      <span class="navbar_product_category__tooltip">Perfil</span>
+    </a>
+    <form action="{% url 'tiendas:enable_store' %}" method="POST" style="display:inline;">
+        {% csrf_token %}
+        <button type="submit" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+            <img src="{% static 'assets/icons/mobiledata.svg' %}" class="navbar_product_category__icon">
+            <span class="navbar_product_category__tooltip">Habilitar<br>Tienda</span>
+        </button>
+    </form>
+    <!-- SALIR -->
+    <a href="{% url 'usuarios:logout' %}" 
+       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/exit.svg' %}" 
+           class="navbar_product_category__icon" 
+           alt="Salir">
+      <span class="navbar_product_category__tooltip">Salir</span>
+    </a>
+  </div>
+</nav>
