@@ -9,6 +9,20 @@
 </head>
 
 <body>
+  {% if messages %}
+    <div id="alert-container">
+      {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert--success{% else %}alert--error{% endif %}">
+          <div class="alert__content">
+            <span class="alert__icon">
+              {% if message.tags == 'success' %}✔{% else %}⚠{% endif %}
+            </span>
+            <p class="alert__message">{{ message }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
   <!-- Navbar -->
   {% include 'components/navabar_go_go.html' %}

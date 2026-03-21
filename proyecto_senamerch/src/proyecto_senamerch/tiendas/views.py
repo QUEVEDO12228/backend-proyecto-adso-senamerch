@@ -95,6 +95,8 @@ def create_store_view(request):
 # ==========================================
 # PASO 2 - DESCRIPCIÓN E IMAGEN
 # ==========================================
+from django.urls import reverse
+
 @login_required
 def create_store2(request):
     store_data = request.session.get('store_data')
@@ -117,10 +119,21 @@ def create_store2(request):
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'tiendas/create_store2.html')
 
+        # 🔥 VALIDAR NOMBRE ÚNICO
+        nombre_tienda = store_data['name']
+        email_tienda = store_data['email']
+
+        if Tienda.objects.filter(nombre=nombre_tienda).exists():
+            messages.error(request, 'Ya existe una tienda con ese nombre.')
+            return render(request, 'tiendas/create_store2.html')
+        # 🔴 VALIDAR EMAIL
+        if Tienda.objects.filter(email=email_tienda).exists():
+            messages.error(request, 'Ya existe una tienda con ese correo.')
+            return render(request, 'tiendas/create_store2.html')
         # 🔥 CREAR TIENDA
         Tienda.objects.create(
             propietario=request.user,
-            nombre=store_data['name'],
+            nombre=nombre_tienda,
             email=store_data['email'],
             telefono=store_data['phone'],
             categoria=store_data['category'],
@@ -138,10 +151,11 @@ def create_store2(request):
         request.session.pop('store_data', None)
         request.session.pop('store_address', None)
 
+        # 👇 CLAVE
         messages.success(request, 'Tienda creada correctamente.')
-
-        # 🚀 REDIRECCIÓN CORRECTA
-        return redirect('tiendas:home_seller')
+        return render(request, 'tiendas/create_store2.html', {
+            'redirect_url': 'tiendas:home_seller'
+        })
 
     return render(request, 'tiendas/create_store2.html')
 # =====================================================
