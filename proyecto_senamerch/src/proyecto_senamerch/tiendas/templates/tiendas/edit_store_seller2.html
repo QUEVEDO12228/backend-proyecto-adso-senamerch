@@ -2,11 +2,25 @@
 {% load static %}
 
 {% block content %}
+
+<!-- 🔥 ALERTA PRO -->
+{% if messages %}
+<div class="custom-alert-overlay">
+  {% for message in messages %}
+    <div class="custom-alert custom-alert--{{ message.tags }}">
+      <div class="custom-alert__content">
+        <span class="custom-alert__icon">✔</span>
+        <p>{{ message }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <section class="edit-store-seller">
   <div class="edit-store-seller__wrapper">
     <h2 class="edit-store-seller__title">Editar datos de la tienda</h2>
 
-    <!-- SUBTÍTULO (el mismo del anterior que querías) -->
     <p class="edit-store-seller__subtitle">
       Completa o edita la información de tu tienda
     </p>
@@ -16,15 +30,15 @@
         enctype="multipart/form-data"
         class="edit-store-seller__form">
       {% csrf_token %}
+
       <div class="edit-store-seller__group">
         <label class="edit-store-seller__label">Dirección de la tienda</label>
-        <a
-          href="{% url 'tiendas:edit_address_store' %}"
-          class="edit-store-seller__link"
-        >
+        <a href="{% url 'tiendas:edit_address_store' %}"
+           class="edit-store-seller__link">
           Editar dirección
         </a>
       </div>
+
       <div class="edit-store-seller__group">
         <label class="edit-store-seller__label">Imagen de portada</label>
         <input type="file"
@@ -32,7 +46,7 @@
           class="edit-store-seller__input"
           accept="image/*" />
       </div>
-      <!-- Descripción -->
+
       <div class="edit-store-seller__group">
         <label class="edit-store-seller__label">Descripción</label>
         <textarea
@@ -41,7 +55,7 @@
           rows="4"
           required>{{ tienda.descripcion }}</textarea>
       </div>
-      <!-- Botón secundario -->
+
       <div class="edit-store-seller__secondary">
         <a href="{% url 'tiendas:edit_store_seller' %}"
           class="btn-secundary btn-secundary-style edit-store-seller__cancel">
@@ -51,7 +65,6 @@
         </a>
       </div>
 
-      <!-- Botón primario -->
       <div class="edit-store-seller__primary">
         <button type="submit"
                 class="btn btn--primary edit-store-seller__save">
@@ -60,7 +73,40 @@
               class="btn__icon edit-store-seller__icon">
         </button>
       </div>
+
     </form>
   </div>
 </section>
+
+<!-- 🔥 JS ALERTA -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const overlay = document.querySelector(".custom-alert-overlay");
+  const alertBox = document.querySelector(".custom-alert");
+
+  if (overlay && alertBox) {
+
+    setTimeout(() => {
+      alertBox.classList.add("show");
+    }, 100);
+
+    setTimeout(() => {
+      overlay.classList.add("hide");
+
+      setTimeout(() => {
+        overlay.remove();
+
+        {% if redirect_url %}
+          window.location.href = "{% url redirect_url %}";
+        {% endif %}
+
+      }, 300);
+
+    }, 2000);
+  }
+
+});
+</script>
+
 {% endblock %}

@@ -16,7 +16,7 @@
       </p>
     </header>
 
-    <!-- 🔥 MENSAJES DJANGO -->
+    <!-- MENSAJES DJANGO -->
     {% if messages %}
       <div id="alert-container">
         {% for message in messages %}
@@ -55,6 +55,7 @@
             type="password"
             name="password"
             id="password"
+            placeholder="Crea tu contraseña"
             autocomplete="new-password"
             required
           >
@@ -72,6 +73,7 @@
             type="password"
             name="confirm_password"
             id="confirm"
+            placeholder="Confirma tu contraseña"
             autocomplete="new-password"
             required
           >

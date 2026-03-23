@@ -2,6 +2,21 @@
 {% load static %}
 
 {% block content %}
+
+<!-- 🔥 ALERTA -->
+{% if messages %}
+<div class="custom-alert-overlay">
+  {% for message in messages %}
+    <div class="custom-alert custom-alert--{{ message.tags }}">
+      <div class="custom-alert__content">
+        <span class="custom-alert__icon">✔</span>
+        <p>{{ message }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <section class="edit-profile-admin"> 
   <div class="edit-profile-admin__wrapper">
     <header class="edit-profile-admin__header">
@@ -16,7 +31,6 @@
       class="edit-profile-admin__form">
     {% csrf_token %}
 
-      <!-- Columna 1: Dirección -->
       <div class="edit-profile-admin__group direccion-col">
         <label class="edit-profile-admin__label">Dirección</label>
         <a href="{% url 'tiendas:edit_address_seller' %}" class="edit-profile-admin__link">
@@ -25,31 +39,26 @@
         <small class="edit-profile-admin__text">Todo estará más cerca de ti.</small>
       </div>
 
-      <!-- Columna 2: Editar contraseña -->
       <div class="edit-profile-admin__group password-col">
         <label class="edit-profile-admin__label">Edita tu contraseña</label>
         <div class="edit-profile-admin__password-wrapper">
-          <input
-            name="password"
-            type="password"
+          <input name="password" type="password"
+            placeholder="Escribe tu nueva contraseña"
             class="edit-profile-admin__input edit-profile-admin__input--password"/>
           <button type="button" class="edit-profile-admin__toggle-password">Mostrar</button>
         </div>
       </div>
 
-      <!-- Columna 1: Confirmar contraseña debajo de Dirección -->
       <div class="edit-profile-admin__group confirmar-col">
         <label class="edit-profile-admin__label">Confirma tu contraseña</label>
         <div class="edit-profile-admin__password-wrapper">
-          <input
-            name="confirm_password"
-            type="password"
+          <input name="confirm_password" type="password"
+            placeholder="Confirma tu nueva contraseña"
             class="edit-profile-admin__input edit-profile-admin__input--password"/>
           <button type="button" class="edit-profile-admin__toggle-password">Mostrar</button>
         </div>
       </div>
 
-      <!-- Botones: Volver a la izquierda, Guardar a la derecha -->
       <div class="edit-profile-admin__secondary volver-col">
         <a href="{% url 'tiendas:edit_seller_profile' %}"
           class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
@@ -60,18 +69,11 @@
       </div>
 
       <div class="edit-profile-admin__buttons guardar-col">
-        <button
-          type="submit"
-          class="btn btn--primary edit-profile-admin__submit"
-          aria-label="Guardar datos del administrador"
-        >
+        <button type="submit"
+          class="btn btn--primary edit-profile-admin__submit">
           Guardar datos
-          <img
-            src="{% static 'assets/icons/save.svg' %}"
-            alt=""
-            class="btn__icon edit-profile-admin__icon"
-            aria-hidden="true"
-          />
+          <img src="{% static 'assets/icons/save.svg' %}"
+            class="btn__icon edit-profile-admin__icon"/>
         </button>
       </div>
 
@@ -79,13 +81,43 @@
   </div>
 </section>
 
+<!-- 🔥 JS ALERTA -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const overlay = document.querySelector(".custom-alert-overlay");
+  const alertBox = document.querySelector(".custom-alert");
+
+  if (overlay && alertBox) {
+
+    setTimeout(() => {
+      alertBox.classList.add("show");
+    }, 100);
+
+    setTimeout(() => {
+      overlay.classList.add("hide");
+
+      setTimeout(() => {
+        overlay.remove();
+
+        {% if redirect_url %}
+          window.location.href = "{% url redirect_url %}";
+        {% endif %}
+
+      }, 300);
+
+    }, 2000);
+  }
+
+});
+</script>
+
 <style>
-/* Grid manual para forzar columnas */
 .direccion-col { grid-column: 1; }
 .confirmar-col { grid-column: 1; }
 .password-col { grid-column: 2; }
-/* Botones: Volver en columna 1, Guardar en columna 2 */
 .volver-col { grid-column: 1; margin-top: 1rem; justify-self: start; }
 .guardar-col { grid-column: 2; margin-top: 1rem; justify-self: end; }
 </style>
+
 {% endblock %}

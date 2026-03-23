@@ -1,6 +1,9 @@
 {% extends "index_create_product.html" %}
 {% load static %}
+
 {% block content %}
+
+{% include "components/navbar_create_product.html" %}
 
 <section class="create-product-post-one">
   <div class="create-product-post-one__wrapper">
@@ -13,7 +16,7 @@
       </p>
     </header>
 
-    <form method="POST" action="{% url 'productos:create_product' %}"  class="create-post__form">
+    <form method="POST" action="{% url 'productos:create_product' %}" class="create-post__form">
       {% csrf_token %}
 
       <div class="create-product-post-one__group">

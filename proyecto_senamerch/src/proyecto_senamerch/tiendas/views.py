@@ -24,7 +24,7 @@ def home_seller(request):
         tienda__propietario=request.user
     ).filter(
         activo=True,
-        tienda__activo=True  # 🔥 CLAVE
+        tienda__activo=True  # CLAVE
     ).select_related(
         'tienda'
     ).prefetch_related(
@@ -307,22 +307,22 @@ def edit_seller_profile(request):
     })
 @login_required
 def edit_seller_profile2(request):
-    # Obtener datos guardados en sesión
     data_user = request.session.get('edit_user_data')
     data_address = request.session.get('edit_address_full')
-    # Validar que el paso anterior se haya completado
+
     if not data_user:
         return redirect('tiendas:edit_seller_profile')
+
     if request.method == "POST":
         user = request.user
         profile = user.profile
-        # Actualizar datos básicos del usuario
+
         user.email = data_user.get("email", user.email)
         user.first_name = data_user.get("first_name", user.first_name)
         user.save()
-        # Actualizar teléfono del perfil
+
         profile.phone = data_user.get("telefono", profile.phone)
-        # Actualizar dirección si fue editada
+
         if data_address:
             profile.neighborhood = data_address.get("neighborhood")
             profile.address_number = data_address.get("address_number")
@@ -331,25 +331,33 @@ def edit_seller_profile2(request):
             profile.department = data_address.get("department")
             profile.city = data_address.get("city")
             profile.extra_info = data_address.get("additional_info")
+
         profile.save()
-        # Obtener contraseñas del formulario
+
         password = request.POST.get("password")
         confirm = request.POST.get("confirm_password")
-        # Validar y actualizar contraseña
+
         if password and confirm:
             if password != confirm:
                 messages.error(request, "Las contraseñas no coinciden.")
                 return redirect('tiendas:edit_seller_profile2')
+
             user.set_password(password)
-            update_session_auth_hash(request, user)  # Mantener sesión activa
+            update_session_auth_hash(request, user)
             user.save()
-        # Eliminar datos temporales de sesión
+
         request.session.pop('edit_user_data', None)
         request.session.pop('edit_address_data', None)
         request.session.pop('edit_address_full', None)
-        messages.success(request, "Perfil actualizado correctamente.")
-        return redirect('tiendas:profile_store_seller')
-    # Renderizar paso 2 de edición de perfil
+
+        # ALERTA
+        messages.success(request, "Cambios guardados correctamente.")
+
+        return render(request, 'tiendas/edit_seller_profile2.html', {
+            "profile": request.user.profile,
+            "redirect_url": "tiendas:profile_store_seller"
+        })
+
     return render(request, 'tiendas/edit_seller_profile2.html', {
         "profile": request.user.profile
     })
@@ -449,31 +457,52 @@ def edit_store_seller(request):
 # ==========================================
 # EDITAR TIENDA - PASO 2
 # ==========================================
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Tienda
+
+
 @login_required
 def edit_store_seller2(request):
     # Obtener tienda y datos temporales
     tienda = Tienda.objects.filter(propietario=request.user).first()
     data = request.session.get('edit_store_data')
+
     # Validar existencia de tienda y datos
     if not tienda or not data:
         return redirect('tiendas:edit_store_seller')
+
     if request.method == "POST":
+
         # Actualizar datos básicos de la tienda
         tienda.nombre = data.get("nombre", tienda.nombre)
         tienda.email = data.get("email", tienda.email)
         tienda.telefono = data.get("telefono", tienda.telefono)
         tienda.categoria = data.get("categoria", tienda.categoria)
+
         # Actualizar descripción
         tienda.descripcion = request.POST.get("descripcion", tienda.descripcion)
+
         # Actualizar imagen si se envía una nueva
         if request.FILES.get("imagen"):
             tienda.imagen_portada = request.FILES.get("imagen")
+
         tienda.save()
+
         # Limpiar datos de sesión
         request.session.pop('edit_store_data', None)
-        messages.success(request, "Tienda actualizada correctamente.")
-        return redirect('tiendas:profile_store_seller')
-    # Renderizar formulario del paso 2
+
+        # ALERTA
+        messages.success(request, "Cambios guardados correctamente.")
+
+        # RENDER EN VEZ DE REDIRECT (para mostrar alerta)
+        return render(request, 'tiendas/edit_store_seller2.html', {
+            'tienda': tienda,
+            'redirect_url': 'tiendas:profile_store_seller'
+        })
+
+    # Render normal (GET)
     return render(request, 'tiendas/edit_store_seller2.html', {
         'tienda': tienda
     })

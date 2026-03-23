@@ -2,10 +2,25 @@
 {% load static %}
 
 {% block content %}
+
+<!-- 🔥 ALERTA -->
+{% if messages %}
+<div class="custom-alert-overlay">
+  {% for message in messages %}
+    <div class="custom-alert custom-alert--{{ message.tags }}">
+      <div class="custom-alert__content">
+        <span class="custom-alert__icon">✔</span>
+        <p>{{ message }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <section class="store-content">
   <section class="store-orders">
 
-    <!-- Cabecera de los pedidos -->
+    <!-- Cabecera -->
     <header class="store-orders__header">
       <h2 class="store-orders__title">Pedidos recientes</h2>
 
@@ -28,12 +43,11 @@
           <h3 class="store-orders__id">Pedido #{{ pedido.id }}</h3>
           <p class="store-orders__date"><strong>Fecha:</strong> {{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
 
-          <!-- Estado del pedido -->
           <div class="store-orders__status 
-                      {% if pedido.estado == 'pending' %}store-orders__status--pending
-                      {% elif pedido.estado == 'delivered' %}store-orders__status--delivered
-                      {% elif pedido.estado == 'canceled' %}store-orders__status--canceled
-                      {% endif %}">
+            {% if pedido.estado == 'pending' %}store-orders__status--pending
+            {% elif pedido.estado == 'delivered' %}store-orders__status--delivered
+            {% elif pedido.estado == 'canceled' %}store-orders__status--canceled
+            {% endif %}">
             {{ pedido.get_estado_display }}
           </div>
 
@@ -41,57 +55,46 @@
             Total: <strong>${{ pedido.total }}</strong>
           </div>
 
-          <!-- Información del cliente -->
+          <!-- Cliente -->
           <div class="store-orders__card store-orders__card--client">
             <h3 class="store-orders__subtitle">Información del cliente</h3>
-            <p class="store-orders__client"><strong>Nombre:</strong> {{ pedido.usuario.get_full_name|default:pedido.usuario.username }}</p>
-            <p class="store-orders__client"><strong>Correo:</strong> {{ pedido.usuario.email }}</p>
-            {% if pedido.usuario.telefono %}
-            <p class="store-orders__client"><strong>Teléfono:</strong> {{ pedido.usuario.telefono }}</p>
+            <p><strong>Nombre:</strong> {{ pedido.usuario.get_full_name|default:pedido.usuario.username }}</p>
+            <p><strong>Correo:</strong> {{ pedido.usuario.email }}</p>
+            {% if pedido.usuario.profile.phone %}
+            <p><strong>Teléfono:</strong> {{ pedido.usuario.profile.phone }}</p>
             {% endif %}
           </div>
 
-          <!-- Productos del pedido -->
+          <!-- Productos -->
           <div class="store-orders__products">
             <h3 class="store-orders__product">Productos del pedido</h3>
             {% for item in pedido.items.all %}
             <div class="store-orders__card store-orders__card--product">
-              <p class="store-orders__product-name"><strong>{{ item.producto.nombre }}</strong></p>
-              <p class="store-orders__product-detail">Cantidad: {{ item.cantidad }}</p>
-              <p class="store-orders__product-detail">Precio: ${{ item.precio_unitario }}</p>
+              <p><strong>{{ item.producto.nombre }}</strong></p>
+              <p>Cantidad: {{ item.cantidad }}</p>
+              <p>Precio: ${{ item.precio_unitario }}</p>
             </div>
             {% endfor %}
           </div>
 
-          <!-- Botón de acción para realizar el pedido -->
-          <!-- BOTONES DE ACCIÓN -->
+          <!-- BOTONES -->
           {% if pedido.estado == "pending" %}
           <div class="store-orders__primary">
-
-          <form method="get" action="{% url 'pedidos:store_order_detail' pedido.id %}">
-          <button type="submit" class="btn btn--primary store-orders__delivery">
-          Realizar
-          <img src="{% static 'assets/icons/perform.svg' %}" alt="Icono Realizar" class="btn__icon">
-          </button>
-          </form>
-
+            <form method="get" action="{% url 'pedidos:store_order_detail' pedido.id %}">
+              <button type="submit" class="btn btn--primary store-orders__delivery">
+                Realizar
+                <img src="{% static 'assets/icons/perform.svg' %}" class="btn__icon">
+              </button>
+            </form>
           </div>
           {% endif %}
 
-
           {% if pedido.estado == "delivered" %}
           <div class="store-orders__primary">
-
-          <a href="{% url 'tiendas:sales_details_order_store' pedido.id %} " 
-            class="login__link">
-
-          Detalle del pedido
-
-          <img src="{% static 'assets/icons/details.svg' %}" 
-              alt="Detalle" 
-              class="flex">
-
-          </a>
+            <a href="{% url 'tiendas:sales_details_order_store' pedido.id %}" class="login__link">
+              Detalle del pedido
+              <img src="{% static 'assets/icons/details.svg' %}" class="flex">
+            </a>
           </div>
           {% endif %}
 
@@ -104,4 +107,31 @@
 
   </section>
 </section>
+
+<!-- 🔥 JS ALERTA -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const overlay = document.querySelector(".custom-alert-overlay");
+  const alertBox = document.querySelector(".custom-alert");
+
+  if (overlay && alertBox) {
+
+    setTimeout(() => {
+      alertBox.classList.add("show");
+    }, 100);
+
+    setTimeout(() => {
+      overlay.classList.add("hide");
+
+      setTimeout(() => {
+        overlay.remove();
+      }, 300);
+
+    }, 2000);
+  }
+
+});
+</script>
+
 {% endblock %}

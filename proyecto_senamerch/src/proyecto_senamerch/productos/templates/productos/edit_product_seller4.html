@@ -2,15 +2,27 @@
 {% load static %}
 
 {% block content %}
+
+{% include "components/navbar_create_product.html" %}
+
+{% if messages %}
+<div class="custom-alert-overlay">
+  {% for message in messages %}
+    <div class="custom-alert custom-alert--{{ message.tags }}">
+      <div class="custom-alert__content">
+        <span class="custom-alert__icon">✔</span>
+        <p>{{ message }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <section class="main-image-upload">
     <div class="image-upload">
 
         <h2 class="image-upload__title">Termina de editar el producto</h2>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+
         <p class="image-upload__subtitle">
             Edita las imágenes para completar la presentación de tu producto.
         </p>
@@ -23,7 +35,7 @@
 
             <div class="image-upload__content">
 
-                <!-- Sidebar de miniaturas -->
+                <!-- SIDEBAR -->
                 <div class="image-upload__sidebar">
 
                     {% for imagen in imagenes %}
@@ -53,7 +65,7 @@
 
                 </div>
 
-                <!-- Vista previa grande -->
+                <!-- PREVIEW -->
                 <div class="image-upload__viewer">
                     {% if imagenes.first %}
                         <div class="image-upload__preview"
@@ -70,25 +82,21 @@
 
             </div>
 
-            <!-- Acciones del formulario -->
+            <!-- BOTONES -->
             <div class="image-upload__actions">
 
                 <a href="{% url 'productos:edit_product_step3' producto.id %}"
                    class="btn-secundary btn-secundary-style image-upload__cancel">
                     Volver
                     <img src="{% static 'assets/icons/return.svg' %}" 
-                        alt=""
-                        class="btn-secundary__icon"
-                        aria-hidden="true"/>
+                         class="btn-secundary__icon"/>
                 </a>
 
                 <button type="submit"
                         class="btn btn--primary image-upload__submit">
                     Guardar cambios
                     <img src="{% static 'assets/icons/save.svg' %}" 
-                    alt=""
-                    class="btn-secundary__icon"
-                    aria-hidden="true"/>
+                         class="btn-secundary__icon"/>
                 </button>
 
             </div>
@@ -98,55 +106,34 @@
     </div>
 </section>
 
-<!-- Script para mostrar preview al subir imagen -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-  const inputs = document.querySelectorAll(".image-upload__input");
-  const previewBox = document.querySelector(".image-upload__preview");
-  const previewText = document.querySelector(".image-upload__preview-text");
+  const overlay = document.querySelector(".custom-alert-overlay");
+  const alertBox = document.querySelector(".custom-alert");
 
-  inputs.forEach((input) => {
+  if (overlay && alertBox) {
 
-    // Cuando se sube una imagen
-    input.addEventListener("change", function (event) {
-      const file = event.target.files[0];
-      if (!file) return;
+    setTimeout(() => {
+      alertBox.classList.add("show");
+    }, 100);
 
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const thumbnail = input.closest(".image-upload__thumbnail");
-        thumbnail.style.backgroundImage = `url(${e.target.result})`;
-        thumbnail.style.backgroundSize = "cover";
-        thumbnail.style.backgroundPosition = "center";
-        thumbnail.classList.remove("image-upload__thumbnail--empty");
+    setTimeout(() => {
+      overlay.classList.add("hide");
 
-        const text = thumbnail.querySelector(".image-upload__add-text");
-        if (text) text.style.display = "none";
+      setTimeout(() => {
+        overlay.remove();
 
-        // Mostrar en la vista previa grande
-        previewBox.style.backgroundImage = `url(${e.target.result})`;
-        previewBox.style.backgroundSize = "cover";
-        previewBox.style.backgroundPosition = "center";
+        {% if redirect_url %}
+          window.location.href = "{% url redirect_url %}";
+        {% endif %}
 
-        if (previewText) previewText.style.display = "none";
-      };
-      reader.readAsDataURL(file);
-    });
+      }, 300);
 
-    // Mostrar en preview grande al pasar el mouse sobre miniatura
-    const thumbnail = input.closest(".image-upload__thumbnail");
-    thumbnail.addEventListener("mouseenter", function () {
-      const bg = thumbnail.style.backgroundImage;
-      if (!bg) return;
-      previewBox.style.backgroundImage = bg;
-      previewBox.style.backgroundSize = "cover";
-      previewBox.style.backgroundPosition = "center";
-      if (previewText) previewText.style.display = "none";
-    });
-
-  });
+    }, 2000);
+  }
 
 });
 </script>
+
 {% endblock %}

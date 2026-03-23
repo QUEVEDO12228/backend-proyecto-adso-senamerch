@@ -1,227 +1,231 @@
-  {% extends 'index_client_orders.html' %}
-  {% load static %}
+{% extends 'index_client_orders.html' %}
+{% load static %}
 
-  {% block title %}Mis Pedidos{% endblock %}
+{% block title %}Mis Pedidos{% endblock %}
 
-  {% block content %}
-  <section class="orders-panel">
-    <div class="orders-panel__container">
+{% block content %}
 
-      <!-- ========================================
-          TABS
-      ======================================== -->
-      <nav class="orders-panel__tabs">
-        <button class="orders-panel__tab {% if selected_status == 'pending' %}orders-panel__tab--active{% endif %}" data-status="pending">
-          Pendientes
-        </button>
-
-        <button class="orders-panel__tab {% if selected_status == 'delivered' %}orders-panel__tab--active{% endif %}" data-status="delivered">
-          Entregados
-        </button>
-
-        <button class="orders-panel__tab {% if selected_status == 'canceled' %}orders-panel__tab--active{% endif %}" data-status="canceled">
-          Cancelados
-        </button>
-      </nav>
-
-
-      <!-- ========================================
-          SELECT RESPONSIVE
-      ======================================== -->
-      <div class="orders-panel__filter">
-        <form method="get">
-          <select name="status" class="orders-panel__select" onchange="this.form.submit()">
-            <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pendientes</option>
-            <option value="delivered" {% if selected_status == 'delivered' %}selected{% endif %}>Entregados</option>
-            <option value="canceled" {% if selected_status == 'canceled' %}selected{% endif %}>Cancelados</option>
-          </select>
-        </form>
+<!-- 🔥 ALERTA -->
+{% if messages %}
+<div class="custom-alert-overlay">
+  {% for message in messages %}
+    <div class="custom-alert custom-alert--{{ message.tags }}">
+      <div class="custom-alert__content">
+        <span class="custom-alert__icon">✔</span>
+        <p>{{ message }}</p>
       </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
 
+<section class="orders-panel">
+  <div class="orders-panel__container">
 
-      <!-- ========================================
-          LISTA DE PEDIDOS
-      ======================================== -->
-      <div class="orders-panel__list">
+    <!-- ========================================
+        TABS
+    ======================================== -->
+    <nav class="orders-panel__tabs">
+      <button class="orders-panel__tab {% if selected_status == 'pending' %}orders-panel__tab--active{% endif %}" data-status="pending">
+        Pendientes
+      </button>
 
-        {% if pedidos %}
+      <button class="orders-panel__tab {% if selected_status == 'delivered' %}orders-panel__tab--active{% endif %}" data-status="delivered">
+        Entregados
+      </button>
 
-          {% for pedido in pedidos %}
-          <article class="order-card">
+      <button class="orders-panel__tab {% if selected_status == 'canceled' %}orders-panel__tab--active{% endif %}" data-status="canceled">
+        Cancelados
+      </button>
+    </nav>
 
-            <!-- HEADER -->
-            <header class="order-card__top">
+    <!-- ========================================
+        SELECT RESPONSIVE
+    ======================================== -->
+    <div class="orders-panel__filter">
+      <form method="get">
+        <select name="status" class="orders-panel__select" onchange="this.form.submit()">
+          <option value="pending" {% if selected_status == 'pending' %}selected{% endif %}>Pendientes</option>
+          <option value="delivered" {% if selected_status == 'delivered' %}selected{% endif %}>Entregados</option>
+          <option value="canceled" {% if selected_status == 'canceled' %}selected{% endif %}>Cancelados</option>
+        </select>
+      </form>
+    </div>
 
-              <div class="order-card__meta">
-                <h3 class="order-card__id">
-                  Pedido #{{ pedido.id }}
-                </h3>
+    <!-- ========================================
+        LISTA DE PEDIDOS
+    ======================================== -->
+    <div class="orders-panel__list">
 
-                <p class="order-card__date">
-                  {{ pedido.creado_en|date:"d/m/Y H:i" }}
-                </p>
-              </div>
+      {% if pedidos %}
 
-              <span class="order-card__status order-card__status--{{ pedido.estado }}">
-                {% if pedido.estado == "pending" %}
-                  Pendiente
-                {% elif pedido.estado == "delivered" %}
-                  Entregado
+        {% for pedido in pedidos %}
+        <article class="order-card">
+
+          <!-- HEADER -->
+          <header class="order-card__top">
+
+            <div class="order-card__meta">
+              <h3 class="order-card__id">
+                Pedido #{{ pedido.id }}
+              </h3>
+
+              <p class="order-card__date">
+                {{ pedido.creado_en|date:"d/m/Y H:i" }}
+              </p>
+            </div>
+
+            <span class="order-card__status order-card__status--{{ pedido.estado }}">
+              {% if pedido.estado == "pending" %}
+                Pendiente
+              {% elif pedido.estado == "delivered" %}
+                Entregado
+              {% else %}
+                Cancelado
+              {% endif %}
+            </span>
+
+          </header>
+
+          <!-- TIENDA -->
+          <div class="order-card__store">
+            {% with first_item=pedido.items.first %}
+              {% if first_item %}
+                Tienda: <strong>{{ first_item.producto.tienda.nombre }}</strong>
+              {% endif %}
+            {% endwith %}
+          </div>
+
+          <!-- PRODUCTOS -->
+          <div class="order-card__products">
+            {% for item in pedido.items.all %}
+            <div class="order-card__product">
+              <p class="order-card__product-name">
+                {{ item.producto.nombre }}
+              </p>
+              <p class="order-card__product-qty">
+                x{{ item.cantidad }}
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- TOTAL -->
+          <div class="order-card__total">
+            Total del pedido:
+            <strong>${{ pedido.total }}</strong>
+          </div>
+
+          <!-- TIEMPO RESTANTE -->
+          {% if pedido.estado == "pending" %}
+          <div class="order-card__cancelation-time">
+
+            {% if pedido.tiempo_restante_cancelacion %}
+              <span>
+                Tiempo restante para cancelar el pedido:
+
+                {% if pedido.horas_restantes > 0 %}
+                  {{ pedido.horas_restantes }} horas
+                  y {{ pedido.minutos_restantes }} minutos
                 {% else %}
-                  Cancelado
+                  Pedido cancelado automáticamente
                 {% endif %}
               </span>
-
-            </header>
-
-
-            <!-- TIENDA -->
-            <div class="order-card__store">
-              {% with first_item=pedido.items.first %}
-                {% if first_item %}
-                  Tienda: <strong>{{ first_item.producto.tienda.nombre }}</strong>
-                {% endif %}
-              {% endwith %}
-            </div>
-
-
-            <!-- PRODUCTOS -->
-            <div class="order-card__products">
-
-              {% for item in pedido.items.all %}
-              <div class="order-card__product">
-
-                <p class="order-card__product-name">
-                  {{ item.producto.nombre }}
-                </p>
-
-                <p class="order-card__product-qty">
-                  x{{ item.cantidad }}
-                </p>
-
-              </div>
-              {% endfor %}
-
-            </div>
-
-
-            <!-- TOTAL -->
-            <div class="order-card__total">
-              Total del pedido:
-              <strong>${{ pedido.total }}</strong>
-            </div>
-
-
-            <!-- TIEMPO RESTANTE PARA CANCELAR -->
-            {% if pedido.estado == "pending" %}
-            <div class="order-card__cancelation-time">
-
-              {% if pedido.tiempo_restante_cancelacion %}
-
-                <span>
-                  Tiempo restante para cancelar el pedido:
-
-                  {% if pedido.horas_restantes > 0 %}
-                    {{ pedido.horas_restantes }} horas
-                    y {{ pedido.minutos_restantes }} minutos
-                  {% else %}
-                    Pedido cancelado automáticamente
-                  {% endif %}
-
-                </span>
-
-              {% else %}
-
-                <span>
-                  Pedido cancelado automáticamente
-                </span>
-
-              {% endif %}
-
-            </div>
+            {% else %}
+              <span>Pedido cancelado automáticamente</span>
             {% endif %}
 
+          </div>
+          {% endif %}
 
+          <!-- ACCIONES -->
+          <div class="order-card__actions">
 
-            <!-- ACCIONES -->
-            <div class="order-card__actions">
+            {% if pedido.estado == "pending" %}
+            <form method="post" action="{% url 'pedidos:cancel_order' pedido.id %}">
+              {% csrf_token %}
+              <button type="submit"
+                class="btn-secundary btn-secundary-style order-card__cancel">
+                Cancelar
+                <img src="{% static 'assets/icons/cancel.svg' %}"
+                     class="btn__icon"
+                     alt="Cancelar">
+              </button>
+            </form>
+            {% endif %}
 
-              <!-- CANCELAR -->
-              {% if pedido.estado == "pending" %}
-              <form method="post" action="{% url 'pedidos:cancel_order' pedido.id %}">
-                {% csrf_token %}
+            {% if pedido.estado == "delivered" %}
+            <a href="{% url 'pedidos:view_purchase' pedido.id %}"
+               class="btn-secundary btn-secundary-style">
+              Ver detalle
+              <img src="{% static 'assets/icons/details_white.svg' %}"
+                   class="btn__icon--big"
+                   alt="Detalle">
+            </a>
+            {% endif %}
 
-                <button type="submit"
-                  class="btn-secundary btn-secundary-style order-card__cancel">
+          </div>
 
-                  Cancelar
+        </article>
+        {% endfor %}
 
-                  <img src="{% static 'assets/icons/cancel.svg' %}"
-                      class="btn__icon"
-                      alt="Cancelar">
-
-                </button>
-
-              </form>
-              {% endif %}
-
-
-              <!-- VER DETALLE -->
-              {% if pedido.estado == "delivered" %}
-
-              <a href="{% url 'pedidos:view_purchase' pedido.id %}"
-                class="btn-secundary btn-secundary-style">
-
-                Ver detalle
-
-                <img src="{% static 'assets/icons/details_white.svg' %}"
-                    class="btn__icon--big"
-                    alt="Detalle">
-
-              </a>
-
-              {% endif %}
-
-            </div>
-
-          </article>
-
-          {% endfor %}
-
-        {% else %}
-
-          <p>No hay pedidos con este estado.</p>
-
-        {% endif %}
-
-      </div>
+      {% else %}
+        <p>No hay pedidos con este estado.</p>
+      {% endif %}
 
     </div>
-  </section>
 
+  </div>
+</section>
 
+<!-- 🔥 JS ALERTA -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
-  <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  const overlay = document.querySelector(".custom-alert-overlay");
+  const alertBox = document.querySelector(".custom-alert");
 
-    const tabs = document.querySelectorAll('.orders-panel__tab');
-    const currentStatus = new URLSearchParams(window.location.search).get('status') || 'pending';
+  if (overlay && alertBox) {
 
-    tabs.forEach(tab => {
+    setTimeout(() => {
+      alertBox.classList.add("show");
+    }, 100);
 
-      const status = tab.dataset.status;
+    setTimeout(() => {
+      overlay.classList.add("hide");
 
-      if (status === currentStatus) {
-        tab.classList.add('orders-panel__tab--active');
-      }
+      setTimeout(() => {
+        overlay.remove();
+      }, 300);
 
-      tab.addEventListener('click', () => {
-        window.location.search = `?status=${status}`;
-      });
+    }, 2000);
+  }
 
+});
+</script>
+
+<!-- TU JS ORIGINAL -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  const tabs = document.querySelectorAll('.orders-panel__tab');
+  const currentStatus = new URLSearchParams(window.location.search).get('status') || 'pending';
+
+  tabs.forEach(tab => {
+
+    const status = tab.dataset.status;
+
+    if (status === currentStatus) {
+      tab.classList.add('orders-panel__tab--active');
+    }
+
+    tab.addEventListener('click', () => {
+      window.location.search = `?status=${status}`;
     });
 
   });
-  </script>
 
-  {% endblock %}
+});
+</script>
+
+{% endblock %}

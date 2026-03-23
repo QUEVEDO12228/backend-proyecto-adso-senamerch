@@ -69,7 +69,7 @@ def home_view(request):
     else:
         productos = Producto.objects.filter(
             activo=True,
-            tienda__activo=True  # 🔥 CLAVE
+            tienda__activo=True  # CLAVE
         ).select_related(
             "tienda"
         ).prefetch_related(
@@ -95,19 +95,19 @@ def login_view(request):
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
 
-        # 🔹 Validar campos vacíos
+        # Validar campos vacíos
         if not email or not password:
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'usuarios/login.html', context)
 
-        # 🔹 Validar formato de email
+        # Validar formato de email
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Ingresa un correo electrónico válido.')
             return render(request, 'usuarios/login.html', context)
 
-        # 🔹 Autenticación
+        # Autenticación
         user = authenticate(request, username=email, password=password)
 
         if user is None:
@@ -123,11 +123,10 @@ def login_view(request):
 
             return render(request, 'usuarios/login.html', context)
 
-        # 🔹 LOGIN CORRECTO
+        # LOGIN CORRECTO
         login(request, user)
         nombre = user.get_full_name() or user.username
 
-        # 🔥 NUEVA LÓGICA CORRECTA
         tienda = Tienda.objects.filter(propietario=user).first()
 
         es_vendedor = False
@@ -139,17 +138,17 @@ def login_view(request):
             else:
                 tienda_inactiva = True
 
-        # 🔥 REDIRECCIÓN SEGÚN ESTADO
+        # REDIRECCIÓN SEGÚN ESTADO
         if es_vendedor:
-            messages.success(request, f'Bienvenido vendedor {nombre} 👋')
+            messages.success(request, f'Bienvenido vendedor {nombre} ')
             redirect_url = reverse('tiendas:home_seller')
 
         elif tienda_inactiva:
-            messages.success(request, f'Bienvenido {nombre} (tienda deshabilitada) 👋')
+            messages.success(request, f'Bienvenido {nombre} (tienda deshabilitada) ')
             redirect_url = reverse('usuarios:home_client')
 
         else:
-            messages.success(request, f'Bienvenido cliente {nombre} 👋')
+            messages.success(request, f'Bienvenido cliente {nombre} ')
             redirect_url = reverse('usuarios:home_client')
 
         context['redirect_url'] = redirect_url
@@ -189,7 +188,7 @@ def register_view(request):
         phone = request.POST.get('phone', '').strip()
         email = request.POST.get('email', '').strip().lower()
 
-        # 🔹 Guardar temporalmente
+        # Guardar temporalmente
         request.session['register_temp'] = {
             'name': name,
             'phone': phone,
@@ -197,7 +196,7 @@ def register_view(request):
         }
         request.session.modified = True
 
-        # 🔴 VALIDACIONES
+        # VALIDACIONES
 
         if not all([name, phone, email]):
             messages.error(request, 'Todos los campos son obligatorios.')
@@ -223,19 +222,19 @@ def register_view(request):
             messages.error(request, 'Correo ya registrado.')
             return redirect(f"{reverse('usuarios:register')}?error=1")
 
-        # 🔴 VALIDACIÓN CLAVE (DIRECCIÓN)
+        # VALIDACIÓN CLAVE (DIRECCIÓN)
         if not request.session.get('address_full'):
             messages.error(request, 'Debes agregar una dirección antes de continuar.')
             return redirect(f"{reverse('usuarios:register')}?error=address")
 
-        # ✅ TODO OK → guardar definitivo
+        # TODO OK → guardar definitivo
         request.session['register_name'] = name
         request.session['register_phone'] = phone_clean
         request.session['register_email'] = email
 
         return redirect('usuarios:register_step_2')
 
-    # 🔹 GET
+    # GET
     return render(request, 'usuarios/register.html', {
         'data': data
     })
@@ -246,7 +245,7 @@ User = get_user_model()
 
 def register_step_2(request):
 
-    # 🔹 Si no hay sesión, evitar errores
+    # Si no hay sesión, evitar errores
     if not request.session.get('register_email'):
         messages.error(request, 'Sesión expirada. Vuelve a registrarte.')
         return redirect('usuarios:register')
@@ -257,7 +256,7 @@ def register_step_2(request):
         confirm_password = request.POST.get('confirm_password', '').strip()
         image = request.FILES.get('cover_image')
 
-        # 🔴 VALIDACIONES
+        # VALIDACIONES
         if not password or not confirm_password:
             messages.error(request, 'Debes completar ambos campos.')
             return redirect('usuarios:register_step_2')
@@ -266,13 +265,13 @@ def register_step_2(request):
             messages.error(request, 'Las contraseñas no coinciden.')
             return redirect('usuarios:register_step_2')
 
-        # 🔹 DATOS DE SESIÓN
+        # DATOS DE SESIÓN
         name = request.session.get('register_name')
         email = request.session.get('register_email')
         address = request.session.get('address_full')
 
         try:
-            # 🔥 CREAR USUARIO
+            # CREAR USUARIO
             user = User.objects.create_user(
                 username=email,
                 email=email,
@@ -280,7 +279,7 @@ def register_step_2(request):
                 first_name=name
             )
 
-            # 🔥 PERFIL
+            # PERFIL
             Profile.objects.update_or_create(
                 user=user,
                 defaults={
@@ -289,7 +288,7 @@ def register_step_2(request):
                 }
             )
 
-            # 🔥 DIRECCIÓN
+            # DIRECCIÓN
             if address:
                 Address.objects.create(
                     user=user,
@@ -302,22 +301,22 @@ def register_step_2(request):
                     extra_info=address.get('additional_info')
                 )
 
-            # 🔥 LIMPIAR SESIÓN (MUY IMPORTANTE)
+            # LIMPIAR SESIÓN (MUY IMPORTANTE)
             request.session.pop('register_name', None)
             request.session.pop('register_email', None)
             request.session.pop('register_phone', None)
             request.session.pop('address_full', None)
 
-            # ✅ MENSAJE Y REDIRECCIÓN
+            # MENSAJE Y REDIRECCIÓN
             messages.success(request, 'Cuenta creada correctamente')
             return redirect('usuarios:login')
 
         except Exception as e:
-            # 🔴 ERROR CONTROLADO
+            # ERROR CONTROLADO
             messages.error(request, 'Ocurrió un error al crear la cuenta.')
             return redirect('usuarios:register_step_2')
 
-    # 🔹 GET
+    # GET
     return render(request, 'usuarios/register2.html')
 # ==========================================
 #  Añadir Dirección para Registrarse (PASO 1)
@@ -578,14 +577,12 @@ def contact_view(request):
         query_type = request.POST.get('query_type', '').strip()
         message = request.POST.get('message', '').strip()
 
-        # Validar campos
+        # VALIDACIÓN
         if not name or not email or not query_type or not message:
             messages.error(request, 'Todos los campos son obligatorios.')
-            return redirect('contact')
+            return render(request, 'usuarios/contact.html')
 
-        # =========================
-        # CONTENIDO DEL CORREO
-        # =========================
+        # CONTENIDO HTML DEL CORREO
         html_content = render_to_string(
             'usuarios/contact_email.html',
             {
@@ -596,29 +593,29 @@ def contact_view(request):
             }
         )
 
-        # =========================
         # CREAR CORREO
-        # =========================
         email_message = EmailMultiAlternatives(
             f'Nuevo mensaje de contacto - {query_type}',
             f'''
-            Nombre: {name}
-            Correo: {email}
-            Tipo de consulta: {query_type}
+Nombre: {name}
+Correo: {email}
+Tipo de consulta: {query_type}
 
-            Mensaje:
-            {message}
-            ''',
+Mensaje:
+{message}
+''',
             settings.EMAIL_HOST_USER,
-            [settings.EMAIL_HOST_USER]  # se envía al correo del proyecto
+            [settings.EMAIL_HOST_USER]
         )
 
         email_message.attach_alternative(html_content, "text/html")
         email_message.send()
 
+        # 🔥 ALERTA
         messages.success(request, 'Tu mensaje fue enviado correctamente.')
 
-        return redirect('usuarios:contact')
+        # 🔥 CLAVE: render (NO redirect)
+        return render(request, 'usuarios/contact.html')
 
     return render(request, 'usuarios/contact.html')
 # =====================
@@ -669,34 +666,44 @@ def edit_profile_client(request):
 # =========================================
 @login_required
 def edit_profile_client2(request):
-    """ Vista para guardar los cambios del perfil del cliente (Paso 2). Permite editar el teléfono y la contraseña del usuario. """
     data = request.session.get("edit_client_data")
+
     if not data:
         return redirect("usuarios:edit_profile_client")
+
     if request.method == "POST":
         user = request.user
         profile = user.profile
-        # Guardar los cambios del usuario
+
         user.email = data.get("email", user.email)
         user.first_name = data.get("first_name", user.first_name)
         user.save()
-        # Guardar el teléfono
+
         profile.phone = request.POST.get("phone", profile.phone)
         profile.save()
-        # Cambio de contraseña si se proporciona
+
         password = request.POST.get("password")
         confirm = request.POST.get("password_confirm")
+
         if password and confirm:
             if password != confirm:
                 messages.error(request, "Las contraseñas no coinciden.")
                 return redirect("usuarios:edit_profile_client2")
+
             user.set_password(password)
             update_session_auth_hash(request, user)
             user.save()
-        # Limpiar sesión temporal
+
         request.session.pop("edit_client_data", None)
-        messages.success(request, "Perfil actualizado correctamente.")
-        return redirect("usuarios:profile")
+
+        # ALERTA
+        messages.success(request, "Cambios guardados correctamente.")
+
+        return render(request, "usuarios/edit_profile_client2.html", {
+            "user": request.user,
+            "redirect_url": "usuarios:profile"
+        })
+
     return render(request, "usuarios/edit_profile_client2.html", {
         "user": request.user
     })
