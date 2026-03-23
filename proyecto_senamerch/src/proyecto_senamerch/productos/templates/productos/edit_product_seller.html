@@ -2,6 +2,9 @@
 {% load static %}
 
 {% block content %}
+
+{% include "components/navbar_create_product.html" %}
+
 <section class="edit-product-one">
   <div class="edit-product-one__wrapper">
     
@@ -66,9 +69,7 @@
           class="btn-secundary btn-secundary-style edit-product-one__cancel">
           Volver
           <img src="{% static 'assets/icons/return.svg' %}" 
-              alt=""
-              class="btn-secundary__icon"
-              aria-hidden="true"/>
+              class="btn-secundary__icon"/>
         </a>
       </div>
 
@@ -76,13 +77,12 @@
         <button type="submit" class="btn btn--primary edit-product-one__continue">
           Siguiente
           <img src="{% static 'assets/icons/continue.svg' %}" 
-                alt=""
-                class="btn-secundary__icon"
-                aria-hidden="true"/>
+                class="btn-secundary__icon"/>
         </button>
       </div>
 
     </form>
   </div>
 </section>
+
 {% endblock %}

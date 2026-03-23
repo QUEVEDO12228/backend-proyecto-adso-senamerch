@@ -3,6 +3,23 @@
 
 {% block content %}
 
+{% include "components/navbar_create_product.html" %}
+
+{% if messages %}
+<div class="custom-alert-overlay">
+  {% for message in messages %}
+    <div class="custom-alert custom-alert--{{ message.tags }}">
+      <div class="custom-alert__content">
+        <span class="custom-alert__icon">
+          {% if message.tags == "success" %}✔{% elif message.tags == "error" %}✖{% endif %}
+        </span>
+        <p>{{ message }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <section class="main-image-upload">
   <div class="image-upload">
 
@@ -19,7 +36,7 @@
         }
       </style>
     {% endif %}
-    <!-- FORM ENVUELVE TODO EL CONTENIDO INTERNO -->
+
     <form method="POST"
           action="{% url 'productos:create_product_step4' %}"
           enctype="multipart/form-data">
@@ -29,37 +46,12 @@
       <div class="image-upload__content">
         
         <div class="image-upload__sidebar">
-          
+          {% for i in "123456" %}
           <div class="image-upload__thumbnail image-upload__thumbnail--empty">
             <span class="image-upload__add-text">Agregar</span>
-            <input type="file" name="image1" accept="image/*" class="image-upload__input">
+            <input type="file" name="image{{ i }}" accept="image/*" class="image-upload__input">
           </div>
-
-          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
-            <span class="image-upload__add-text">Agregar</span>
-            <input type="file" name="image2" accept="image/*" class="image-upload__input">
-          </div>
-
-          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
-            <span class="image-upload__add-text">Agregar</span>
-            <input type="file" name="image3" accept="image/*" class="image-upload__input">
-          </div>
-
-          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
-            <span class="image-upload__add-text">Agregar</span>
-            <input type="file" name="image4" accept="image/*" class="image-upload__input">
-          </div>
-
-          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
-            <span class="image-upload__add-text">Agregar</span>
-            <input type="file" name="image5" accept="image/*" class="image-upload__input">
-          </div>
-
-          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
-            <span class="image-upload__add-text">Agregar</span>
-            <input type="file" name="image6" accept="image/*" class="image-upload__input">
-          </div>
-
+          {% endfor %}
         </div>
 
         <div class="image-upload__viewer">
@@ -70,45 +62,58 @@
 
       </div>
 
-      <!-- ACCIONES DEL FORMULARIO -->
-     <div class="image-upload__actions">
+      <div class="image-upload__actions">
 
-        <!-- Botón secundario -->
         <a href="{% url 'productos:create_product_step3' %}" 
-            type="button"
-            class="btn-secundary btn-secundary-style image-upload__cancel"
-            aria-label="Volver sin crear producto"
-        >
-            Volver
-            <img
-                src="{% static 'assets/icons/return.svg' %}"
-                alt=""
-                class="btn-secundary__icon"
-                aria-hidden="true"
-            />
+           class="btn-secundary btn-secundary-style image-upload__cancel">
+          Volver
+          <img src="{% static 'assets/icons/return.svg' %}" class="btn-secundary__icon"/>
         </a>
 
-        <!-- Botón principal -->
-        <button
-            type="submit"
-            class="btn btn--primary image-upload__submit"
-            aria-label="Crear nuevo producto"
-        >
-            Crear producto
-            <img
-                src="{% static 'assets/icons/create_product.svg' %}"
-                alt=""
-                class="btn__icon"
-                aria-hidden="true"
-            />
+        <button type="submit" class="btn btn--primary image-upload__submit">
+          Crear producto
+          <img src="{% static 'assets/icons/create_product.svg' %}" class="btn__icon"/>
         </button>
 
-     </div>
+      </div>
 
     </form>
 
   </div>
 </section>
+
+<!-- 🔥 JS ALERTA + REDIRECT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const overlay = document.querySelector(".custom-alert-overlay");
+  const alertBox = document.querySelector(".custom-alert");
+
+  if (overlay && alertBox) {
+
+    setTimeout(() => {
+      alertBox.classList.add("show");
+    }, 100);
+
+    setTimeout(() => {
+      overlay.classList.add("hide");
+
+      setTimeout(() => {
+        overlay.remove();
+
+        {% if redirect_url %}
+          window.location.href = "{% url redirect_url %}";
+        {% endif %}
+
+      }, 300);
+
+    }, 2000);
+  }
+
+});
+</script>
+
+<!-- 🔥 TU JS ORIGINAL -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -118,9 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   inputs.forEach((input) => {
 
-    // 🔥 CUANDO SE SUBE IMAGEN
     input.addEventListener("change", function (event) {
-
       const file = event.target.files[0];
       if (!file) return;
 
@@ -137,7 +140,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const text = thumbnail.querySelector(".image-upload__add-text");
         if (text) text.style.display = "none";
 
-        // 🔥 TAMBIÉN LO MUESTRA EN LA VISTA GRANDE AUTOMÁTICAMENTE
         previewBox.style.backgroundImage = `url(${e.target.result})`;
         previewBox.style.backgroundSize = "cover";
         previewBox.style.backgroundPosition = "center";
@@ -148,12 +150,9 @@ document.addEventListener("DOMContentLoaded", function () {
       reader.readAsDataURL(file);
     });
 
-
-    // 🔥 CUANDO PASAS EL MOUSE POR UNA MINIATURA
     const thumbnail = input.closest(".image-upload__thumbnail");
 
     thumbnail.addEventListener("mouseenter", function () {
-
       const bg = thumbnail.style.backgroundImage;
       if (!bg) return;
 
@@ -168,4 +167,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
+
 {% endblock %}

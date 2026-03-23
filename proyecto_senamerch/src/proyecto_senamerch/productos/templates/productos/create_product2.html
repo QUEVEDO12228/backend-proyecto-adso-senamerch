@@ -2,6 +2,8 @@
 {% load static %}
 {% block content %}
 
+{% include "components/navbar_create_product.html" %}
+
 <section class="create-post">
   <div class="create-post__wrapper">
 
@@ -60,6 +62,7 @@
         <input type="number"
                name="price"
                class="create-product-post-one__input"
+               placeholder="Agregue el precio del producto"
                min="0"
                required>
       </div>
@@ -69,6 +72,7 @@
         <input type="number"
                name="discount"
                class="create-post__input"
+               placeholder="Agregue el descuento del producto"
                min="0"
                max="100">
       </div>

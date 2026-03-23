@@ -1,5 +1,7 @@
 {% extends "index_create_product.html" %} {% load static %} {% block content %}
 
+{% include "components/navbar_create_product.html" %}
+
 <section class="create-post">
   <div class="create-post__wrapper">
     <header class="create-post__header">
@@ -44,6 +46,7 @@
           id="stock"
           name="stock"
           class="create-post__input"
+          placeholder="Agregue el stock de este producto"
           min="0"
           required
         />

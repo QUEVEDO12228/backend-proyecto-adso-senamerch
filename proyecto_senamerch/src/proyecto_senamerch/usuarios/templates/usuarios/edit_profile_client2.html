@@ -2,10 +2,24 @@
 {% load static %}
 
 {% block content %}
+
+<!-- ALERTA -->
+{% if messages %}
+<div class="custom-alert-overlay">
+  {% for message in messages %}
+    <div class="custom-alert custom-alert--{{ message.tags }}">
+      <div class="custom-alert__content">
+        <span class="custom-alert__icon">✔</span>
+        <p>{{ message }}</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% endif %}
+
 <section class="edit-profile-user">
   <div class="edit-profile-user__wrapper">
 
-    <!-- Header -->
     <header class="edit-profile-user__header">
       <h1 class="edit-profile-user__title">Editar perfil</h1>
       <p class="edit-profile-user__subtitle">
@@ -13,16 +27,6 @@
       </p>
     </header>
 
-    <!-- 🔥 MENSAJES -->
-    {% if messages %}
-      <div class="edit-profile-user__group">
-        {% for message in messages %}
-          <p>{{ message }}</p>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <!-- Form -->
     <form 
       class="edit-profile-user__form" 
       method="POST"
@@ -30,7 +34,6 @@
       
       {% csrf_token %}
 
-      <!-- Tipo de usuario -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Tipo de usuario</label>
         <input
@@ -40,7 +43,6 @@
           readonly>
       </div>
 
-      <!-- Teléfono -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Teléfono</label>
         <input
@@ -51,80 +53,103 @@
           required>
       </div>
 
-      <!-- Contraseña -->
-      <!-- Columna: Contraseña actual -->
       <div class="edit-profile-user__group password-col">
-        <label class="edit-profile-user__label">Escribe tu contraseña actual</label>
+        <label class="edit-profile-user__label">Crea tu nueva contraseña</label>
         <div class="edit-profile-user__password-wrapper">
           <input
             name="password"
             type="password"
-            class="edit-profile-user__input edit-profile-user__input--password"
-            required>
+            placeholder="Escribe tu nueva contraseña"
+            class="edit-profile-user__input edit-profile-user__input--password">
           <button type="button" class="edit-profile-user__toggle-password">
             Mostrar
           </button>
         </div>
       </div>
 
-      <!-- Columna: Confirmar contraseña -->
       <div class="edit-profile-user__group confirmar-col">
         <label class="edit-profile-user__label">Confirma tu contraseña</label>
         <div class="edit-profile-user__password-wrapper">
           <input
             name="password_confirm"
             type="password"
-            class="edit-profile-user__input edit-profile-user__input--password"
-            required>
+            placeholder="Confirma tu nueva contraseña"
+            class="edit-profile-user__input edit-profile-user__input--password">
           <button type="button" class="edit-profile-user__toggle-password">
             Mostrar
           </button>
         </div>
       </div>
 
-      <!-- Botón secundario -->
       <div class="edit-profile-user__secondary">
         <a href="{% url 'usuarios:edit_profile_client' %}"
            class="btn-secundary btn-secundary-style edit-profile-user__cancel">
           Volver
-          <img
-            src="{% static 'assets/icons/return.svg' %}"
-            alt=""
-            class="btn-secundary__icon"
-            aria-hidden="true">
+          <img src="{% static 'assets/icons/return.svg' %}"
+               class="btn-secundary__icon">
         </a>
       </div>
 
-      <!-- Botón principal -->
       <div class="edit-profile-user__buttons">
-        <button
-          type="submit"
+        <button type="submit"
           class="btn btn--primary edit-profile-user__submit">
           Guardar cambios
-          <img
-            src="{% static 'assets/icons/save.svg' %}"
-            alt=""
-            class="btn__icon edit-profile-user__icon">
+          <img src="{% static 'assets/icons/save.svg' %}"
+               class="btn__icon edit-profile-user__icon">
         </button>
       </div>
 
     </form>
   </div>
 </section>
-<script>
-  document.querySelectorAll(".edit-profile-user__toggle-password")
-    .forEach(button => {
-      button.addEventListener("click", function () {
-        const input = this.previousElementSibling;
 
-        if (input.type === "password") {
-          input.type = "text";
-          this.textContent = "Ocultar";
-        } else {
-          input.type = "password";
-          this.textContent = "Mostrar";
-        }
-      });
-    });
+<!-- 🔥 JS ALERTA -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const overlay = document.querySelector(".custom-alert-overlay");
+  const alertBox = document.querySelector(".custom-alert");
+
+  if (overlay && alertBox) {
+
+    setTimeout(() => {
+      alertBox.classList.add("show");
+    }, 100);
+
+    setTimeout(() => {
+      overlay.classList.add("hide");
+
+      setTimeout(() => {
+        overlay.remove();
+
+        {% if redirect_url %}
+          window.location.href = "{% url redirect_url %}";
+        {% endif %}
+
+      }, 300);
+
+    }, 2000);
+  }
+
+});
 </script>
+
+<!-- TU SCRIPT ORIGINAL (NO TOCADO) -->
+<script>
+document.querySelectorAll(".edit-profile-user__toggle-password")
+  .forEach(button => {
+    button.addEventListener("click", function () {
+      const input = this.previousElementSibling;
+
+      if (input.type === "password") {
+        input.type = "text";
+        this.textContent = "Ocultar";
+      } else {
+        input.type = "password";
+        this.textContent = "Mostrar";
+      }
+    });
+  });
+</script>
+
 {% endblock %}

@@ -168,14 +168,12 @@ def option_payment_method(request):
         if not items.exists():
             return redirect("productos:lista_productos")
 
-        # AGRUPAR POR TIENDA
         tiendas = defaultdict(list)
 
         for item in items:
             tienda = item.producto.tienda
             tiendas[tienda].append(item)
 
-        # CREAR PEDIDOS
         for tienda, items_tienda in tiendas.items():
 
             pedido = Pedido.objects.create(
@@ -188,7 +186,6 @@ def option_payment_method(request):
             total = 0
 
             for item in items_tienda:
-
                 PedidoItem.objects.create(
                     pedido=pedido,
                     producto=item.producto,
@@ -201,9 +198,13 @@ def option_payment_method(request):
             pedido.total = total
             pedido.save()
 
-        # LIMPIAR CARRITO
+        # 🔥 limpiar carrito
         items.delete()
 
+        # 🔥 mensaje
+        messages.success(request, "Pedido realizado correctamente.")
+
+        # 🔥 redirect (correcto)
         return redirect("pedidos:client_orders")
 
     return render(request, "carrito/option_payment_method.html", {
@@ -214,14 +215,18 @@ def option_payment_method(request):
 # ==========================
 @login_required
 def cancel_order(request, pedido_id):
-    """ Vista para cancelar un pedido. Cambia el estado del pedido a 'canceled' y redirige al cliente a la página de pedidos cancelados. """
-    # Obtener el pedido o devolver 404 si no existe o no pertenece al usuario
+    """ Vista para cancelar un pedido. """
+
     pedido = get_object_or_404(Pedido, id=pedido_id, usuario=request.user)
+
     if request.method == "POST":
-        # Cambiar el estado del pedido a 'canceled'
+
         pedido.estado = "canceled"
         pedido.save()
-    # Redirigir a la página de pedidos con estado 'canceled'
+
+        # ALERTA
+        messages.success(request, "Pedido cancelado correctamente.")
+
     url = reverse("pedidos:client_orders")
     return redirect(f"{url}?status=canceled")
 # ======================================================
@@ -271,20 +276,19 @@ def store_orders(request):
 @login_required
 def store_order_detail(request, pedido_id):
 
-    pedido = get_object_or_404(
-        Pedido,
-        id=pedido_id,
-        tienda__propietario=request.user
-    )
+    pedido = get_object_or_404(Pedido, id=pedido_id)
 
-    items = pedido.items.select_related("producto")
+    items = pedido.items.all()
+    total = pedido.total
 
-    total = sum(item.subtotal() for item in items)
+    # 🔥 OBTENER DIRECCIÓN DEL CLIENTE
+    address = pedido.usuario.addresses.last()  # usa la última dirección guardada
 
-    return render(request, 'pedidos/store_order_detail.html', {
-        'pedido': pedido,
-        'items': items,
-        'total': total,
+    return render(request, "pedidos/store_order_detail.html", {
+        "pedido": pedido,
+        "items": items,
+        "total": total,
+        "address": address,  # 🔥 IMPORTANTE
     })
 # =========================
 #  Cancelar Pedido Tienda
@@ -306,17 +310,19 @@ def cancel_order_store(request, pedido_id):
 @login_required
 def deliver_order_store(request, pedido_id):
 
-    if request.method == "POST":
+    pedido = get_object_or_404(Pedido, id=pedido_id)
 
-        pedido = get_object_or_404(
-            Pedido,
-            id=pedido_id,
-            tienda__propietario=request.user
-        )
+    if request.method == "POST":
 
         if pedido.estado == "pending":
             pedido.estado = "delivered"
             pedido.save()
+
+            # 🔥 ALERTA
+            messages.success(request, "Pedido entregado correctamente.")
+
+        else:
+            messages.error(request, "Este pedido no se puede entregar.")
 
     return redirect("pedidos:store_orders")
 # ==================================

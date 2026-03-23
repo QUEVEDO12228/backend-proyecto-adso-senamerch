@@ -154,7 +154,7 @@
 }
 .create-store__actions {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* 👈 dos cajas */
+  grid-template-columns: 1fr 1fr; /* dos cajas */
   grid-column: 1 / -1; /* ocupa todo el ancho del form */
   align-items: center;
 }

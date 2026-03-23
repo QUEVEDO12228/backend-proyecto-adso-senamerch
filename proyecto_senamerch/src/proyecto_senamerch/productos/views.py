@@ -383,39 +383,39 @@ def edit_product_step3(request, id):
 # =====================================================
 @login_required
 def edit_product_step4(request, id):
-    # Obtener producto que pertenece al vendedor
     producto = get_object_or_404(
         Producto,
         id=id,
         tienda__propietario=request.user
     )
-    # Obtener imágenes actuales del producto
+
     imagenes = producto.imagenes.order_by("id")
+
     if request.method == "POST":
-        # Recuperar datos editados desde sesión
+
         data = request.session.get("edit_product_data")
         if not data:
             return redirect("productos:edit_product_seller", id=id)
-        # Validación final de consistencia de datos
+
         tipo = data.get("tipo_producto")
         unidad = data.get("unidad")
         stock = data.get("stock")
-        # Unidades permitidas según tipo de producto
+
         unidades_liquido = ["litro","mililitro","centilitro","decilitro","decalitro","hectolitro","kilolitro"]
         unidades_solido = ["tonelada","kg","g","mg"]
-        # Validar unidad para productos líquidos
+
         if tipo == "liquido" and unidad not in unidades_liquido:
             messages.error(request, "Error de validación en unidad.")
             return redirect("productos:edit_product_seller", id=id)
-        # Validar unidad para productos sólidos
+
         if tipo == "solido" and unidad not in unidades_solido:
             messages.error(request, "Error de validación en unidad.")
             return redirect("productos:edit_product_seller", id=id)
-        # Validar stock no negativo
+
         if int(stock) < 0:
             messages.error(request, "Stock inválido.")
             return redirect("productos:edit_product_seller", id=id)
-        # Actualizar datos principales del producto
+
         producto.nombre = data.get("nombre")
         producto.precio = data.get("precio")
         producto.categoria = data.get("categoria")
@@ -427,32 +427,37 @@ def edit_product_step4(request, id):
         producto.tipo_envio = data.get("tipo_envio")
         producto.descripcion = data.get("descripcion")
         producto.stock = int(data.get("stock") or 0)
+
         producto.save()
-        # Lista de imágenes actuales para edición
+
         imagenes_actuales = list(imagenes)
-        # Procesar nuevas imágenes subidas
+
         for i in range(1, 7):
             nueva_imagen = request.FILES.get(f"image{i}")
             if nueva_imagen:
-                # Reemplazar imagen existente
                 if len(imagenes_actuales) >= i:
                     imagen_obj = imagenes_actuales[i - 1]
                     if imagen_obj.imagen:
                         imagen_obj.imagen.delete(save=False)
                     imagen_obj.imagen = nueva_imagen
                     imagen_obj.save()
-                # Crear nueva imagen si no existía
                 else:
                     ImagenProducto.objects.create(
                         producto=producto,
                         imagen=nueva_imagen
                     )
-        # Limpiar datos temporales de sesión
+
         request.session.pop("edit_product_data", None)
-        messages.success(request, "Producto actualizado correctamente.")
-        # Redirigir al catálogo del vendedor
-        return redirect("tiendas:seller_catalog")
-    # Renderizar formulario final de edición
+
+        # ALERTA
+        messages.success(request, "Cambios guardados correctamente.")
+
+        return render(request, "productos/edit_product_seller4.html", {
+            "producto": producto,
+            "imagenes": imagenes,
+            "redirect_url": "tiendas:seller_catalog"
+        })
+
     return render(request, "productos/edit_product_seller4.html", {
         "producto": producto,
         "imagenes": imagenes
