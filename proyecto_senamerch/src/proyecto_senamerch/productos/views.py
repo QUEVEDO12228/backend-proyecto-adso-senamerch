@@ -14,7 +14,7 @@ from .models import Producto, ImagenProducto
 from productos.models import Calificacion
 
 # =====================================================
-# 🔹 CREAR PRODUCTO - PASO 1
+# CREAR PRODUCTO - PASO 1
 # =====================================================
 @login_required
 def create_product(request):
@@ -63,7 +63,7 @@ def create_product(request):
         "fecha_max": fecha_max
     })
 # =======================
-# 🔹 PASO 2 CREAR TIENDA
+# PASO 2 CREAR TIENDA
 # =======================
 @login_required
 def create_product_step2(request):
@@ -142,7 +142,7 @@ def create_product_step2(request):
         "categorias": categorias
     })
 # =====================================================
-# 🔹 PASO 3 (INCLUYE STOCK)
+# PASO 3 (INCLUYE STOCK)
 # =====================================================
 @login_required
 def create_product_step3(request):
@@ -183,7 +183,7 @@ def create_product_step3(request):
         "unidad": unidad
     })
 # =====================================================
-# 🔹 PASO 4 - CREACIÓN FINAL
+# PASO 4 - CREACIÓN FINAL
 # =====================================================
 @login_required
 def create_product_step4(request):
@@ -228,7 +228,7 @@ def create_product_step4(request):
 
         request.session.pop("product_data", None)
 
-        # ✅ AQUÍ ESTÁ LA CLAVE
+        # AQUÍ ESTÁ LA CLAVE
         messages.success(request, "Producto creado correctamente.")
         return render(request, "productos/create_product4.html", {
             "redirect_url": "tiendas:seller_catalog"
@@ -236,7 +236,7 @@ def create_product_step4(request):
 
     return render(request, "productos/create_product4.html")
 # =====================================================
-# 🔹 EDITAR PRODUCTO - PASO 1
+# EDITAR PRODUCTO - PASO 1
 # =====================================================
 @login_required
 def edit_product_seller(request, id):
@@ -281,7 +281,7 @@ def edit_product_seller(request, id):
         "fecha_max": fecha_max
     })
 # =====================================================
-# 🔹 PASO 2 EDITAR
+# PASO 2 EDITAR
 # =====================================================
 @login_required
 def edit_product_step2(request, id):
@@ -330,7 +330,7 @@ def edit_product_step2(request, id):
         "producto": producto
     })
 # =====================================================
-# 🔹 PASO 3 EDITAR (INCLUYE STOCK)
+# PASO 3 EDITAR (INCLUYE STOCK)
 # =====================================================
 @login_required
 def edit_product_step3(request, id):
@@ -379,7 +379,7 @@ def edit_product_step3(request, id):
         "unidad": unidad
     })
 # =====================================================
-# 🔹 PASO 4 EDITAR - GUARDAR
+# PASO 4 EDITAR - GUARDAR
 # =====================================================
 @login_required
 def edit_product_step4(request, id):
@@ -463,7 +463,7 @@ def edit_product_step4(request, id):
         "imagenes": imagenes
     })
 # =====================================================
-# 🔹 DESCRIPCIÓN VENDEDOR
+# DESCRIPCIÓN VENDEDOR
 # ===================================================== 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -493,7 +493,7 @@ def description_product_seller(request, id):
         "comentarios": comentarios
     })
 # =====================================================
-# 🔹 DESCRIPCIÓN CLIENTE
+# DESCRIPCIÓN CLIENTE
 # =====================================================
 from django.shortcuts import render, get_object_or_404
 from productos.models import Producto, Calificacion
@@ -512,13 +512,13 @@ def description_product_client(request, id):
         if calificacion:
             user_rating = calificacion.puntuacion
 
-    # 🔹 Otros productos de la misma tienda, excluyendo el actual
+    # Otros productos de la misma tienda, excluyendo el actual
     otros_productos = producto.tienda.productos.exclude(id=producto.id)[:1]  # solo 1 producto más
 
     # Comentarios del producto
     comentarios = producto.calificaciones.select_related("usuario").all()
 
-    # 🔥 Detectar si es vendedor
+    # Detectar si es vendedor
     es_vendedor = False
     if request.user.is_authenticated:
         es_vendedor = Tienda.objects.filter(propietario=request.user).exists()
@@ -531,7 +531,7 @@ def description_product_client(request, id):
         "es_vendedor": es_vendedor
     })
 # =====================================================
-# 🔹 ACTIVAR / DESACTIVAR PRODUCTO
+# ACTIVAR / DESACTIVAR PRODUCTO
 # =====================================================
 @login_required
 def toggle_product_status(request, producto_id):
@@ -552,7 +552,7 @@ def toggle_product_status(request, producto_id):
     # Redirigir a la descripción del producto
     return redirect("productos:description_product_seller", producto.id)
 # =====================================================
-# 🔹 COMPRA DE PRODUCTO
+# COMPRA DE PRODUCTO
 # =====================================================
 def buy_product(request, producto_id):
     # Obtener producto
@@ -562,7 +562,7 @@ def buy_product(request, producto_id):
         'producto': producto
     })
 # =====================================================
-# 🔹 LISTA DE PRODUCTOS
+# LISTA DE PRODUCTOS
 # =====================================================
 def lista_productos(request):
     # Obtener productos activos
@@ -572,7 +572,7 @@ def lista_productos(request):
         'productos': productos
     })
 # =====================================================
-# 🔹 BUSCADOR GENERAL
+# BUSCADOR GENERAL
 # =====================================================
 def buscar(request):
     # Obtener consulta de búsqueda
@@ -601,7 +601,7 @@ def buscar(request):
     # Renderizar resultados de búsqueda
     return render(request, "productos/busqueda.html", context)
 # =====================================================
-# 🔹 SUGERENCIAS DE BÚSQUEDA (AJAX)
+# SUGERENCIAS DE BÚSQUEDA (AJAX)
 # =====================================================
 from django.http import JsonResponse
 import difflib
