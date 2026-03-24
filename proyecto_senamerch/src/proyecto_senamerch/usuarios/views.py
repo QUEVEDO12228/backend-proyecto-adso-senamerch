@@ -47,7 +47,7 @@ def home_view(request):
             tienda__propietario=request.user
         ).filter(
             activo=True,
-            tienda__activo=True  # 🔥 CLAVE
+            tienda__activo=True  # CLAVE
         ).select_related(
             "tienda"
         ).prefetch_related(
@@ -171,7 +171,7 @@ def register_view(request):
     Vista para el primer paso del registro de un nuevo usuario.
     """
 
-    # 🔥 CONTROL DE LIMPIEZA DE SESIÓN (CORREGIDO)
+    # CONTROL DE LIMPIEZA DE SESIÓN (CORREGIDO)
     if request.method == 'GET' and not (
         request.GET.get('from_address') or request.GET.get('error')
     ):
@@ -357,22 +357,22 @@ from django.urls import reverse
 
 def add_address_step_2(request):
 
-    # 🔹 Obtener datos del paso 1
+    # Obtener datos del paso 1
     step_1 = request.session.get('address_step_1')
 
-    # 🔴 Validar acceso correcto al paso
+    # Validar acceso correcto al paso
     if not step_1:
         messages.error(request, 'Debes completar el paso anterior.')
         return redirect('usuarios:add_address')
 
     if request.method == 'POST':
 
-        # 🔹 Obtener datos del formulario
+        # Obtener datos del formulario
         department = request.POST.get('department', '').strip()
         city = request.POST.get('city', '').strip()
         additional_info = request.POST.get('additional_info', '').strip()
 
-        # 🔴 Validaciones
+        # Validaciones
         if not department or not city:
             messages.error(request, 'Debes seleccionar departamento y municipio.')
             return redirect('usuarios:add_address_step_2')
@@ -382,7 +382,7 @@ def add_address_step_2(request):
             return redirect('usuarios:add_address_step_2')
 
         try:
-            # 🔥 Guardar dirección completa en sesión
+            # Guardar dirección completa en sesión
             request.session['address_full'] = {
                 **step_1,
                 'department': department,
@@ -390,24 +390,24 @@ def add_address_step_2(request):
                 'additional_info': additional_info
             }
 
-            # 🔹 Marcar sesión como modificada
+            # Marcar sesión como modificada
             request.session.modified = True
 
-            # 🔹 Limpiar paso 1 (ya no se necesita)
+            # Limpiar paso 1 (ya no se necesita)
             request.session.pop('address_step_1', None)
 
-            # ✅ Mensaje de éxito
+            # Mensaje de éxito
             messages.success(request, 'Dirección agregada correctamente')
 
-            # 🔥 Redirección controlada al registro
+            # Redirección controlada al registro
             return redirect(f"{reverse('usuarios:register')}?from_address=1")
 
         except Exception as e:
-            # 🔴 Error controlado
+            # Error controlado
             messages.error(request, 'Ocurrió un error al guardar la dirección.')
             return redirect('usuarios:add_address_step_2')
 
-    # 🔹 GET (mostrar formulario)
+    # GET (mostrar formulario)
     return render(request, 'usuarios/add_address2.html', {
         'data': step_1  # opcional: para rellenar datos si quieres
     })
@@ -611,10 +611,10 @@ Mensaje:
         email_message.attach_alternative(html_content, "text/html")
         email_message.send()
 
-        # 🔥 ALERTA
+        # ALERTA
         messages.success(request, 'Tu mensaje fue enviado correctamente.')
 
-        # 🔥 CLAVE: render (NO redirect)
+        # CLAVE: render (NO redirect)
         return render(request, 'usuarios/contact.html')
 
     return render(request, 'usuarios/contact.html')
@@ -768,7 +768,7 @@ def home_client_view(request):
         'tienda'
     ).prefetch_related('imagenes').filter(
         activo=True,
-        tienda__activo=True  # 🔥 IMPORTANTE
+        tienda__activo=True 
     )
 
     if request.user.is_authenticated:
@@ -799,6 +799,6 @@ def home_client_view(request):
 
     return render(request, "usuarios/card_client.html", {
         "productos": productos,
-        "es_vendedor": es_vendedor,           # 🔥 CLAVE
-        "tienda_inactiva": tienda_inactiva    # 🔥 CLAVE
+        "es_vendedor": es_vendedor,           # CLAVE
+        "tienda_inactiva": tienda_inactiva    # CLAVE
     })

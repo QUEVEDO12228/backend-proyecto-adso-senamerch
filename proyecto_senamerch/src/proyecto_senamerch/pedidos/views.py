@@ -198,13 +198,13 @@ def option_payment_method(request):
             pedido.total = total
             pedido.save()
 
-        # 🔥 limpiar carrito
+        # limpiar carrito
         items.delete()
 
-        # 🔥 mensaje
+        # mensaje
         messages.success(request, "Pedido realizado correctamente.")
 
-        # 🔥 redirect (correcto)
+        # redirect (correcto)
         return redirect("pedidos:client_orders")
 
     return render(request, "carrito/option_payment_method.html", {
@@ -281,14 +281,14 @@ def store_order_detail(request, pedido_id):
     items = pedido.items.all()
     total = pedido.total
 
-    # 🔥 OBTENER DIRECCIÓN DEL CLIENTE
+    # OBTENER DIRECCIÓN DEL CLIENTE
     address = pedido.usuario.addresses.last()  # usa la última dirección guardada
 
     return render(request, "pedidos/store_order_detail.html", {
         "pedido": pedido,
         "items": items,
         "total": total,
-        "address": address,  # 🔥 IMPORTANTE
+        "address": address,  # IMPORTANTE
     })
 # =========================
 #  Cancelar Pedido Tienda
@@ -318,7 +318,7 @@ def deliver_order_store(request, pedido_id):
             pedido.estado = "delivered"
             pedido.save()
 
-            # 🔥 ALERTA
+            # ALERTA
             messages.success(request, "Pedido entregado correctamente.")
 
         else:

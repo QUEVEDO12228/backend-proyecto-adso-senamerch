@@ -119,18 +119,18 @@ def create_store2(request):
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'tiendas/create_store2.html')
 
-        # 🔥 VALIDAR NOMBRE ÚNICO
+        # VALIDAR NOMBRE ÚNICO
         nombre_tienda = store_data['name']
         email_tienda = store_data['email']
 
         if Tienda.objects.filter(nombre=nombre_tienda).exists():
             messages.error(request, 'Ya existe una tienda con ese nombre.')
             return render(request, 'tiendas/create_store2.html')
-        # 🔴 VALIDAR EMAIL
+        # VALIDAR EMAIL
         if Tienda.objects.filter(email=email_tienda).exists():
             messages.error(request, 'Ya existe una tienda con ese correo.')
             return render(request, 'tiendas/create_store2.html')
-        # 🔥 CREAR TIENDA
+        # CREAR TIENDA
         Tienda.objects.create(
             propietario=request.user,
             nombre=nombre_tienda,
@@ -147,11 +147,11 @@ def create_store2(request):
             informacion_adicional=store_address['additional_info'],
         )
 
-        # 🔥 LIMPIAR SESIÓN
+        # LIMPIAR SESIÓN
         request.session.pop('store_data', None)
         request.session.pop('store_address', None)
 
-        # 👇 CLAVE
+        # CLAVE
         messages.success(request, 'Tienda creada correctamente.')
         return render(request, 'tiendas/create_store2.html', {
             'redirect_url': 'tiendas:home_seller'
@@ -257,7 +257,7 @@ def disable_store(request):
         tienda.activo = False
         tienda.save()
 
-        print("🔥 TIENDA DESHABILITADA:", tienda.activo)
+        print("TIENDA DESHABILITADA:", tienda.activo)
 
     return redirect('usuarios:home_client')
 @login_required
