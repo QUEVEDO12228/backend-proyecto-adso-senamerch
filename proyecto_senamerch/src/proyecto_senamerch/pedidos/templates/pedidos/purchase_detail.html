@@ -43,7 +43,7 @@
 
         <div class="sales-made-details__product-card">
 
-          <p><strong>Fecha:</strong> {{ pedido.creado_en|date:"d/m/Y" }}</p>
+          <p><strong>Fecha:</strong> {{ pedido.creado_en|localtime|date:"d \d\e F \d\e Y" }}</p>
 
           <p><strong>Producto:</strong> {{ item.producto.nombre }}</p>
 

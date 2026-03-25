@@ -8,6 +8,7 @@ from django.http import HttpResponse
 from .models import Pedido, PedidoItem
 from carrito.models import Carrito
 from tiendas.models import Tienda
+from django.utils.timezone import localtime
 # ==================================
 #  Pedidos Clientes 
 # ==================================
@@ -295,15 +296,26 @@ def store_order_detail(request, pedido_id):
 # =========================
 @login_required
 def cancel_order_store(request, pedido_id):
-    """ Permite al vendedor cancelar un pedido en estado "pending """
+
     if request.method == "POST":
-        # Obtener el pedido solo si pertenece a la tienda del vendedor logueado
-        pedido = get_object_or_404(Pedido, id=pedido_id, items__producto__tienda__propietario=request.user)
-        # Si el pedido está en estado 'pending', cambiar su estado a 'canceled'
+
+        pedido = get_object_or_404(
+            Pedido,
+            id=pedido_id,
+            items__producto__tienda__propietario=request.user
+        )
+
         if pedido.estado == 'pending':
             pedido.estado = 'canceled'
             pedido.save()
-    return redirect('pedidos:store_orders')
+
+            messages.success(request, "Pedido cancelado correctamente.")
+
+        else:
+            messages.error(request, "Este pedido no se puede cancelar.")
+
+    url = reverse('pedidos:store_orders')
+    return redirect(f"{url}?estado=canceled")
 # ===============================================================
 #  Actualizar estado del pedido Pendiente, Entregado, Cancelado
 # ===============================================================
@@ -330,26 +342,22 @@ def deliver_order_store(request, pedido_id):
 # ==================================
 @login_required
 def view_purchase(request, pedido_id):
-    """
-    Vista para que el cliente vea el detalle de su compra.
-    Solo puede ver pedidos que le pertenezcan y que estén entregados.
-    """
 
-    # Obtener pedido o devolver 404 si no pertenece al usuario
     pedido = get_object_or_404(
         Pedido,
         id=pedido_id,
         usuario=request.user
     )
 
-    # Solo permitir ver pedidos entregados
     if pedido.estado != "delivered":
         return redirect("pedidos:client_orders")
 
-    # Serializar datos del pedido para usar en PDF o JS
+    fecha_local = localtime(pedido.creado_en)
+
     pedido_data = {
         "id": pedido.id,
-        "fecha": pedido.creado_en.strftime("%d/%m/%Y"),
+        "fecha": fecha_local.strftime("%d/%m/%Y"),
+        "hora": fecha_local.strftime("%H:%M"),
         "tienda": pedido.items.first().producto.tienda.nombre,
         "items": [
             {
