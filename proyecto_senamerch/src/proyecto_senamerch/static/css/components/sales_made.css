@@ -31,7 +31,7 @@
   overflow: hidden;
 }
 .sales-made-details__sidebar {
-  background-color: var(--secundary-300);
+  /* background-color: var(--secundary-300); */
   border: solid 2px var(--secundary-400);
   padding: var(--gap-md);
   border-radius: 12px;
@@ -87,7 +87,7 @@
   gap: var(--gap-md);
 }
 .sales-made-details__product-card {
-  background: var(--secundary-300);
+  /* background: var(--secundary-300); */
   border: solid 2px var(--secundary-400);
   border-radius: 12px;
   padding: var(--gap-md);
@@ -103,7 +103,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 .sales-made-details__totals {
-  background: var(--secundary-300);
+  /* background: var(--secundary-300); */
   border-radius: 12px;
   border: 1px solid var(--secundary-800);
   padding: var(--gap-md);

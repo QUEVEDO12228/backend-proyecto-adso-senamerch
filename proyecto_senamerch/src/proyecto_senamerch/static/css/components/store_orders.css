@@ -109,18 +109,26 @@
 }
 
 .store-orders__status--pending {
-  background-color: var(--secundary-600);
+  background-color: var(--gray-300);
   color: var(--white);
 }
 
 .store-orders__status--in-process {
-  background-color: var(--primary-300);
+  background-color: var(--tertiary-300);
   color: var(--primary-900);
+  border: 2px solid var(--secundary-400)
+}
+
+.store-orders__status--canceled{
+  background-color: var(--tertiary-700);
+  color: var(--white);
+  border: 2px solid var(--secundary-400)
 }
 
 .store-orders__status--delivered {
   background-color: var(--secundary-300);
   color: var(--secundary-950);
+  border: 2px solid var(--secundary-400)
 }
 
 /* =========================================================

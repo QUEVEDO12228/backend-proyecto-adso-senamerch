@@ -35,18 +35,6 @@
   </div>
 
   <div class="navbar_product_category__actions">
-
-    <a
-      href="{% url 'usuarios:login' %}"
-      class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
-    >
-      <img
-        src="{% static 'assets/icons/return.svg' %}"
-        class="navbar_product_category__icon"
-        alt=""
-      >
-      <span class="navbar_product_category__tooltip">Volver</span>
-    </a>
     
     <a
       href="{% url 'usuarios:home' %}"
@@ -58,6 +46,18 @@
         alt=""
       >
       <span class="navbar_product_category__tooltip">Inicio</span>
+    </a>
+
+    <a
+      href="{% url 'usuarios:login' %}"
+      class="navbar_product_category__link navbar_product_category__link--icon-nav-bar"
+    >
+      <img
+        src="{% static 'assets/icons/return.svg' %}"
+        class="navbar_product_category__icon"
+        alt=""
+      >
+      <span class="navbar_product_category__tooltip">Volver</span>
     </a>
 
   </div>

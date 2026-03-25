@@ -51,14 +51,6 @@
       <span class="navbar_product_category__tooltip">Mis Pedidos</span>
     </a>
 
-     <!-- 🔹 MIS PEDIDOS COMO USUARIO -->
-    <a href="{% url 'pedidos:client_orders' %}" 
-        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
-      <img src="{% static 'assets/icons/orders_users.svg' %}" 
-            class="navbar_product_category__icon" alt="">
-      <span class="navbar_product_category__tooltip">Mis Pedidos</span>
-    </a>
-
     <!-- Catálogo -->
     <a href="{% url 'tiendas:seller_catalog' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
@@ -70,7 +62,7 @@
 
     <a href="{% url 'tiendas:home_seller' %}" class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/home.svg' %}" class="navbar_product_category__icon" alt="">
-      <span class="navbar_product_category__tooltip">Más Productos</span>
+      <span class="navbar_product_category__tooltip">Inicio</span>
     </a>
 
     <!-- Salir -->

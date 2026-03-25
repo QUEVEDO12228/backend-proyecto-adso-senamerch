@@ -126,6 +126,10 @@
   flex-direction: column;
   gap: var(--gap-xxs);
 }
+.store-orders__card--product{
+  background: var(--white);
+  color: var(--secundary-900);
+}
 
 .store-order-detail__product-title {
   font-size: var(--fs-xs);
