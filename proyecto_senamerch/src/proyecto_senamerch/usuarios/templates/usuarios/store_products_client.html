@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block main_content %}
-
+{% block title %} Visulizar tienda | SenaMerch {% endblock %}
 {% for producto in productos %}
   {% if producto.tienda.id != request.user.tienda.id %}
 

@@ -1,6 +1,6 @@
 {% extends "index_create_product.html" %}
 {% load static %}
-
+{% block title %}Editar producto paso 4 | SenaMerch {% endblock %}
 {% block content %}
 
 {% include "components/navbar_create_product.html" %}
@@ -112,6 +112,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const overlay = document.querySelector(".custom-alert-overlay");
   const alertBox = document.querySelector(".custom-alert");
 
+  // tomar la URL desde Django
+  const redirectUrl = "{{ redirect_url|default:''|escapejs }}";
+
   if (overlay && alertBox) {
 
     setTimeout(() => {
@@ -124,9 +127,10 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {
         overlay.remove();
 
-        {% if redirect_url %}
-          window.location.href = "{% url redirect_url %}";
-        {% endif %}
+        // redirigir si existe URL
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        }
 
       }, 300);
 

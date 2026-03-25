@@ -1,6 +1,6 @@
 {% extends 'index_home_store_seller.html' %}
 {% load static %}
-
+{% block title %}Editar datos Tienda paso 2 | SenaMerch {% endblock %}
 {% block content %}
 
 <!-- ALERTA -->
@@ -85,6 +85,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const overlay = document.querySelector(".custom-alert-overlay");
   const alertBox = document.querySelector(".custom-alert");
 
+  // tomar la URL desde Django
+  const redirectUrl = "{{ redirect_url|default:''|escapejs }}";
+
   if (overlay && alertBox) {
 
     setTimeout(() => {
@@ -97,9 +100,10 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {
         overlay.remove();
 
-        {% if redirect_url %}
-          window.location.href = "{% url redirect_url %}";
-        {% endif %}
+        // redirigir si existe URL
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        }
 
       }, 300);
 
