@@ -1,5 +1,6 @@
 {% extends "index_edit_profile_client.html" %}
 {% load static %}
+{% block title %}Editar Perfil paso 1 | SenaMerch {% endblock %}{% endblock %}
 
 {% block content %}
 
@@ -107,6 +108,8 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
+  const redirectUrl = "{{ redirect_url|default:''|escapejs }}";
+
   const overlay = document.querySelector(".custom-alert-overlay");
   const alertBox = document.querySelector(".custom-alert");
 
@@ -122,9 +125,9 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {
         overlay.remove();
 
-        {% if redirect_url %}
-          window.location.href = "{% url redirect_url %}";
-        {% endif %}
+        if (redirectUrl) {
+          window.location.href = redirectUrl;
+        }
 
       }, 300);
 

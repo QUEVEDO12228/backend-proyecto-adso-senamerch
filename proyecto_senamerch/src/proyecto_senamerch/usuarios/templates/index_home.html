@@ -31,6 +31,8 @@
     </section>
   </main>
 
+  {% include 'components/about_project_home.html' %} 
+
   {% include 'components/footer.html' %}
   {% include 'components/footer_go_go.html' %}
 <script>
@@ -60,5 +62,14 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 <script src="{% static 'js/search_autocomplete.js' %}"></script>
 <script src="{% static 'js/cards.js' %}" defer></script>
+        <script>const aboutSection = document.querySelector('.about');
+
+window.addEventListener('scroll', () => {
+  const sectionTop = aboutSection.getBoundingClientRect().top;
+
+  if (sectionTop < window.innerHeight - 100) {
+    aboutSection.classList.add('about--visible');
+  }
+});</script>
 </body>
 </html>

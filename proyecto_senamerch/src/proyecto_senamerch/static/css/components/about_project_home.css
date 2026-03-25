@@ -1,0 +1,205 @@
+/* ================== ABOUT SECTION ================== */
+.about {
+  padding: var(--gap-xxl) clamp(24px, 6vw, 80px);
+  background-color: var(--primary-100);
+
+  opacity: 0;
+  transform: translateY(50px);
+  transition: 0.6s ease;
+}
+
+.about--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* CONTENEDOR */
+.about__container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xxl);
+}
+
+/* ================== HEADER ================== */
+.about__header {
+  text-align: left;
+  max-width: 800px;
+}
+
+.about__title {
+  font-size: var(--fs-xl);
+  font-family: var(--font-primary-bold);
+  color: var(--secundary-900);
+}
+
+.about__subtitle {
+  font-size: var(--fs-sm);
+  color: var(--gray-950);
+}
+
+/* ================== CONTENT ================== */
+.about__content {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: var(--gap-xxl);
+  align-items: start;
+}
+
+.about__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+  max-width: 700px;
+}
+
+.about__description {
+  font-size: var(--fs-xs);
+  color: var(--gray-950);
+  line-height: 1.6;
+}
+
+/* ================== FEATURES ================== */
+.about__features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-lg);
+}
+
+.about__feature {
+  padding: var(--gap-lg);
+  border-radius: 14px;
+  background-color: var(--white);
+  border: 2px solid var(--secundary-400);
+  transition: 0.3s;
+  width: 100%;
+}
+
+.about__feature:hover {
+  transform: translateY(-6px);
+  border-color: var(--secundary-900);
+}
+
+.about__feature-title {
+  font-size: var(--fs-sm);
+  color: var(--secundary-700);
+  margin-bottom: var(--gap-xs);
+}
+
+.about__feature-text {
+  font-size: var(--fs-xxs);
+  color: var(--gray-600);
+}
+
+/* ================== ROLES ================== */
+.about__roles {
+  text-align: left;
+}
+
+.about__roles-title {
+  margin-bottom: var(--gap-lg);
+}
+
+/* GRID RESPONSIVE */
+.about__roles-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--gap-xl);
+  width: 100%;
+}
+
+/* ================== ROLE CARD ================== */
+.about__role-card {
+  padding: var(--gap-xl);
+  border-radius: 16px;
+  background-color: var(--white);
+  border: 1px solid var(--gray-100);
+  transition: 0.3s;
+}
+
+.about__role-card:hover {
+  transform: translateY(-5px);
+}
+
+/* VENDEDOR DESTACADO */
+.about__role-card--seller {
+  border: 2px solid var(--secundary-400);
+}
+
+/* CONTENIDO INTERNO */
+.about__role-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--gap-md);
+}
+
+/* TEXTO */
+.about__role-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xs);
+}
+
+.about__role-title {
+  font-size: var(--fs-sm);
+  color: var(--primary-900);
+}
+
+.about__role-list {
+  margin-top: var(--gap-sm);
+  list-style: none;
+  padding: 0;
+  font-size: var(--fs-xxs);
+  color: var(--gray-700);
+}
+
+/* ================== IMAGEN ================== */
+.about__role-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about__role-image img {
+  width: 280px;
+  height: auto;
+  object-fit: contain;
+  transition: 0.3s;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.15));
+}
+
+/* HOVER PRO */
+.about__role-card:hover .about__role-image img {
+  transform: scale(1.1) rotate(2deg);
+}
+
+/* ================== RESPONSIVE ================== */
+@media (max-width: 900px) {
+  .about__content {
+    grid-template-columns: 1fr;
+  }
+
+  .about__text {
+    max-width: 100%;
+  }
+
+  .about__role-content {
+    flex-direction: row;
+  }
+
+  .about__role-image img {
+    width: 70px;
+  }
+}
+
+@media (max-width: 500px) {
+  .about__role-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .about__role-image {
+    align-self: flex-end;
+  }
+}
