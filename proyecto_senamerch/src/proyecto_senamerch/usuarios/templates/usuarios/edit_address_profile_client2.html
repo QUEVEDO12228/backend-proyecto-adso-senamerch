@@ -1,7 +1,6 @@
 {% extends "index_edit_profile_client.html" %}
-{% block title %}Editar Dirección del Perfil paso 1 | SenaMerch {% endblock %}{% endblock %}
+{% block title %}Editar Dirección del Perfil paso 2 | SenaMerch {% endblock %}
 {% load static %}
-
 
 {% block content %}
 <section class="edit-profile-user">
@@ -30,28 +29,25 @@
                 name="department"
                 class="edit-profile-user__input"
                 required>
-
           <option value="">Selecciona...</option>
-          <option value="Risaralda">Risaralda</option>
-          <option value="Quindio">Quindío</option>
-          <option value="Caldas">Caldas</option>
-
+          <option value="Risaralda" {% if address.department == "Risaralda" %}selected{% endif %}>Risaralda</option>
+          <option value="Quindio" {% if address.department == "Quindio" %}selected{% endif %}>Quindío</option>
+          <option value="Caldas" {% if address.department == "Caldas" %}selected{% endif %}>Caldas</option>
         </select>
       </div>
 
       <!-- MUNICIPIO -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Ciudad</label>
-
         <select id="city"
                 name="city"
                 class="edit-profile-user__input"
                 required>
-
-          <option value="">Selecciona un departamento</option>
-
+          <option value="">Selecciona municipio</option>
+          {% if address.city %}
+            <option value="{{ address.city }}" selected>{{ address.city }}</option>
+          {% endif %}
         </select>
-
       </div>
 
       <!-- INFO EXTRA -->
@@ -59,11 +55,12 @@
         <label class="edit-profile-user__label">Información adicional</label>
         <input type="text"
                name="extra_info"
-               class="edit-profile-user__input">
+               class="edit-profile-user__input"
+               value="{{ address.extra_info|default:'' }}">
       </div>
 
       <div class="edit-profile-user__group">
-        
+
       </div>
 
       <div class="edit-profile-user__secondary">
@@ -85,97 +82,39 @@
 </section>
 
 <script>
-
 const municipios = {
-
-  Risaralda: [
-    "Pereira",
-    "Dosquebradas",
-    "Santa Rosa de Cabal",
-    "La Virginia",
-    "Apía",
-    "Balboa",
-    "Belén de Umbría",
-    "Guática",
-    "La Celia",
-    "Marsella",
-    "Mistrató",
-    "Pueblo Rico",
-    "Quinchía",
-    "Santuario"
-  ],
-
-  Quindio: [
-    "Armenia",
-    "Calarcá",
-    "Circasia",
-    "Córdoba",
-    "Filandia",
-    "Génova",
-    "La Tebaida",
-    "Montenegro",
-    "Pijao",
-    "Quimbaya",
-    "Salento",
-    "Buenavista"
-  ],
-
-  Caldas: [
-    "Manizales",
-    "Villamaría",
-    "Chinchiná",
-    "La Dorada",
-    "Riosucio",
-    "Anserma",
-    "Salamina",
-    "Aguadas",
-    "Supía",
-    "Neira",
-    "Aranzazu",
-    "Belalcázar",
-    "Filadelfia",
-    "La Merced",
-    "Marmato",
-    "Marquetalia",
-    "Marulanda",
-    "Norcasia",
-    "Pácora",
-    "Palestina",
-    "Pensilvania",
-    "Risaralda",
-    "Samaná",
-    "San José",
-    "Victoria",
-    "Viterbo"
-  ]
-
+  Risaralda: ["Pereira","Dosquebradas","Santa Rosa de Cabal","La Virginia","Apía","Balboa","Belén de Umbría","Guática","La Celia","Marsella","Mistrató","Pueblo Rico","Quinchía","Santuario"],
+  Quindio: ["Armenia","Calarcá","Circasia","Córdoba","Filandia","Génova","La Tebaida","Montenegro","Pijao","Quimbaya","Salento","Buenavista"],
+  Caldas: ["Manizales","Villamaría","Chinchiná","La Dorada","Riosucio","Anserma","Salamina","Aguadas","Supía","Neira","Aranzazu","Belalcázar","Filadelfia","La Merced","Marmato","Marquetalia","Marulanda","Norcasia","Pácora","Palestina","Pensilvania","Risaralda","Samaná","San José","Victoria","Viterbo"]
 };
 
 const departmentSelect = document.getElementById("department");
 const citySelect = document.getElementById("city");
 
-departmentSelect.addEventListener("change", function(){
-
-  const dept = this.value;
-
+function fillCities(selectedDept, selectedCity=null){
   citySelect.innerHTML = "<option value=''>Selecciona municipio</option>";
-
-  if(municipios[dept]){
-
-    municipios[dept].forEach(function(municipio){
-
+  if(municipios[selectedDept]){
+    municipios[selectedDept].forEach(function(municipio){
       const option = document.createElement("option");
       option.value = municipio;
       option.textContent = municipio;
-
+      if(municipio === selectedCity){
+        option.selected = true;
+      }
       citySelect.appendChild(option);
-
     });
-
   }
+}
 
+// Llenar ciudades si ya hay departamento seleccionado
+if(departmentSelect.value){
+  fillCities(departmentSelect.value, "{{ address.city|default:'' }}");
+}
+
+// Cambiar municipios al cambiar departamento
+departmentSelect.addEventListener("change", function(){
+  fillCities(this.value);
 });
-
 </script>
 
 {% endblock %}

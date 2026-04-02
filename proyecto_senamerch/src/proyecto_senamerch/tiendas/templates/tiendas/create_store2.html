@@ -1,6 +1,7 @@
 {% extends 'index_create_store.html' %}
 {% load static %}
 {% block title %}Crear Tienda paso 2 | SenaMerch {% endblock %}
+
 {% block content %}
 
 <section class="create-store">
@@ -23,67 +24,71 @@
       </p>
     </header>
 
-    <!-- IMPORTANTE enctype -->
     <form method="post" enctype="multipart/form-data" class="create-store__form" id="formStore2">
       {% csrf_token %}
+
+      {{ request.session.store_address|default:"{}"|json_script:"storeAddressData" }}
+      {{ store_temp|default:"{}"|json_script:"storeTempData" }}
 
       <!-- DIRECCIÓN -->
       <div class="create-store__group">
         <label class="create-store__label">Dirección de la tienda</label>
-
-        {% comment %} {% if request.session.store_address %}
-          <p style="color:green;">✔ Dirección agregada</p>
-        {% endif %} {% endcomment %}
-
-        <a href="{% url 'tiendas:add_address_store' %}"
-           class="create-store__link">
+        {% with request.session.store_address as addr %}
+          {% if addr and addr.neighborhood and addr.address_number and addr.department and addr.city %}
+            <p style="color: green;">✔ Dirección agregada</p>
+          {% else %}
+            <p style="color: red;">⚠ Debes agregar la dirección</p>
+          {% endif %}
+        {% endwith %}
+        <a href="{% url 'tiendas:add_address_store' %}" class="create-store__link">
           Agregar dirección
         </a>
-
-        {% comment %} <small id="errorAddress" style="color:red;"></small> {% endcomment %}
+        <small id="errorAddress" style="color:red;"></small>
       </div>
 
       <!-- IMAGEN -->
       <div class="create-store__group">
         <label class="create-store__label">Imagen de portada</label>
-
         <input type="file"
                name="cover"
                id="cover"
                class="create-store__input"
                accept="image/*">
+
+        <!-- Mostrar imagen temporal si existe -->
+        {% if store_temp.imagen_name %}
+          <p>Imagen seleccionada previamente: {{ store_temp.imagen_name }}</p>
+          <img id="preview" src="/media/temp/{{ store_temp.imagen_name }}" style="display:block; margin-top:10px; max-width:200px;">
+        {% else %}
+          <img id="preview" style="display:none; margin-top:10px; max-width:200px;">
+        {% endif %}
+        <small id="errorImage" style="color:red;"></small>
       </div>
 
       <!-- DESCRIPCIÓN -->
       <div class="create-store__group">
         <label class="create-store__label">Descripción</label>
-
         <textarea name="description"
                   id="description"
                   class="create-store__textarea"
                   rows="4"
                   placeholder="Escribe una breve descripción..."
-                  required></textarea>
-
+                  required>{{ store_temp.description|default:'' }}</textarea>
         <small id="errorDesc" style="color:red;"></small>
       </div>
 
       <!-- BOTONES -->
       <div class="create-store__actions">
-
         <div class="create-store__action-left">
-          <a href="{% url 'tiendas:create_store' %}"
-             class="btn-secundary btn-secundary-style">
+          <a href="{% url 'tiendas:create_store' %}" class="btn-secundary btn-secundary-style">
             Volver
           </a>
         </div>
-
         <div class="create-store__action-right">
           <button type="submit" class="btn btn--primary">
             Crear tienda
           </button>
         </div>
-
       </div>
 
     </form>
@@ -91,74 +96,48 @@
 </section>
 
 <script>
-// ELEMENTOS
-const form = document.getElementById("formStore2");
+const descInput = document.getElementById("description");
 const imageInput = document.getElementById("cover");
 const preview = document.getElementById("preview");
-const desc = document.getElementById("description");
 
-// PREVIEW IMAGEN
-imageInput.addEventListener("change", function(){
-  const file = this.files[0];
+// 🔹 Cargar datos al entrar
+window.addEventListener("load", () => {
+    const savedDesc = localStorage.getItem("store_description");
+    const savedImage = localStorage.getItem("store_image_preview");
 
-  if (file){
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
-  }
+    if(savedDesc){
+        descInput.value = savedDesc;
+    }
+
+    if(savedImage){
+        preview.src = savedImage;
+        preview.style.display = "block";
+    }
 });
 
-// VALIDACIONES
-form.addEventListener("submit", function(e){
+// 🔹 Guardar descripción en tiempo real
+descInput.addEventListener("input", () => {
+    localStorage.setItem("store_description", descInput.value);
+});
 
-  let valid = true;
-
-  const file = imageInput.files[0];
-  const description = desc.value.trim();
-
-  // LIMPIAR ERRORES
-  document.getElementById("errorImage").textContent = "";
-  document.getElementById("errorDesc").textContent = "";
-  document.getElementById("errorAddress").textContent = "";
-
-  // DESCRIPCIÓN
-  if (description.length < 5){
-    document.getElementById("errorDesc").textContent =
-      "Mínimo 5 caracteres";
-    valid = false;
-  }
-
-  // IMAGEN
-  if (!file){
-    document.getElementById("errorImage").textContent =
-      "Debes subir una imagen";
-    valid = false;
-  } else {
-
-    if (!file.type.startsWith("image/")){
-      document.getElementById("errorImage").textContent =
-        "El archivo debe ser una imagen";
-      valid = false;
+// 🔹 Guardar imagen como preview
+imageInput.addEventListener("change", function(){
+    const file = this.files[0];
+    if(file){
+        const reader = new FileReader();
+        reader.onload = function(e){
+            localStorage.setItem("store_image_preview", e.target.result);
+        };
+        reader.readAsDataURL(file);
     }
+});
 
-    if (file.size > 2 * 1024 * 1024){
-      document.getElementById("errorImage").textContent =
-        "Máximo 2MB";
-      valid = false;
-    }
-  }
-
-  // DIRECCIÓN (Si luego se implementa)
-  const hasAddress = "{{ request.session.store_address|default:'' }}";
-
-  if (!hasAddress){
-    document.getElementById("errorAddress").textContent =
-      "Debes agregar una dirección";
-    valid = false;
-  }
-
-  if (!valid) e.preventDefault();
-
+// 🔹 Limpiar cuando se crea tienda
+document.getElementById("formStore2").addEventListener("submit", () => {
+    localStorage.removeItem("store_description");
+    localStorage.removeItem("store_image_preview");
 });
 </script>
+
 <script src="{% static 'js/login_alerts.js' %}"></script>
 {% endblock %}

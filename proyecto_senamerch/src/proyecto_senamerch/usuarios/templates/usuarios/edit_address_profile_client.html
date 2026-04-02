@@ -1,6 +1,7 @@
 {% extends "index_edit_profile_client.html" %}
 {% load static %}
-{% block title %}Editar Dirección del Perfil paso 2 | SenaMerch {% endblock %}
+
+{% block title %}Editar Dirección del Perfil paso 1 | SenaMerch {% endblock %}
 
 {% block content %}
 <section class="edit-profile-user">
@@ -19,40 +20,49 @@
 
       {% csrf_token %}
 
+      <!-- BARRIO -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Barrio</label>
         <input type="text"
                name="neighborhood"
+               value="{{ address.neighborhood|default:'' }}"
                placeholder="Ingresa tu barrio"
                class="edit-profile-user__input"
                required>
       </div>
 
+      <!-- NÚMERO DE DIRECCIÓN -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Número de dirección</label>
         <input type="text"
                name="address_number"
+               value="{{ address.address_number|default:'' }}"
                placeholder="Ej: #25A - 45"
                class="edit-profile-user__input"
                required>
       </div>
 
+      <!-- TIPO DE VÍA -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Tipo de vía</label>
         <input type="text"
                name="road_type"
+               value="{{ address.road_type|default:'' }}"
                placeholder="Ej: Calle, Carrera, Avenida"
                class="edit-profile-user__input">
       </div>
 
+      <!-- CÓDIGO POSTAL -->
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Código postal</label>
         <input type="text"
                name="postal_code"
+               value="{{ address.postal_code|default:'' }}"
                placeholder="Ej: 110111"
                class="edit-profile-user__input">
       </div>
 
+      <!-- BOTONES -->
       <div class="edit-profile-user__secondary">
         <a href="{% url 'usuarios:edit_profile_client' %}"
            class="btn-secundary btn-secundary-style">

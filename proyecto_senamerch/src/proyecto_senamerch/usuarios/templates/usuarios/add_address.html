@@ -1,8 +1,7 @@
 {% extends 'index_register.html' %}
 {% load static %}
 
-{% block title %}Agregar Dirección paso 2 | SenaMerch {% endblock %}
-
+{% block title %}Agregar Dirección paso 1 | SenaMerch {% endblock %}
 
 {% block content %}
 <section class="address-store-form">
@@ -33,7 +32,9 @@
         <label>Barrio</label>
         <input type="text" name="neighborhood" id="neighborhood"
           class="address-store-form__input"
-          placeholder="Ingresa tu barrio" required>
+          placeholder="Ingresa tu barrio"
+          value="{{ data.neighborhood|default:'' }}"
+          required>
         <small id="errorNeighborhood" class="error-text"></small>
       </div>
 
@@ -42,7 +43,9 @@
         <label>Número de dirección</label>
         <input type="text" name="address_number" id="address_number"
           class="address-store-form__input"
-          placeholder="Ej: #25A - 45" required>
+          placeholder="Ej: #25A - 45"
+          value="{{ data.address_number|default:'' }}"
+          required>
         <small id="errorAddress" class="error-text"></small>
       </div>
 
@@ -51,7 +54,8 @@
         <label>Tipo de vía</label>
         <input type="text" name="road_type" id="road_type"
           class="address-store-form__input"
-          placeholder="Ej: Calle, Carrera, Avenida">
+          placeholder="Ej: Calle, Carrera, Avenida"
+          value="{{ data.road_type|default:'' }}">
       </div>
 
       <!-- POSTAL -->
@@ -59,13 +63,15 @@
         <label>Código postal</label>
         <input type="text" name="postal_code" id="postal_code"
           class="address-store-form__input"
-          placeholder="Ej: 110111">
+          placeholder="Ej: 110111"
+          value="{{ data.postal_code|default:'' }}">
         <small id="errorPostal" class="error-text"></small>
       </div>
 
       <!-- BOTONES -->
       <div class="address-store-form__secondary">
-        <a href="{% url 'usuarios:register' %}" class="btn-secundary btn-secundary-style">
+        <a href="{% url 'usuarios:register' %}?from_address=1"
+           class="btn-secundary btn-secundary-style">
           Volver
         </a>
       </div>
@@ -110,7 +116,7 @@ form.addEventListener('submit', function(e){
     valid = false;
   }
 
-  // POSTAL (opcional pero válido si lo ponen)
+  // POSTAL (opcional)
   if (postal && !/^[0-9]{5,6}$/.test(postal)) {
     document.getElementById('errorPostal').textContent =
       "Código postal inválido";

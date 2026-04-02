@@ -1,4 +1,7 @@
-<section class="hero-store-seller">
+<section class="hero-store-seller" 
+         style="background-image:
+                linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+                url('{% if tienda.imagen_portada %}{{ tienda.imagen_portada.url }}{% else %}/static/assets/img/store_seller.jpg{% endif %}');">
   <div class="hero-store-seller__overlay"></div>
   
   <div class="hero-store-seller__content">
