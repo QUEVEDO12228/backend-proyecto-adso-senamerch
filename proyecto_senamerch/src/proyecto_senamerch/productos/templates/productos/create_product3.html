@@ -1,4 +1,4 @@
-{% extends "index_create_product.html" %} 
+{% extends "index_create_product.html" %}
 {% load static %}
 {% block title %}Crear producto paso 3 | SenaMerch {% endblock %}
 {% block content %}
@@ -16,6 +16,14 @@
       </p>
     </header>
 
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
     <form
       method="POST"
       action="{% url 'productos:create_product_step3' %}"
@@ -23,27 +31,35 @@
     >
       {% csrf_token %}
 
+      <!-- METODO DE PAGO -->
       <div class="create-post__group">
-        <label class="create-post__label">Metodo de pago</label>
+        <label class="create-post__label">Método de pago</label>
         <select name="payment_method" class="create-post__input" required>
-          <option value="" selected disabled>Selecciona una opción</option>
-          <option value="efectivo">Efectivo</option>
+          <option value="" disabled {% if not product_data.metodo_pago %}selected{% endif %}>Selecciona una opción</option>
+          <option value="efectivo" {% if product_data.metodo_pago == "efectivo" %}selected{% endif %}>Efectivo</option>
         </select>
+        {% if form_errors.metodo_pago %}
+          <span class="text-danger">{{ form_errors.metodo_pago }}</span>
+        {% endif %}
       </div>
 
+      <!-- TIPO DE ENVIO -->
       <div class="create-post__group">
         <label class="create-post__label">Tipo de envío</label>
         <select name="shipping_type" class="create-post__input" required>
-          <option value="" selected disabled>Selecciona una opción</option>
-          <option value="contraentrega">Sí, solo envío contraentrega</option>
+          <option value="" disabled {% if not product_data.tipo_envio %}selected{% endif %}>Selecciona una opción</option>
+          <option value="contraentrega" {% if product_data.tipo_envio == "contraentrega" %}selected{% endif %}>Sí, solo envío contraentrega</option>
         </select>
+        {% if form_errors.tipo_envio %}
+          <span class="text-danger">{{ form_errors.tipo_envio }}</span>
+        {% endif %}
       </div>
 
+      <!-- STOCK -->
       <div class="create-post__group">
         <label class="create-post__label" for="stock">
           Stock disponible (en {{ unidad }})
         </label>
-
         <input
           type="number"
           id="stock"
@@ -52,15 +68,20 @@
           placeholder="Agregue el stock de este producto"
           min="0"
           required
+          value="{{ product_data.stock|default_if_none:'' }}"
         />
-
         <small class="create-post__help">
           Indica la cantidad disponible para la venta.
         </small>
+        {% if form_errors.stock %}
+          <span class="text-danger">{{ form_errors.stock }}</span>
+        {% endif %}
+      </div>
+      <div class="create-post__group">
+        
       </div>
 
-      <div class="div"></div>
-
+      <!-- BOTON VOLVER -->
       <div class="create-post__secondary">
         <a
           href="{% url 'productos:create_product_step2' %}"
@@ -74,6 +95,7 @@
         </a>
       </div>
 
+      <!-- BOTON SIGUIENTE -->
       <div class="create-post__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente

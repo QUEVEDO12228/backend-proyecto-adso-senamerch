@@ -445,13 +445,15 @@ def edit_address_seller(request):
     """Paso 1: barrio, número, tipo de vía, código postal"""
     # Obtener perfil del usuario
     profile = request.user.profile
+
     if request.method == "POST":
-        # Actualizar datos básicos de dirección
+        # Actualizar datos de dirección usando los campos existentes en el modelo
         profile.neighborhood = request.POST.get("neighborhood", profile.neighborhood)
         profile.address_number = request.POST.get("address_number", profile.address_number)
         profile.road_type = request.POST.get("road_type", profile.road_type)
         profile.postal_code = request.POST.get("postal_code", profile.postal_code)
         profile.save()
+
         # Guardar datos en sesión para el paso 2
         request.session['edit_address_data'] = {
             "neighborhood": profile.neighborhood,
@@ -459,8 +461,10 @@ def edit_address_seller(request):
             "road_type": profile.road_type,
             "postal_code": profile.postal_code
         }
+
         # Redirigir al paso 2
         return redirect('tiendas:edit_address_seller2')
+
     # Renderizar formulario de dirección paso 1
     return render(request, 'tiendas/add_adress_seller_edit.html', {
         "profile": profile
@@ -468,20 +472,19 @@ def edit_address_seller(request):
 @login_required
 def edit_address_seller2(request):
     """Paso 2: departamento, ciudad, info adicional"""
-    # Obtener perfil del usuario
     profile = request.user.profile
     # Recuperar datos guardados del paso 1
     data = request.session.get('edit_address_data', {})
-    # Lista de departamentos para el formulario
     departamentos = ["Risaralda", "Quindío", "Caldas"]
+
     if request.method == "POST":
         department = request.POST.get("department", "").strip()
         city = request.POST.get("city", "").strip()
         additional_info = request.POST.get("additional_info", "").strip()
-        # Validar campos obligatorios
+
         if not department or not city:
             messages.error(request, "Departamento y municipio son obligatorios.")
-            return render(request, 'tiendas/add_adress_seller_edit2.html', {
+            return render(request, 'tiendas/add_address_seller_edit2.html', {  # CORREGIDO
                 "profile": profile,
                 "form_data": {
                     "department": department,
@@ -490,23 +493,34 @@ def edit_address_seller2(request):
                 },
                 "departamentos": departamentos
             })
-        # Guardar todo en Profile
+
+        # Guardar los datos del paso 2
         profile.department = department
         profile.city = city
         profile.extra_info = additional_info
-        # Guardar también los datos del paso 1 si existen en sesión
+
+        # Guardar también los datos del paso 1 desde sesión
         profile.neighborhood = data.get("neighborhood", profile.neighborhood)
         profile.address_number = data.get("address_number", profile.address_number)
         profile.road_type = data.get("road_type", profile.road_type)
         profile.postal_code = data.get("postal_code", profile.postal_code)
+
         profile.save()
-        # Limpiar sesión temporal
+
+        # Limpiar sesión
         request.session.pop('edit_address_data', None)
+
         messages.success(request, "Dirección actualizada correctamente.")
         return redirect('tiendas:edit_seller_profile2')
-    return render(request, 'tiendas/add_adress_seller_edit2.html', {
+
+    # GET
+    return render(request, 'tiendas/add_adress_seller_edit2.html', {  # CORREGIDO
         "profile": profile,
-        "form_data": {},
+        "form_data": {
+            "department": profile.department,
+            "city": profile.city,
+            "additional_info": profile.extra_info
+        },
         "departamentos": departamentos
     })
 # ==========================================
@@ -542,46 +556,71 @@ from django.contrib import messages
 from .models import Tienda
 
 
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
 @login_required
 def edit_store_seller2(request):
-    # Obtener tienda y datos temporales
     tienda = Tienda.objects.filter(propietario=request.user).first()
     data = request.session.get('edit_store_data')
 
-    # Validar existencia de tienda y datos
     if not tienda or not data:
         return redirect('tiendas:edit_store_seller')
 
     if request.method == "POST":
 
-        # Actualizar datos básicos de la tienda
+        # -------------------------
+        # DATOS BÁSICOS
+        # -------------------------
         tienda.nombre = data.get("nombre", tienda.nombre)
         tienda.email = data.get("email", tienda.email)
         tienda.telefono = data.get("telefono", tienda.telefono)
         tienda.categoria = data.get("categoria", tienda.categoria)
 
-        # Actualizar descripción
-        tienda.descripcion = request.POST.get("descripcion", tienda.descripcion)
+        # -------------------------
+        # DESCRIPCIÓN
+        # -------------------------
+        descripcion = request.POST.get("descripcion", "").strip()
 
-        # Actualizar imagen si se envía una nueva
-        if request.FILES.get("imagen"):
-            tienda.imagen_portada = request.FILES.get("imagen")
+        if not descripcion:
+            messages.error(request, "La descripción es obligatoria.")
+            return render(request, 'tiendas/edit_store_seller2.html', {
+                'tienda': tienda
+            })
 
+        tienda.descripcion = descripcion
+
+        # -------------------------
+        # IMAGEN 🔥
+        # -------------------------
+        imagen = request.FILES.get("imagen")
+
+        if imagen:
+            # eliminar anterior (PRO)
+            if tienda.imagen_portada:
+                tienda.imagen_portada.delete(save=False)
+
+            tienda.imagen_portada = imagen
+
+        # -------------------------
+        # GUARDAR
+        # -------------------------
         tienda.save()
 
-        # Limpiar datos de sesión
+        # -------------------------
+        # LIMPIAR SESIÓN
+        # -------------------------
         request.session.pop('edit_store_data', None)
 
-        # ALERTA
+        # -------------------------
+        # MENSAJE
+        # -------------------------
         messages.success(request, "Cambios guardados correctamente.")
 
-        # RENDER EN VEZ DE REDIRECT (para mostrar alerta)
-        return render(request, 'tiendas/edit_store_seller2.html', {
-            'tienda': tienda,
-            'redirect_url': 'tiendas:profile_store_seller'
-        })
+        # 🔥 REDIRECT (MEJOR PRÁCTICA)
+        return redirect('tiendas:profile_store_seller')
 
-    # Render normal (GET)
     return render(request, 'tiendas/edit_store_seller2.html', {
         'tienda': tienda
     })
@@ -612,30 +651,38 @@ def seller_address_view(request):
 def edit_address_store(request):
     # Obtener tienda del vendedor
     tienda = Tienda.objects.filter(propietario=request.user).first()
+
     # Validar existencia de tienda
     if not tienda:
         messages.error(request, "Primero debes crear la tienda.")
         return redirect('tiendas:create_store')
+
     if request.method == "POST":
         # Obtener datos del formulario
         neighborhood = request.POST.get("neighborhood", "").strip()
         address_number = request.POST.get("address_number", "").strip()
         road_type = request.POST.get("road_type", "").strip()
         postal_code = request.POST.get("postal_code", "").strip()
+
         # Validar campos obligatorios
         if not neighborhood or not address_number:
             messages.error(request, "Barrio y número de dirección son obligatorios.")
             return redirect('tiendas:edit_address_store')
-        # Guardar datos temporalmente en sesión
-        request.session['edit_store_address_step1'] = {
-            "neighborhood": neighborhood,
-            "address_number": address_number,
-            "road_type": road_type,
-            "postal_code": postal_code,
-        }
+
+        # 🔥 GUARDAR EN BASE DE DATOS
+        tienda.barrio = neighborhood
+        tienda.numero_direccion = address_number
+        tienda.tipo_via = road_type
+        tienda.codigo_postal = postal_code
+
+        tienda.save()
+
+        messages.success(request, "Dirección actualizada correctamente.")
+
         # Redirigir al paso 2
         return redirect('tiendas:edit_address_store2')
-    # Renderizar formulario de dirección
+
+    # GET → mostrar formulario con datos actuales
     return render(request, "tiendas/add_address_store_edit.html", {
         "tienda": tienda
     })
@@ -644,20 +691,18 @@ def edit_address_store(request):
 # ==========================================
 @login_required
 def edit_address_store2(request):
-    # Obtener tienda y datos del paso 1
     tienda = Tienda.objects.filter(propietario=request.user).first()
-    step1 = request.session.get("edit_store_address_step1", {})
-    # Validar existencia de tienda
+
     if not tienda:
         return redirect("tiendas:edit_address_store")
-    # Lista de departamentos disponibles
+
     departamentos = ["Risaralda", "Quindío", "Caldas"]
+
     if request.method == "POST":
-        # Obtener datos del formulario
         department = request.POST.get("department", "").strip()
         city = request.POST.get("city", "").strip()
         additional_info = request.POST.get("additional_info", "").strip()
-        # Validar campos obligatorios
+
         if not department or not city:
             messages.error(request, "Departamento y municipio son obligatorios.")
             return render(request, "tiendas/add_address_store_edit2.html", {
@@ -669,20 +714,18 @@ def edit_address_store2(request):
                 },
                 "departamentos": departamentos
             })
-        # Actualizar dirección de la tienda
-        tienda.barrio = step1.get("neighborhood", tienda.barrio)
-        tienda.numero_direccion = step1.get("address_number", tienda.numero_direccion)
-        tienda.tipo_via = step1.get("road_type", tienda.tipo_via)
-        tienda.codigo_postal = step1.get("postal_code", tienda.codigo_postal)
+
+        # 🔥 GUARDAR DIRECTO (SIN SESSION)
         tienda.departamento = department
         tienda.municipio = city
         tienda.informacion_adicional = additional_info
+
         tienda.save()
-        # Limpiar datos de sesión
-        request.session.pop("edit_store_address_step1", None)
+
         messages.success(request, "Dirección de la tienda actualizada correctamente.")
+
         return redirect("tiendas:edit_store_seller2")
-    # Renderizar formulario paso 2
+
     return render(request, "tiendas/add_address_store_edit2.html", {
         "tienda": tienda,
         "form_data": {},

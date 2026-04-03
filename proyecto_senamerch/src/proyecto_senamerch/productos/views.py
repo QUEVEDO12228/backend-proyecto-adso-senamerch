@@ -18,169 +18,238 @@ from productos.models import Calificacion
 # =====================================================
 @login_required
 def create_product(request):
-    # Fecha máxima permitida para caducidad (14 días desde hoy)
     fecha_max = (timezone.now().date() + timedelta(days=14)).isoformat()
+    
+    # Si hay datos guardados en sesión, los usamos para rellenar el formulario
+    session_data = request.session.get("product_data", {})
+    
     if request.method == "POST":
-        # Obtener datos del formulario
         nombre = request.POST.get("name", "").strip()
         descripcion = request.POST.get("description", "").strip()
         expiration_date = request.POST.get("expiration_date")
         tipo_producto = request.POST.get("tipo_producto")
-        # Validar campos obligatorios
+        
         if not all([nombre, descripcion, expiration_date, tipo_producto]):
             messages.error(request, "Todos los campos son obligatorios.")
-            return redirect("productos:create_product")
-        # Validar tipo de producto
+            # Renderizamos con los datos ingresados para que no se pierdan
+            return render(request, "productos/create_product.html", {
+                "fecha_max": fecha_max,
+                "form_data": {
+                    "nombre": nombre,
+                    "descripcion": descripcion,
+                    "expiration_date": expiration_date,
+                    "tipo_producto": tipo_producto,
+                }
+            })
+        
         if tipo_producto not in ["solido", "liquido"]:
             messages.error(request, "Tipo de producto inválido.")
-            return redirect("productos:create_product")
-        # Convertir fecha enviada a objeto date
+            return render(request, "productos/create_product.html", {
+                "fecha_max": fecha_max,
+                "form_data": session_data
+            })
+        
         try:
             fecha = datetime.strptime(expiration_date, "%Y-%m-%d").date()
         except ValueError:
             messages.error(request, "Fecha inválida.")
-            return redirect("productos:create_product")
-        # Validar rango de fecha permitido
+            return render(request, "productos/create_product.html", {
+                "fecha_max": fecha_max,
+                "form_data": session_data
+            })
+        
         hoy = timezone.now().date()
         limite = hoy + timedelta(days=14)
-        if fecha < hoy:
-            messages.error(request, "La fecha no puede ser anterior a hoy.")
-            return redirect("productos:create_product")
-        if fecha > limite:
-            messages.error(request, "La fecha no puede superar 2 semanas desde hoy.")
-            return redirect("productos:create_product")
-        # Guardar datos en sesión para pasos siguientes
+        if fecha < hoy or fecha > limite:
+            messages.error(request, "La fecha debe estar entre hoy y dos semanas.")
+            return render(request, "productos/create_product.html", {
+                "fecha_max": fecha_max,
+                "form_data": session_data
+            })
+        
+        # Guardar datos en sesión
         request.session["product_data"] = {
             "nombre": nombre,
             "descripcion": descripcion,
             "expiration_date": expiration_date,
             "tipo_producto": tipo_producto,
         }
-        # Redirigir al paso 2
+        
         return redirect("productos:create_product_step2")
-    # Renderizar formulario del paso 1
+    
+    # GET: precargar datos de sesión si existen
     return render(request, "productos/create_product.html", {
-        "fecha_max": fecha_max
+        "fecha_max": fecha_max,
+        "form_data": session_data
     })
-# =======================
-# PASO 2 CREAR TIENDA
-# =======================
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from decimal import Decimal
+
 @login_required
 def create_product_step2(request):
     # Recuperar datos del producto desde sesión
-    product_data = request.session.get("product_data")
+    product_data = request.session.get("product_data", {})
+
     if not product_data:
         return redirect("productos:create_product")
+
     tipo_producto = product_data.get("tipo_producto")
-    # Categorías permitidas para productos sólidos
+
+    # Categorías
     categorias_solido = [
         ("verduras", "Verduras"),
         ("frutas", "Frutas"),
         ("granos", "Granos"),
         ("lacteos", "Lácteos"),
     ]
-    # Categorías permitidas para productos líquidos
     categorias_liquido = [
         ("lacteos", "Lácteos"),
     ]
-    # Seleccionar categorías según tipo
     categorias = categorias_liquido if tipo_producto == "liquido" else categorias_solido
+
+    # Unidades
+    unidades_liquido = ["litro","mililitro","centilitro","decilitro","decalitro","hectolitro","kilolitro"]
+    unidades_solido = ["tonelada","kg","g","mg","Uni"]
+    unidades = unidades_liquido if tipo_producto == "liquido" else unidades_solido
+
+    form_errors = {}
+
     if request.method == "POST":
         # Obtener datos del formulario
         categoria = request.POST.get("categoria")
         unidad = request.POST.get("unit")
         precio = request.POST.get("price")
         descuento = request.POST.get("discount") or 0
-        # Validar campos obligatorios
+
+        # Guardar temporalmente en sesión para mostrar de nuevo en el template
+        product_data["categoria"] = categoria
+        product_data["unidad"] = unidad
+        product_data["precio"] = precio
+        product_data["descuento"] = descuento
+
+        # Validaciones
         if not all([categoria, unidad, precio]):
-            messages.error(request, "Todos los campos son obligatorios.")
-            return redirect("productos:create_product_step2")
-        # Validar categoría según tipo de producto
+            messages.error(request, "Todos los campos obligatorios deben ser completados.")
+
         valores_validos = [c[0] for c in categorias]
         if categoria not in valores_validos:
-            messages.error(request, "Categoría inválida para el tipo seleccionado.")
-            return redirect("productos:create_product_step2")
-        # Unidades válidas según tipo de producto
-        unidades_liquido = ["litro","mililitro","centilitro","decilitro","decalitro","hectolitro","kilolitro"]
-        unidades_solido = ["tonelada","kg","g","mg","Uni"]
-        # Validar unidad para líquidos
+            form_errors['categoria'] = "Categoría inválida."
+
         if tipo_producto == "liquido" and unidad not in unidades_liquido:
-            messages.error(request, "Unidad inválida para líquido.")
-            return redirect("productos:create_product_step2")
-        # Validar unidad para sólidos
+            form_errors['unidad'] = "Unidad inválida para líquido."
         if tipo_producto == "solido" and unidad not in unidades_solido:
-            messages.error(request, "Unidad inválida para sólido.")
-            return redirect("productos:create_product_step2")
-        # Convertir precio y descuento a números
+            form_errors['unidad'] = "Unidad inválida para sólido."
+
+        # Convertir precio y descuento
         try:
-            precio = float(precio)
-            descuento = float(descuento)
-        except ValueError:
-            messages.error(request, "Precio o descuento inválido.")
-            return redirect("productos:create_product_step2")
-        # Validar precio positivo
-        if precio <= 0:
-            messages.error(request, "El precio debe ser mayor que 0.")
-            return redirect("productos:create_product_step2")
-        # Validar rango de descuento
-        if descuento < 0 or descuento > 100:
-            messages.error(request, "El descuento debe estar entre 0 y 100.")
-            return redirect("productos:create_product_step2")
-        # Actualizar datos del producto en sesión
+            precio_decimal = Decimal(precio)
+            if precio_decimal <= 0:
+                form_errors['precio'] = "El precio debe ser mayor que 0."
+        except:
+            form_errors['precio'] = "El precio debe ser un número válido."
+
+        try:
+            descuento_int = int(descuento)
+            if descuento_int < 0 or descuento_int > 100:
+                form_errors['descuento'] = "El descuento debe estar entre 0 y 100."
+        except:
+            form_errors['descuento'] = "El descuento debe ser un número entero válido."
+
+        if form_errors:
+            # Guardar la sesión para mantener valores ingresados
+            request.session["product_data"] = product_data
+            return render(request, "productos/create_product2.html", {
+                "tipo_producto": tipo_producto,
+                "categorias": categorias,
+                "unidades": unidades,
+                "product_data": product_data,
+                "form_errors": form_errors
+            })
+
+        # Guardar ya convertidos correctamente
         product_data.update({
-            "categoria": categoria,
-            "unidad": unidad,
-            "precio": precio,
-            "descuento": descuento,
+            "precio": str(precio_decimal),   # guardamos como str para mostrar
+            "descuento": descuento_int
         })
         request.session["product_data"] = product_data
-        # Redirigir al paso 3
+
         return redirect("productos:create_product_step3")
-    # Renderizar formulario paso 2
+
     return render(request, "productos/create_product2.html", {
         "tipo_producto": tipo_producto,
-        "categorias": categorias
+        "categorias": categorias,
+        "unidades": unidades,
+        "product_data": product_data,
+        "form_errors": form_errors
     })
-# =====================================================
-# PASO 3 (INCLUYE STOCK)
-# =====================================================
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
 @login_required
 def create_product_step3(request):
     # Obtener datos del producto desde sesión
-    product_data = request.session.get("product_data")
+    product_data = request.session.get("product_data", {})
     if not product_data:
         return redirect("productos:create_product")
-    # Obtener unidad de medida para mostrar en template
+
     unidad = product_data.get("unidad")
+    form_errors = {}
+
     if request.method == "POST":
         # Obtener datos del formulario
         metodo_pago = request.POST.get("payment_method")
         tipo_envio = request.POST.get("shipping_type")
         stock = request.POST.get("stock")
-        # Validar campos obligatorios
-        if not all([metodo_pago, tipo_envio, stock]):
-            messages.error(request, "Todos los campos son obligatorios.")
-            return redirect("productos:create_product_step3")
-        # Validar stock como número entero positivo
+
+        # Guardar temporalmente en session para mostrar en template
+        product_data["metodo_pago"] = metodo_pago
+        product_data["tipo_envio"] = tipo_envio
+        product_data["stock"] = stock
+
+        # Validaciones
+        if not metodo_pago:
+            form_errors['metodo_pago'] = "Debe seleccionar un método de pago."
+        if not tipo_envio:
+            form_errors['tipo_envio'] = "Debe seleccionar un tipo de envío."
+
         try:
-            stock = int(stock)
-            if stock < 0:
-                raise ValueError
-        except ValueError:
-            messages.error(request, "Stock inválido.")
-            return redirect("productos:create_product_step3")
-        # Guardar datos en sesión
+            stock_int = int(stock)
+            if stock_int < 0:
+                form_errors['stock'] = "El stock debe ser mayor o igual a 0."
+        except:
+            form_errors['stock'] = "Stock inválido, ingrese un número entero."
+
+        # Si hay errores, renderizamos el template con errores
+        if form_errors:
+            return render(request, "productos/create_product3.html", {
+                "unidad": unidad,
+                "product_data": product_data,
+                "form_errors": form_errors
+            })
+
+        # Guardar valores correctos en la sesión
         product_data.update({
             "metodo_pago": metodo_pago,
             "tipo_envio": tipo_envio,
-            "stock": stock,
+            "stock": stock_int
         })
         request.session["product_data"] = product_data
+
         # Redirigir al paso final
         return redirect("productos:create_product_step4")
-    # Renderizar formulario paso 3
+
+    # GET: renderizar formulario
     return render(request, "productos/create_product3.html", {
-        "unidad": unidad
+        "unidad": unidad,
+        "product_data": product_data,
+        "form_errors": form_errors
     })
 # =====================================================
 # PASO 4 - CREACIÓN FINAL
@@ -191,6 +260,8 @@ def create_product_step4(request):
     if not product_data:
         return redirect("productos:create_product")
 
+    form_errors = {}
+
     if request.method == "POST":
 
         tienda = Tienda.objects.filter(propietario=request.user).first()
@@ -198,6 +269,7 @@ def create_product_step4(request):
             messages.error(request, "Debes crear una tienda primero.")
             return redirect("tiendas:create_store")
 
+        # Crear producto primero
         producto = Producto.objects.create(
             tienda=tienda,
             nombre=product_data.get("nombre"),
@@ -214,27 +286,38 @@ def create_product_step4(request):
         )
 
         imagen_subida = False
+        uploaded_images = {}
 
+        # Guardar cada imagen subida
         for i in range(1, 7):
             imagen = request.FILES.get(f"image{i}")
             if imagen:
                 ImagenProducto.objects.create(producto=producto, imagen=imagen)
                 imagen_subida = True
+                uploaded_images[str(i)] = imagen
+            else:
+                uploaded_images[str(i)] = None
 
+        # Validación: al menos una imagen
         if not imagen_subida:
             producto.delete()
-            messages.error(request, "Debes subir al menos una imagen.")
-            return redirect("productos:create_product_step4")
+            form_errors["images"] = "Debes subir al menos una imagen."
+            messages.error(request, form_errors["images"])
+            return render(request, "productos/create_product4.html", {
+                "form_errors": form_errors,
+            })
 
+        # Todo OK: limpiar sesión y redirigir
         request.session.pop("product_data", None)
-
-        # AQUÍ ESTÁ LA CLAVE
         messages.success(request, "Producto creado correctamente.")
         return render(request, "productos/create_product4.html", {
             "redirect_url": "tiendas:seller_catalog"
         })
 
-    return render(request, "productos/create_product4.html")
+    # GET: renderizar formulario
+    return render(request, "productos/create_product4.html", {
+        "form_errors": form_errors,
+    })
 # =====================================================
 # EDITAR PRODUCTO - PASO 1
 # =====================================================
@@ -285,49 +368,87 @@ def edit_product_seller(request, id):
 # =====================================================
 @login_required
 def edit_product_step2(request, id):
-    # Obtener producto del vendedor
+    # Obtener el producto del vendedor
     producto = get_object_or_404(
         Producto,
         id=id,
         tienda__propietario=request.user
     )
+
+    # Obtener datos guardados en sesión o inicializar con los actuales
+    data = request.session.get("edit_product_data", {
+        "categoria": producto.categoria,
+        "unidad": producto.unidad_medida,
+        "precio": str(producto.precio),  # Asegurarse de pasar como string
+        "descuento": producto.descuento or 0,
+        "tipo_producto": producto.tipo_producto,
+    })
+
+    # Si el método es POST, se procesan los datos del formulario
     if request.method == "POST":
-        # Obtener datos del formulario
         categoria = request.POST.get("categoria")
         unidad = request.POST.get("unit")
         precio = request.POST.get("price")
-        descuento = request.POST.get("discount")
-        # Validar campos obligatorios
+        descuento = request.POST.get("discount") or "0"  # default a "0" si no viene
+
+        # Validación de campos obligatorios
         if not all([categoria, unidad, precio]):
             messages.error(request, "Todos los campos son obligatorios.")
             return redirect("productos:edit_product_step2", id=id)
-        # Recuperar datos guardados del paso anterior
-        data = request.session.get("edit_product_data", {})
+
+        # Validar que el precio sea un número decimal válido
+        try:
+            precio_decimal = Decimal(precio)
+            if precio_decimal <= 0:
+                raise ValueError
+        except:
+            messages.error(request, "El precio debe ser un número positivo.")
+            return redirect("productos:edit_product_step2", id=id)
+
+        # Validar que el descuento sea un número entero entre 0 y 100
+        try:
+            descuento_int = int(descuento)
+            if descuento_int < 0 or descuento_int > 100:
+                raise ValueError
+        except:
+            messages.error(request, "El descuento debe ser un número entero entre 0 y 100.")
+            return redirect("productos:edit_product_step2", id=id)
+
+        # Validar unidad según el tipo de producto
         tipo = data.get("tipo_producto")
-        # Unidades válidas según tipo de producto
-        unidades_liquido = ["litro","mililitro","centilitro","decilitro","decalitro","hectolitro","kilolitro"]
-        unidades_solido = ["tonelada","kg","g","mg"]
-        # Validar unidad para producto líquido
+        unidades_liquido = ["litro", "mililitro", "centilitro", "decilitro", "decalitro", "hectolitro", "kilolitro"]
+        unidades_solido = ["tonelada", "kg", "g", "mg", "uni"]
+
         if tipo == "liquido" and unidad not in unidades_liquido:
             messages.error(request, "Unidad inválida para producto líquido.")
             return redirect("productos:edit_product_step2", id=id)
-        # Validar unidad para producto sólido
         if tipo == "solido" and unidad not in unidades_solido:
             messages.error(request, "Unidad inválida para producto sólido.")
             return redirect("productos:edit_product_step2", id=id)
-        # Actualizar datos del producto en sesión
+
+        # Guardar todo en la sesión para mantener el flujo
         data.update({
             "categoria": categoria,
             "unidad": unidad,
-            "precio": precio,
-            "descuento": descuento or 0,
+            "precio": str(precio_decimal),  # Guardamos como string para el formulario
+            "descuento": descuento_int,
         })
         request.session["edit_product_data"] = data
-        # Redirigir al paso 3
+
+        # Actualizar el producto en la base de datos
+        producto.categoria = categoria
+        producto.unidad_medida = unidad
+        producto.precio = precio_decimal
+        producto.descuento = descuento_int
+        producto.save()
+
+        # Redirigir al siguiente paso
         return redirect("productos:edit_product_step3", id=id)
-    # Renderizar formulario paso 2
+
+    # Renderizar formulario con valores de sesión si existen
     return render(request, "productos/edit_product_seller2.html", {
-        "producto": producto
+        "producto": producto,
+        "data": data,  # Pasar los datos a la plantilla
     })
 # =====================================================
 # PASO 3 EDITAR (INCLUYE STOCK)

@@ -1,6 +1,7 @@
 {% extends 'index_home_store_seller.html' %}
 {% load static %}
-{% block title %}Editar datos Vendedor paso 2 | SenaMerch {% endblock %}
+{% block title %}Editar datos Vendedor paso 2 | SenaMerch{% endblock %}
+
 {% block content %}
 
 <!-- ALERTA -->
@@ -19,6 +20,7 @@
 
 <section class="edit-profile-admin"> 
   <div class="edit-profile-admin__wrapper">
+
     <header class="edit-profile-admin__header">
       <h1 class="edit-profile-admin__title">Editar perfil Vendedor</h1>
       <p class="edit-profile-admin__subtitle">
@@ -26,20 +28,24 @@
       </p>
     </header>
 
+    <!-- 🔥 IMPORTANTE: enctype agregado -->
     <form method="POST"
-      action="{% url 'tiendas:edit_seller_profile2' %}"
-      class="edit-profile-admin__form">
+          action="{% url 'tiendas:edit_seller_profile2' %}"
+          enctype="multipart/form-data"
+          class="edit-profile-admin__form">
     {% csrf_token %}
 
+      <!-- DIRECCIÓN -->
       <div class="edit-profile-admin__group direccion-col">
         <label class="edit-profile-admin__label">Dirección</label>
         <a href="{% url 'tiendas:edit_address_seller' %}" class="edit-profile-admin__link">
           Editar dirección
         </a>
         <small class="edit-profile-admin__text">Todo estará más cerca de ti.</small>
-      </div>
+      </div>  
 
-      <div class="edit-profile-admin__group password-col">
+      <!-- PASSWORD -->
+      <div class="edit-profile-admin__group">
         <label class="edit-profile-admin__label">Edita tu contraseña</label>
         <div class="edit-profile-admin__password-wrapper">
           <input name="password" type="password"
@@ -49,7 +55,8 @@
         </div>
       </div>
 
-      <div class="edit-profile-admin__group confirmar-col">
+      <!-- CONFIRMAR -->
+      <div class="edit-profile-admin__group">
         <label class="edit-profile-admin__label">Confirma tu contraseña</label>
         <div class="edit-profile-admin__password-wrapper">
           <input name="confirm_password" type="password"
@@ -59,6 +66,7 @@
         </div>
       </div>
 
+      <!-- BOTONES -->
       <div class="edit-profile-admin__secondary volver-col">
         <a href="{% url 'tiendas:edit_seller_profile' %}"
           class="btn-secundary btn-secundary-style edit-profile-admin__cancel">
@@ -87,32 +95,43 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const overlay = document.querySelector(".custom-alert-overlay");
   const alertBox = document.querySelector(".custom-alert");
-
-  // tomar la URL desde Django
   const redirectUrl = "{{ redirect_url|default:''|escapejs }}";
 
   if (overlay && alertBox) {
-
-    setTimeout(() => {
-      alertBox.classList.add("show");
-    }, 100);
+    setTimeout(() => alertBox.classList.add("show"), 100);
 
     setTimeout(() => {
       overlay.classList.add("hide");
 
       setTimeout(() => {
         overlay.remove();
-
-        // redirigir si existe URL
-        if (redirectUrl) {
-          window.location.href = redirectUrl;
-        }
-
+        if (redirectUrl) window.location.href = redirectUrl;
       }, 300);
 
     }, 2000);
   }
 
+});
+</script>
+
+<!-- 🔥 PREVIEW IMAGEN -->
+<script>
+const input = document.getElementById("coverInput");
+const preview = document.getElementById("preview");
+
+input.addEventListener("change", function(e){
+  const file = e.target.files[0];
+
+  if(file){
+    const reader = new FileReader();
+
+    reader.onload = function(e){
+      preview.src = e.target.result;
+      preview.style.display = "block";
+    }
+
+    reader.readAsDataURL(file);
+  }
 });
 </script>
 
