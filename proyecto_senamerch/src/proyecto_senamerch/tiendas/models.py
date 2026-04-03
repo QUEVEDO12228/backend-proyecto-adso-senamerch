@@ -6,14 +6,14 @@ from core.models import BaseModel
 
 User = get_user_model()
 
+# Validador de teléfono
 phone_validator = RegexValidator(
     regex=r'^\+?\d{7,15}$',
     message="El teléfono debe tener entre 7 y 15 dígitos."
 )
 
-
 class Tienda(BaseModel):
-
+    # Opciones de categorías
     CATEGORIA_CHOICES = [
         ("frutas", "Frutas"),
         ("verduras", "Verduras"),
@@ -102,6 +102,12 @@ class Tienda(BaseModel):
     total_productos = models.PositiveIntegerField(default=0)
 
     # -------------------------
+    # NUEVO CAMPO ACTIVO
+    # -------------------------
+
+    activo = models.BooleanField(default=True)  # Este es el campo que se agregará
+
+    # -------------------------
     # META
     # -------------------------
 
@@ -112,7 +118,7 @@ class Tienda(BaseModel):
         indexes = [
             models.Index(fields=["nombre"]),
             models.Index(fields=["categoria"]),
-            models.Index(fields=["activo"]),  # 👈 cambiado
+            models.Index(fields=["activo"]),  # Ahora tenemos el índice para 'activo'
         ]
 
     # -------------------------

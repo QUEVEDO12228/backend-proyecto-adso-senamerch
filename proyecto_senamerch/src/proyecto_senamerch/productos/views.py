@@ -678,9 +678,25 @@ def toggle_product_status(request, producto_id):
 def buy_product(request, producto_id):
     # Obtener producto
     producto = get_object_or_404(Producto, id=producto_id)
-    # Renderizar vista de compra
+
+    # Variables para el navbar
+    es_vendedor = False
+    tienda_inactiva = False
+
+    if request.user.is_authenticated:
+        # Buscar la tienda del usuario
+        tienda = Tienda.objects.filter(propietario=request.user).first()
+        if tienda:
+            if tienda.activo:
+                es_vendedor = True
+            else:
+                tienda_inactiva = True
+
+    # Renderizar vista de compra pasando todas las variables necesarias
     return render(request, 'usuarios/buy_product.html', {
-        'producto': producto
+        'producto': producto,
+        'es_vendedor': es_vendedor,
+        'tienda_inactiva': tienda_inactiva
     })
 # =====================================================
 # LISTA DE PRODUCTOS
@@ -700,76 +716,72 @@ def buscar(request):
     query = request.GET.get('q')
     productos = []
     tiendas = []
+    
     if query:
-        # Buscar productos por nombre, categoría o descripción
+        # Buscar productos por nombre, categoría o descripción, solo activos
         productos = Producto.objects.filter(
             Q(nombre__icontains=query) |
             Q(categoria__icontains=query) |
             Q(descripcion__icontains=query),
             activo=True
         )
-        # Buscar tiendas por nombre o categoría
+        
+        # Buscar tiendas por nombre o categoría, solo activas
         tiendas = Tienda.objects.filter(
             Q(nombre__icontains=query) |
             Q(categoria__icontains=query),
-            activa=True
+            activo=True
         )
+    
     context = {
         "query": query,
         "productos": productos,
         "tiendas": tiendas
     }
+    
     # Renderizar resultados de búsqueda
     return render(request, "productos/busqueda.html", context)
-# =====================================================
-# SUGERENCIAS DE BÚSQUEDA (AJAX)
-# =====================================================
-from django.http import JsonResponse
-import difflib
+
 def sugerencias_busqueda(request):
     # Obtener texto de búsqueda
     query = request.GET.get("q", "").lower()
+
     # Obtener productos activos
     productos_db = Producto.objects.filter(activo=True)
-    # Lista de nombres de productos
-    nombres_productos = [p.nombre.lower() for p in productos_db]
-    # Buscar coincidencias aproximadas
-    coincidencias = difflib.get_close_matches(
-        query,
-        nombres_productos,
-        n=5,
-        cutoff=0.4
-    )
-    productos = []
-    # Construir lista de sugerencias
-    for producto in productos_db:
-        if (
-            query in producto.nombre.lower()
-            or producto.nombre.lower() in coincidencias
-        ):
-            imagen_url = ""
-            # Obtener imagen principal si existe
-            imagen = producto.imagenes.first()
-            if imagen:
-                imagen_url = imagen.imagen.url
-            productos.append({
-                "nombre": producto.nombre,
-                "precio": producto.precio,
-                "categoria": producto.categoria,
-                "imagen": imagen_url
-            })
-    # Limitar resultados a 5
-    productos = productos[:5]
-    # Obtener sugerencias de tiendas
+
+    # Filtrar productos por nombre exacto (ignorar mayúsculas/minúsculas)
+    productos = productos_db.filter(
+        Q(nombre__icontains=query)
+    )[:5]
+
+    productos_sugeridos = []
+
+    # Construir lista de productos sugeridos
+    for producto in productos:
+        imagen_url = ""
+        # Obtener imagen principal del producto si existe
+        imagen = producto.imagenes.first()  # Suponiendo que las imágenes están relacionadas con el producto
+        if imagen:
+            imagen_url = imagen.imagen.url
+        productos_sugeridos.append({
+            "nombre": producto.nombre,
+            "precio": producto.precio,
+            "categoria": producto.categoria,
+            "imagen": imagen_url
+        })
+
+    # Obtener sugerencias de tiendas activas
     tiendas = list(
         Tienda.objects.filter(
-            nombre__icontains=query,
-            activa=True
+            Q(nombre__icontains=query) |
+            Q(categoria__icontains=query),
+            activo=True  # Ahora utilizamos el campo 'activo' para filtrar las tiendas activas
         ).values("nombre")[:5]
     )
-    # Retornar resultados en formato JSON
+
+    # Retornar los resultados en formato JSON
     return JsonResponse({
-        "productos": productos,
+        "productos": productos_sugeridos,
         "tiendas": tiendas
     })
 

@@ -1,3 +1,5 @@
+
+
 .edit-store-seller-one {
   display: flex;
   align-items: center;
@@ -11,6 +13,7 @@
 
   background-size: cover;
   background-position: center;
+  
   background-repeat: no-repeat;
 }
 .edit-store-seller-one__wrapper {

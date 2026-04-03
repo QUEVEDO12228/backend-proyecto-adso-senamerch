@@ -1,149 +1,113 @@
 {% extends 'index_profile_user.html' %}
 {% load static %}
 
-{% block title %}Perfil | SenaMerch {% endblock %}
+{% block title %}Perfil Usuario | SenaMerch {% endblock %}
 
 {% block content %}
-<section class="user-profile">
-  <div class="user-profile__container">
-    <h1 class="user-profile__title">Mi Perfil</h1>
-
-    <div class="user-profile__grid">
-
-      <!-- === Caja 1: Información Personal === -->
-      <div class="user-profile__card">
-        <h2 class="user-profile__subtitle">Información del usuario</h2>
-
-        <div class="user-profile__info">
-
-          <div class="user-profile__item">
-            <span class="user-profile__label">Nombre:</span>
-            <p class="user-profile__text">
-              {{ request.user.first_name|default:request.user.username }}
-            </p>
-          </div>
-
-          <div class="user-profile__item">
-            <span class="user-profile__label">Correo electrónico:</span>
-            <p class="user-profile__text">
-              {{ request.user.email }}
-            </p>
-          </div>
-
-          <div class="user-profile__item">
-            <span class="user-profile__label">Teléfono:</span>
-            <p class="user-profile__text">
-              {{ profile.phone|default:"No registrado" }}
-            </p>
-          </div>
-
-          <div class="user-profile__item">
-            <span class="user-profile__label">Contraseña:</span>
-            <p class="user-profile__text">
-              ******** (oculta por seguridad)
-            </p>
-          </div>
-
-          <div class="user-profile__item user-profile__item--image">
-            <span class="user-profile__label">Imagen de perfil:</span>
-
-            {% if profile.image %}
-              <img
-                src="{{ profile.image.url }}"
-                alt="Imagen de perfil"
-                class="user-profile__image"
-              >
+<section class="user-profile-wrapper">
+  <!-- ============================= -->
+  <!-- PANEL DEL USUARIO -->
+  <!-- ============================= -->
+  <section class="user-profile">
+    <div class="user-profile__cards">
+      <section class="user-profile__card">
+        <!-- Encabezado -->
+        <div class="user-profile__header">
+          <div class="user-profile__avatar">
+            {% if profile and profile.image %}
+              <img src="{{ profile.image.url }}" alt="Foto del usuario">
             {% else %}
-              <img 
-                src="{% if profile.image %}{{ profile.image.url }}{% else %}{% static 'assets/img/default-user.png' %}{% endif %}"
-                alt="Imagen de perfil"
-                class="user-profile__image"
-              >
+              <img src="{% static 'img/admin_profile.png' %}" alt="Foto del usuario">
             {% endif %}
           </div>
-
+          <div class="user-profile__info">
+            <h1 class="user-profile__name">@{{ request.user.first_name }}</h1>
+            <p class="user-profile__role">Cliente</p>
+          </div>
         </div>
-      </div>
 
-      <!-- === Caja 2: Dirección === -->
-      <div class="user-profile__card">
+        <!-- Información -->
+        <div class="user-profile__details">
+          <div class="user-profile__field">
+            <span class="user-profile__label">Correo electrónico:</span>
+            <span class="user-profile__value">{{ request.user.email }}</span>
+          </div>
+          <div class="user-profile__field">
+            <span class="user-profile__label">Nombre completo:</span>
+            <span class="user-profile__value">{{ request.user.get_full_name|default:"No registrado" }}</span>
+          </div>
+          <div class="user-profile__field">
+            <span class="user-profile__label">Teléfono:</span>
+            <span class="user-profile__value">{{ profile.phone|default:"No registrado" }}</span>
+          </div>
+          <div class="user-profile__field">
+            <span class="user-profile__label">Contraseña:</span>
+            <span class="user-profile__value">************</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="user-profile__card">
         <h2 class="user-profile__subtitle">Dirección</h2>
 
-        <div class="user-profile__info">
-
+        <!-- Información de la Dirección -->
+        <div class="user-profile__details">
           {% if address %}
-
-            <div class="user-profile__item">
+            <div class="user-profile__field">
               <span class="user-profile__label">Barrio:</span>
-              <p class="user-profile__text">
-                {{ address.neighborhood }}
-              </p>
+              <span class="user-profile__value">{{ address.neighborhood }}</span>
             </div>
 
-            <div class="user-profile__item">
+            <div class="user-profile__field">
               <span class="user-profile__label">Número de dirección:</span>
-              <p class="user-profile__text">
-                {{ address.address_number }}
-              </p>
+              <span class="user-profile__value">{{ address.address_number }}</span>
             </div>
 
-            <div class="user-profile__item">
+            <div class="user-profile__field">
               <span class="user-profile__label">Tipo de vía:</span>
-              <p class="user-profile__text">
-                {{ address.road_type|default:"—" }}
-              </p>
+              <span class="user-profile__value">{{ address.road_type|default:"—" }}</span>
             </div>
 
-            <div class="user-profile__item">
+            <div class="user-profile__field">
               <span class="user-profile__label">Código postal:</span>
-              <p class="user-profile__text">
-                {{ address.postal_code|default:"—" }}
-              </p>
+              <span class="user-profile__value">{{ address.postal_code|default:"—" }}</span>
             </div>
 
-            <div class="user-profile__item">
+            <div class="user-profile__field">
               <span class="user-profile__label">Departamento:</span>
-              <p class="user-profile__text">
-                {{ address.department }}
-              </p>
+              <span class="user-profile__value">{{ address.department }}</span>
             </div>
 
-            <div class="user-profile__item">
+            <div class="user-profile__field">
               <span class="user-profile__label">Municipio:</span>
-              <p class="user-profile__text">
-                {{ address.city }}
-              </p>
+              <span class="user-profile__value">{{ address.city }}</span>
             </div>
 
-            <div class="user-profile__item user-profile__item--full">
+            <div class="user-profile__field">
               <span class="user-profile__label">Información adicional:</span>
-              <p class="user-profile__text">
-                {{ address.extra_info|default:"—" }}
-              </p>
+              <span class="user-profile__value">{{ address.extra_info|default:"—" }}</span>
             </div>
 
           {% else %}
-
-            <div class="user-profile__item user-profile__item--full">
-              <p class="user-profile__text">
-                No tienes dirección registrada.
-              </p>
+            <div class="user-profile__field">
+              <span class="user-profile__label">Dirección:</span>
+              <span class="user-profile__value">No tienes dirección registrada.</span>
             </div>
-
           {% endif %}
-
         </div>
-      </div>
 
-      <!-- === Acciones === -->
-      <div class="user-profile__actions-primary">
-        <a href="{% url 'usuarios:edit_profile_client' %}" class="btn btn--primary user-profile__send">
-          Editar datos
-          <img src="{% static 'assets/icons/edit.svg' %}" alt="Icono editar" class="btn__icon user-profile__icon">
-        </a>
-      </div>
-
+      </section>
     </div>
-  </div>
+
+    <!-- ============================= -->
+    <!-- SECCIÓN DEL BOTÓN -->
+    <!-- ============================= -->
+    <div class="user-profile__actions-primary">
+      <a href="{% url 'usuarios:edit_profile_client' %}" class="btn btn--primary">
+        Editar datos
+        <img src="{% static 'assets/icons/edit.svg' %}" class="btn__icon user-profile__icon">
+      </a>
+    </div>
+  </section>
 </section>
 {% endblock %}

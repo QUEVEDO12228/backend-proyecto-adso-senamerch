@@ -117,11 +117,11 @@
 }
 
 .store-order-detail__product-card {
-  background-color: var(--secundary-600); /* Igualado */
+  background-color: var(--white); /* Igualado */
   border: 2px solid var(--secundary-400);
   border-radius: 10px;
   padding: var(--gap-md);
-  color: var(--white);
+  color: var(--secundary-800);
   display: flex;
   flex-direction: column;
   gap: var(--gap-xxs);
@@ -145,11 +145,11 @@
 .store-order-detail__product-total {
   border: 2px solid var(--secundary-400);
   grid-column: 1 / -1;
-  background: var(--secundary-200); /* Igualado */
+  background: var(--white); /* Igualado */
   padding: var(--gap-md);
   border-radius: 8px;
   text-align: right;
-  font-size: var(--fs-sm);
+  font-size: var(--fs-xs);
   color: var(--black);
 }
 

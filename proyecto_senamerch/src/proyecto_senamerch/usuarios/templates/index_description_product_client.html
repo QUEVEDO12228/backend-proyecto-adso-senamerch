@@ -13,9 +13,13 @@
   {% include 'components/navabar_go_go.html' %}
 
   {% if es_vendedor %}
-      {% include 'components/navbar_home_store_seller.html' %}
+  {% include 'components/navbar_home_store_seller.html' %}
+
+  {% elif tienda_inactiva %}
+      {% include 'components/navbar_home_client_but_seller.html' %}
+
   {% else %}
-      {% include 'components/navbar_home_client.html' %}
+      {% include 'components/navbar_client_view.html' %}
   {% endif %}
 
   <main class="main-content">
