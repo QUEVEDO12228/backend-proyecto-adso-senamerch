@@ -15,11 +15,9 @@ from django.utils.timezone import localtime
 @login_required
 def client_orders(request):
     """
-    Vista que muestra los pedidos del usuario actual (cliente o vendedor que compra),
+    Vista que muestra los pedidos del usuario actual (cliente),
     filtrados por estado: pending, delivered, canceled.
-    También calcula el tiempo restante para cancelar pedidos pendientes.
     """
-
     ESTADOS_VALIDOS = ["pending", "delivered", "canceled"]
     selected_status = request.GET.get("status", "pending")
 
@@ -42,11 +40,22 @@ def client_orders(request):
                 pedido.horas_restantes = int(tiempo_restante // 3600)
                 pedido.minutos_restantes = int((tiempo_restante % 3600) // 60)
 
+    # Determinar si el usuario es vendedor o tiene tienda inactiva
+    es_vendedor = False
+    tienda_inactiva = False
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+    if tienda:
+        if tienda.activo:
+            es_vendedor = True
+        else:
+            tienda_inactiva = True
+
     return render(request, "pedidos/client_orders.html", {
         "pedidos": pedidos,
         "selected_status": selected_status,
+        "es_vendedor": es_vendedor,
+        "tienda_inactiva": tienda_inactiva,
     })
-
 # =========================
 #  Editar Pedido Cliente
 # =========================

@@ -1,11 +1,11 @@
+{% load static %}
+
 <nav class="navbar_product_category">
 
   <div class="navbar_left_group">
       <div class="navbar_product_category__actions--left">
           <a href="{% url 'usuarios:home' %}" class="navbar_product_category__link-image">
-            <img src="{% static 'assets/img/sena-logo.png' %}" 
-                 class="navbar_product_category__img" 
-                 alt="">
+            <img src="{% static 'assets/img/sena-logo.png' %}" class="navbar_product_category__img" alt="">
           </a>
       </div>  
 
@@ -23,25 +23,31 @@
           <span class="navbar_product_category__letter navbar_product_category__letter--7">r</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--8">c</span>
           <span class="navbar_product_category__letter navbar_product_category__letter--9">h</span>
-          <img src="{% static 'assets/icons/wheat.svg' %}" 
-               alt="" 
-               class="navbar_product_category__icon">
+          <img src="{% static 'assets/icons/wheat.svg' %}" alt="" class="navbar_product_category__icon">
         </h1>
       </div>
   </div>
 
   <div class="navbar_product_category__actions">
 
+    <a href="{% url 'carrito:shopping_cart' %}" 
+      class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">           
+      <img src="{% static 'assets/icons/shopping-cart-dollar.svg' %}" class="navbar_product_category__icon" 
+          alt="">
+      <span class="navbar_product_category__tooltip">Carrito</span>
+    </a>
     <!-- PEDIDOS -->
-    <a href="{% url 'usuarios:client_orders' %}" 
+    <a href="{% url 'pedidos:client_orders' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/orders.svg' %}" 
            class="navbar_product_category__icon" 
            alt="">
       <span class="navbar_product_category__tooltip">Pedidos</span>
     </a>
+    
 
-    <!-- CREAR TIENDA -->
+    <!-- CREAR TIENDA (solo si no tiene) -->
+    {% if request.user.is_authenticated and request.user.tiendas.count == 0 %}
     <a href="{% url 'tiendas:create_store' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
       <img src="{% static 'assets/icons/create_store.svg' %}" 
@@ -49,8 +55,15 @@
            alt="">
       <span class="navbar_product_category__tooltip">Crear tienda</span>
     </a>
+    {% endif %}
 
-
+    <a href="{% url 'usuarios:home_client' %}" 
+       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
+      <img src="{% static 'assets/icons/home.svg' %}" 
+           class="navbar_product_category__icon" 
+           alt="Inicio">
+      <span class="navbar_product_category__tooltip">Inicio</span>
+    </a>
     <!-- LOGOUT -->
     <a href="{% url 'usuarios:logout' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">
@@ -59,6 +72,8 @@
            alt="">
       <span class="navbar_product_category__tooltip">Salir</span>
     </a>
+
+    
 
   </div>
 </nav>

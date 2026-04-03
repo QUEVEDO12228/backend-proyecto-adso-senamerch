@@ -1,129 +1,306 @@
-/* >>> SECCIÓN DE CONTENEDOR DEL PERFIL DEL USUARIO */
-.user-profile {
+/* CONTENEDOR PRINCIPAL */
+.user-profile-wrapper {
   display: flex;
-  justify-content: center;
-  padding-block: 1.2rem;
+  flex-direction: column; /* Asegura que las tarjetas estén en columna */
+  justify-content: flex-start; /* Alinea los elementos desde arriba */
+  align-items: center; /* Centra todo horizontalmente */
+  gap: 2.4rem; /* Espacio entre las tarjetas y el botón */
+  width: 100%;
+
+  padding-block: 2.4rem;
+  padding-inline: 24px;
+  box-sizing: border-box;
 }
 
-/* >>> CONTENIDO PRINCIPAL */
-.user-profile__container {
+/* PANEL DE TARJETAS */
+.user-profile__cards {
+  display: flex;
+  justify-content: space-between;
+  gap: 2.4rem; /* Espacio entre las dos tarjetas */
   width: 100%;
-  max-width: 1000px;
+  min-width: 1240px; /* Asegura que el contenedor de las tarjetas no se estire más allá de 1440px */
+  flex-wrap: wrap; /* Asegura que las tarjetas se ajusten si hay poco espacio */
+}
+
+/* TARJETA DEL USUARIO */
+.user-profile__card {
+  background: var(--white);
+  border: 2px solid var(--secundary-400);
+  border-radius: 24px;
+  padding: var(--gap-lg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 48%; /* Las tarjetas ocuparán el 48% del ancho en pantallas grandes */
+  max-width: 700px; /* El ancho máximo de cada tarjeta será 700px */
+  display: flex;
+  flex-direction: column;
+  min-width: 320px; /* Para que no se vuelvan demasiado pequeñas en pantallas pequeñas */
+}
+
+/* ============================= */
+/* ESTILOS PARA EL HEADER Y FOTO DE PERFIL */
+.user-profile__header {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-md);
+  padding-bottom: var(--gap-lg);
+}
+
+.user-profile__avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--secundary-900);
+}
+
+.user-profile__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* INFORMACIÓN DEL USUARIO */
+.user-profile__info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-profile__name {
+  font-family: var(--font-primary-semibold);
+  font-size: var(--fs-sm);
+  color: var(--black);
+  margin: 0;
+}
+
+.user-profile__role {
+  font-size: var(--fs-xs);
+  color: var(--gray-950);
+}
+
+/* DETALLES DEL PERFIL */
+.user-profile__details {
   display: flex;
   flex-direction: column;
   gap: var(--gap-sm);
 }
-/* >>> TÍTULO PRINCIPAL */
-.user-profile__title {
-  font-size: var(--fs-sm); /* 24px según lineamientos */
-  color: var(--black);
-  text-align: center;
-  font-family: var(--font-primary-semibold);
-}
 
-/* >>> GRID PRINCIPAL */
-.user-profile__grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--gap-md);
-}
-
-/* >>> TARJETAS */
-.user-profile__card {
-  background-color: var(--white);
-  border-radius: 1.2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  border: 2px solid var(--secundary-400);
-  padding: var(--gap-md);
+.user-profile__field {
   display: flex;
-  flex-direction: column;
-  gap: var(--gap-md);
-  transition: transform 0.2s ease;
+  justify-content: space-between;
+  border-bottom: 2px dashed var(--secundary-400);
+  padding-bottom: 0.4rem;
 }
 
-.user-profile__card:hover {
-  transform: translateY(-4px);
-}
-
-/* >>> SUBTÍTULOS */
-.user-profile__subtitle {
-  font-size: var(--fs-xs);
-  font-family: var(--font-primary-semibold);
-  color: var(--gray-900);
-  border-bottom: 2px solid var(--secundary-400);
-  padding-bottom: var(--gap-xs);
-}
-
-/* >>> CONTENIDO DE INFORMACIÓN */
-.user-profile__info {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap-xxs);
-}
-
-.user-profile__item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-
-/* >>> LABELS Y TEXTOS */
 .user-profile__label {
-  font-size: var(--fs-xxs);
-  color: var(--gray-950);
   font-family: var(--font-primary-semibold);
-}
-
-.user-profile__text {
   font-size: var(--fs-xs);
-  color: var(--gray-700);
-  font-family: var(--font-secondary);
+  font-weight: 600;
+  color: var(--black);
 }
 
-/* >>> IMAGEN */
-.user-profile__item--image {
-  align-items: start;
+.user-profile__value {
+  font-size: var(--fs-xs);
+  color: var(--gray-950);
+  text-align: right;
 }
 
-.user-profile__image {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--gray-300);
-  margin-top: var(--gap-xs);
-}
-
-/* >>> ACCIONES */
+/* ============================= */
+/* SECCIÓN DEL BOTÓN */
 .user-profile__actions-primary {
+  display: flex;
+  justify-content: center; /* Centra el botón */
+  align-items: center;
+  margin-top: 2.4rem; /* Distancia de 2.4rem desde las tarjetas */
+  width: 100%;
+}
+
+.user-profile__submit--user {
   display: flex;
   justify-content: center;
   align-items: center;
-  grid-column: 1 / -1;
-  margin-top: var(--gap-md);
-}
-.user-profile__label--link{
-  font-size: var(--fs-xxs);
-  font-family: var(--font-primary-semibold);
-  color: var(--secundary-900);
-}
-/* >>> RESPONSIVIDAD */
-@media (max-width: 1024px) {
-  .user-profile__grid {
-    grid-template-columns: 1fr;
-  }
+  background-color: var(--primary-color);
+  color: var(--white);
+  padding: 1rem 2rem;
+  border-radius: 24px;
+  font-size: var(--fs-sm);
+  text-decoration: none;
 }
 
+.user-profile__submit--user img {
+  margin-left: 8px;
+}
+
+/* ============================= */
+/* RESPONSIÓN Y ADAPTACIÓN A MÓVILES */
 @media (max-width: 640px) {
-  .user-profile {
-    padding-block: 2rem;
-  }
-  .user-profile__container {
-    width: 100%;
-    padding-inline: 24px;
+  .user-profile__cards {
+    flex-direction: column; /* Se apilan las tarjetas en pantallas pequeñas */
+    gap: 2.4rem;
   }
 
-  .user-profile__title {
+  .user-profile__card {
+    width: 100% !important; /* Las tarjetas ocuparán el 100% del ancho en móviles */
+    max-width: 100% !important; /* No habrá un ancho máximo de 700px en móviles */
+  }
+}
+/* ============================= */
+/* MEDIA QUERIES PARA TABLET Y MÓVIL */
+/* ============================= */
+
+/* TABLET (768px - 1024px) */
+@media (max-width: 1024px) {
+  .user-profile-wrapper {
+    padding-inline: var(--gap-lg); /* Ajuste de padding lateral */
+    padding-block: var(--gap-lg);
+  }
+
+  .user-profile__cards {
+    gap: var(--gap-md); /* Reducimos el gap entre tarjetas */
+    min-width: auto;
+    justify-content: center;
+  }
+
+  .user-profile__card {
+    width: 100%; /* Cada tarjeta toma toda la línea */
+    max-width: 600px; /* No muy grande */
+    padding: var(--gap-md); /* Menos padding que en escritorio */
+  }
+
+  .user-profile__header {
+    gap: var(--gap-sm); /* Reduce espacio entre avatar e info */
+  }
+
+  .user-profile__avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .user-profile__name {
     font-size: var(--fs-sm);
+  }
+
+  .user-profile__role {
+    font-size: var(--fs-xxs);
+  }
+
+  .user-profile__label, .user-profile__value {
+    font-size: var(--fs-xxs);
+  }
+
+  .user-profile__actions-primary {
+    margin-top: var(--gap-lg);
+  }
+}
+
+/* MÓVIL (hasta 640px) */
+@media (max-width: 640px) {
+  .user-profile-wrapper {
+    padding-inline: var(--gap-md); /* Padding más pequeño */
+    padding-block: var(--gap-md);
+  }
+
+  .user-profile__cards {
+    flex-direction: column;
+    gap: var(--gap-md); /* Separación vertical entre tarjetas */
+  }
+
+  .user-profile__card {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--gap-sm);
+  }
+
+  .user-profile__header {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-xs);
+    text-align: center;
+  }
+
+  .user-profile__avatar {
+    width: 70px;
+    height: 70px;
+    margin-bottom: var(--gap-xs);
+  }
+
+  .user-profile__info {
+    align-items: center;
+  }
+
+  .user-profile__name {
+    font-size: var(--fs-xs);
+  }
+
+  .user-profile__role {
+    font-size: var(--fs-xxs);
+  }
+
+  .user-profile__label, .user-profile__value {
+    font-size: var(--fs-xxs);
+  }
+
+  .user-profile__field {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--gap-xxs);
+    border-bottom: 1px dashed var(--secundary-300);
+    padding-bottom: var(--gap-xxs);
+  }
+
+  .user-profile__value {
+    text-align: left;
+  }
+
+  .user-profile__actions-primary {
+    flex-direction: column;
+    gap: var(--gap-sm);
+  }
+}
+
+/* ============================= */
+/* DESKTOP / PANTALLAS GRANDES */
+/* ============================= */
+@media (width > 1025px) and (width < 1240px) {
+.user-profile-wrapper {
+    padding-inline: var(--gap-lg); /* Ajuste de padding lateral */
+    padding-block: var(--gap-lg);
+  }
+
+  .user-profile__cards {
+    gap: var(--gap-md); /* Reducimos el gap entre tarjetas */
+    min-width: auto;
+    justify-content: center;
+  }
+
+  .user-profile__card {
+    width: 100%; /* Cada tarjeta toma toda la línea */
+    max-width: 600px; /* No muy grande */
+    padding: var(--gap-md); /* Menos padding que en escritorio */
+  }
+
+  .user-profile__header {
+    gap: var(--gap-sm); /* Reduce espacio entre avatar e info */
+  }
+
+  .user-profile__avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .user-profile__name {
+    font-size: var(--fs-sm);
+  }
+
+  .user-profile__role {
+    font-size: var(--fs-xxs);
+  }
+
+  .user-profile__label, .user-profile__value {
+    font-size: var(--fs-xxs);
+  }
+
+  .user-profile__actions-primary {
+    margin-top: var(--gap-lg);
   }
 }

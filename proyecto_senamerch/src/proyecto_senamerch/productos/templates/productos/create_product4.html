@@ -28,15 +28,6 @@
       Sube hasta 6 imágenes para completar la presentación de tu producto.
     </p>
 
-    {% if messages %}
-      <style>
-        .main-image-upload {
-          opacity: 0.3;
-          pointer-events: none;
-        }
-      </style>
-    {% endif %}
-
     <form method="POST"
           action="{% url 'productos:create_product_step4' %}"
           enctype="multipart/form-data">
@@ -44,23 +35,31 @@
       {% csrf_token %}
 
       <div class="image-upload__content">
-        
+
         <div class="image-upload__sidebar">
           {% for i in "123456" %}
-          <div class="image-upload__thumbnail image-upload__thumbnail--empty">
-            <span class="image-upload__add-text">Agregar</span>
+          <div class="image-upload__thumbnail {% if not uploaded_images.i %}image-upload__thumbnail--empty{% endif %}">
+            {% if uploaded_images.i %}
+              <img src="{{ uploaded_images.i.url }}" alt="Imagen {{ i }}" class="image-upload__existing">
+            {% else %}
+              <span class="image-upload__add-text">Agregar</span>
+            {% endif %}
             <input type="file" name="image{{ i }}" accept="image/*" class="image-upload__input">
           </div>
           {% endfor %}
         </div>
 
         <div class="image-upload__viewer">
-          <div class="image-upload__preview image-upload__preview--empty">
+          <div class="image-upload__preview {% if not uploaded_images.1 %}image-upload__preview--empty{% endif %}">
             <span class="image-upload__preview-text">Vista previa</span>
           </div>
         </div>
 
       </div>
+
+      {% if form_errors.images %}
+        <span class="text-danger">{{ form_errors.images }}</span>
+      {% endif %}
 
       <div class="image-upload__actions">
 
@@ -82,14 +81,12 @@
   </div>
 </section>
 
-<!-- 🔥 JS ALERTA + REDIRECT -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
   const overlay = document.querySelector(".custom-alert-overlay");
   const alertBox = document.querySelector(".custom-alert");
 
-  // tomar la URL desde Django
   const redirectUrl = "{{ redirect_url|default:''|escapejs }}";
 
   if (overlay && alertBox) {
@@ -103,12 +100,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       setTimeout(() => {
         overlay.remove();
-
-        // redirigir si existe URL
         if (redirectUrl) {
           window.location.href = redirectUrl;
         }
-
       }, 300);
 
     }, 2000);
@@ -117,7 +111,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 
-<!-- 🔥 TU JS ORIGINAL -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 

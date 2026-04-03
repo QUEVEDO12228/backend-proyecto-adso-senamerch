@@ -33,6 +33,12 @@
   </div>
 
   <div class="navbar_product_category__actions">
+    <a href="{% url 'pedidos:client_orders' %}" 
+       class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">           
+      <img src="{% static 'assets/icons/shopping-cart-dollar.svg' %}" class="navbar_product_category__icon" 
+           alt="">
+      <span class="navbar_product_category__tooltip">Carrito</span>
+    </a>
     <!-- PEDIDOS -->
     <a href="{% url 'pedidos:client_orders' %}" 
        class="navbar_product_category__link navbar_product_category__link--icon-nav-bar">

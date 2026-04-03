@@ -16,9 +16,18 @@
       </p>
     </header>
 
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
     <form method="POST" action="{% url 'productos:create_product' %}" class="create-post__form">
       {% csrf_token %}
 
+      <!-- NOMBRE DEL PRODUCTO -->
       <div class="create-product-post-one__group">
         <label class="create-product-post-one__label">Nombre del producto</label>
         <input 
@@ -27,40 +36,45 @@
           class="create-product-post-one__input"
           placeholder="Ej: Tomate del Valle"
           required
+          value="{{ form_data.nombre|default:'' }}"
         >
       </div>
 
+      <!-- DESCRIPCIÓN -->
       <div class="create-post__group">
         <label class="create-post__label">Descripción producto</label>
         <textarea 
           name="description"
           class="create-post__textarea"
           placeholder="Describe brevemente el producto..."
-          required
-        ></textarea>
+          required>{{ form_data.descripcion|default:'' }}</textarea>
       </div>
 
+      <!-- FECHA DE CADUCIDAD -->
       <div class="create-post__group">
         <label class="create-post__label">Fecha de caducidad</label>
         <input type="date"
                name="expiration_date"
                class="create-post__input"
                max="{{ fecha_max }}"
-               required>
+               required
+               value="{{ form_data.expiration_date|default:'' }}">
       </div>
 
+      <!-- TIPO DE PRODUCTO -->
       <div class="create-post__group">
         <label class="create-post__label">Tipo de producto</label>
         <select class="create-post__input"
                 name="tipo_producto"
                 id="tipo_producto"
                 required>
-            <option value="" disabled selected>Selecciona tipo</option>
-            <option value="solido">Sólido</option>
-            <option value="liquido">Líquido</option>
+            <option value="" disabled {% if not form_data.tipo_producto %}selected{% endif %}>Selecciona tipo</option>
+            <option value="solido" {% if form_data.tipo_producto == 'solido' %}selected{% endif %}>Sólido</option>
+            <option value="liquido" {% if form_data.tipo_producto == 'liquido' %}selected{% endif %}>Líquido</option>
         </select>
       </div>
       
+      <!-- CANCELAR -->
       <div class="create-product-post-one__secondary">
         <a href="{% url 'tiendas:seller_catalog' %}"
            class="btn-secundary btn-secundary-style create-product-post-one__cancel">
@@ -70,6 +84,7 @@
         </a>
       </div>
 
+      <!-- SIGUIENTE -->
       <div class="create-product-post-one__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente

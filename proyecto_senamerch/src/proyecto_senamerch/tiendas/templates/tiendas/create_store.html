@@ -64,11 +64,31 @@
         <label class="create-store-one__label">Categoría</label>
         <select name="category" class="create-store-one__input" required>
           <option value="">Selecciona una categoría</option>
-          <option value="Frutas">Frutas</option>
-          <option value="Verduras">Verduras</option>
-          <option value="Lácteos">Lácteos</option>
-          <option value="Granos">Granos</option>
-          <option value="Todas">Todas</option>
+
+          <option value="Frutas"
+            {% if request.session.store_data.category == "Frutas" %}selected{% endif %}>
+            Frutas
+          </option>
+
+          <option value="Verduras"
+            {% if request.session.store_data.category == "Verduras" %}selected{% endif %}>
+            Verduras
+          </option>
+
+          <option value="Lácteos"
+            {% if request.session.store_data.category == "Lácteos" %}selected{% endif %}>
+            Lácteos
+          </option>
+
+          <option value="Granos"
+            {% if request.session.store_data.category == "Granos" %}selected{% endif %}>
+            Granos
+          </option>
+
+          <option value="Todas"
+            {% if request.session.store_data.category == "Todas" %}selected{% endif %}>
+            Todas
+          </option>
         </select>
         <small id="categoryError" class="error-text"></small>
       </div>

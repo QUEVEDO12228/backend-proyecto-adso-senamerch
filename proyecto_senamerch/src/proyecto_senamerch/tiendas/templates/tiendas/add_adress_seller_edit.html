@@ -1,7 +1,6 @@
-{% extends 'index_home_store_seller.html' %}  
+{% extends 'index_home_store_seller.html' %}
 {% load static %}
 {% block title %}Editar Dirección Vendedor paso 1 | SenaMerch {% endblock %}
-
 
 {% block content %}
 <section class="edit-profile-admin">
@@ -24,7 +23,7 @@
           name="neighborhood"
           placeholder="Ej: Centro"
           class="address-store-form__input"
-          value="{{ profile.neighborhood|default:'' }}"
+          value="{{ request.session.edit_address_data.neighborhood|default:profile.neighborhood }}"
           required
         >
       </div>
@@ -36,7 +35,7 @@
           name="address_number"
           placeholder="Ej: 123A"
           class="address-store-form__input"
-          value="{{ profile.address_number|default:'' }}"
+          value="{{ request.session.edit_address_data.address_number|default:profile.address_number }}"
           required
         >
       </div>
@@ -48,7 +47,7 @@
           name="road_type"
           placeholder="Ej: Calle, Carrera"
           class="address-store-form__input"
-          value="{{ profile.road_type|default:'' }}"
+          value="{{ request.session.edit_address_data.road_type|default:profile.road_type }}"
           required
         >
       </div>
@@ -60,7 +59,7 @@
           name="postal_code"
           placeholder="Ej: 660001"
           class="address-store-form__input"
-          value="{{ profile.postal_code|default:'' }}"
+          value="{{ request.session.edit_address_data.postal_code|default:profile.postal_code }}"
           required
         >
       </div>

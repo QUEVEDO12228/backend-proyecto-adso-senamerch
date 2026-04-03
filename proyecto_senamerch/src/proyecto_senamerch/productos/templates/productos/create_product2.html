@@ -17,67 +17,72 @@
       </p>
     </header>
 
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+
     <form method="POST" action="{% url 'productos:create_product_step2' %}" class="create-post__form">
       {% csrf_token %}
 
+      <!-- CATEGORÍA -->
       <div class="create-post__group">
         <label class="create-post__label">Categoría</label>
         <select name="categoria" class="create-post__input" required>
-          <option value="" selected disabled>Selecciona una opción</option>
-
+          <option value="" disabled {% if not product_data.categoria %}selected{% endif %}>Selecciona una opción</option>
           {% for value, label in categorias %}
-            <option value="{{ value }}">{{ label }}</option>
+            <option value="{{ value }}" {% if product_data.categoria == value %}selected{% endif %}>{{ label }}</option>
           {% endfor %}
-
         </select>
       </div>
 
+      <!-- UNIDAD -->
       <div class="create-product-post-one__group">
         <label class="create-product-post-one__label">
           Precio * Unidad de medida
         </label>
-
         <select name="unit" class="create-product-post-one__input" required>
-          <option value="" selected disabled>Selecciona una Unidad</option>
-
-          {% if tipo_producto == "liquido" %}
-              <option value="litro">Litro</option>
-              <option value="mililitro">Mililitro</option>
-              <option value="centilitro">Centilitro</option>
-              <option value="decilitro">Decilitro</option>
-              <option value="decalitro">Decalitro</option>
-              <option value="hectolitro">Hectolitro</option>
-              <option value="kilolitro">Kilolitro</option>
-          {% else %}
-              <option value="tonelada">Tonelada</option>
-              <option value="kg">Kilogramo</option>
-              <option value="g">Gramo</option>
-              <option value="mg">Miligramo</option>
-              <option value="Uni">Unidad</option>
-          {% endif %}
+          <option value="" disabled {% if not product_data.unidad %}selected{% endif %}>Selecciona una Unidad</option>
+          {% for u in unidades %}
+            <option value="{{ u }}" {% if product_data.unidad == u %}selected{% endif %}>{{ u|capfirst }}</option>
+          {% endfor %}
         </select>
       </div>
 
+      <!-- PRECIO -->
       <div class="create-product-post-one__group">
         <label class="create-product-post-one__label">Precio</label>
         <input type="number"
                name="price"
-               class="create-product-post-one__input"
+               class="create-product-post-one__input {% if 'precio' in form_errors %}input-error{% endif %}"
                placeholder="Agregue el precio del producto"
                min="0"
-               required>
+               required
+               value="{{ product_data.precio }}">
+        {% if 'precio' in form_errors %}
+          <span class="text-error">{{ form_errors.precio }}</span>
+        {% endif %}
       </div>
 
+      <!-- DESCUENTO -->
       <div class="create-post__group">
         <label class="create-post__label">Descuento (%)</label>
         <input type="number"
                name="discount"
-               class="create-post__input"
+               class="create-post__input {% if 'descuento' in form_errors %}input-error{% endif %}"
                placeholder="Agregue el descuento del producto"
                min="0"
-               max="100">
+               max="100"
+               value="{{ product_data.descuento }}">
+        {% if 'descuento' in form_errors %}
+          <span class="text-error">{{ form_errors.descuento }}</span>
+        {% endif %}
       </div>
 
+      <!-- VOLVER -->
       <div class="create-post__secondary">
         <a href="{% url 'productos:create_product' %}"
            class="btn-secundary btn-secundary-style">
@@ -87,6 +92,7 @@
         </a>
       </div>
 
+      <!-- SIGUIENTE -->
       <div class="create-post__buttons">
         <button type="submit" class="btn btn--primary">
           Siguiente

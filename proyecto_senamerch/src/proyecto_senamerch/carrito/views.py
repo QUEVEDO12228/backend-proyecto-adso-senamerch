@@ -3,6 +3,11 @@ from django.contrib.auth.decorators import login_required
 from productos.models import Producto
 from .models import Carrito, ItemCarrito
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Carrito
+from tiendas.models import Tienda  # ✅ import correcto
+
 @login_required
 def shopping_cart(request):
     carrito, _ = Carrito.objects.get_or_create(usuario=request.user)
@@ -10,9 +15,23 @@ def shopping_cart(request):
         'producto',
         'producto__tienda'
     )
+
+    # Determinar qué navbar mostrar
+    es_vendedor = False
+    tienda_inactiva = False
+
+    tienda = Tienda.objects.filter(propietario=request.user).first()
+    if tienda:
+        if tienda.activo:
+            es_vendedor = True
+        else:
+            tienda_inactiva = True
+
     return render(request, "carrito/shopping_cart.html", {
         "carrito": carrito,
-        "items": items
+        "items": items,
+        "es_vendedor": es_vendedor,
+        "tienda_inactiva": tienda_inactiva
     })
 @login_required
 def agregar_al_carrito(request, producto_id):

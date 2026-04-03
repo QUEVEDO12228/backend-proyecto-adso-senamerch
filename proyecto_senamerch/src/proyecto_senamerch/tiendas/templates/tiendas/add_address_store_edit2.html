@@ -1,6 +1,6 @@
 {% extends 'index_home_store_seller.html' %}
 {% load static %}
-{% block title %}Editar Dirección de tienda paso 2 | SenaMerch {% endblock %}
+{% block title %}Editar Dirección de tienda paso 2 | SenaMerch{% endblock %}
 
 {% block content %}
 <section class="address-store-form">
@@ -38,7 +38,8 @@
           <option value="">Selecciona...</option>
 
           {% for dep in departamentos %}
-          <option value="{{ dep }}">
+          <option value="{{ dep }}"
+            {% if form_data.department == dep or tienda.departamento == dep %}selected{% endif %}>
             {{ dep }}
           </option>
           {% endfor %}
@@ -54,11 +55,8 @@
                 name="city"
                 class="address-store-form__input"
                 required>
-
           <option value="">Selecciona municipio</option>
-
         </select>
-
       </div>
 
       <!-- INFO ADICIONAL -->
@@ -70,7 +68,7 @@
           name="additional_info"
           placeholder="Apartamento, interior, referencias..."
           class="address-store-form__input"
-          value="{{ form_data.additional_info|default:'' }}"
+          value="{{ form_data.additional_info|default:tienda.informacion_adicional }}"
         >
       </div>
 
@@ -94,7 +92,6 @@
 </section>
 
 <script>
-
 const municipios = {
 
   "Risaralda": [
@@ -122,28 +119,40 @@ const municipios = {
 const department = document.getElementById("department");
 const city = document.getElementById("city");
 
-department.addEventListener("change", function(){
-
-  const dept = this.value;
-
+// 🔥 cargar municipios
+function cargarMunicipios(dept, selectedCity=null){
   city.innerHTML = "<option value=''>Selecciona municipio</option>";
 
   if(municipios[dept]){
-
     municipios[dept].forEach(function(municipio){
-
       const option = document.createElement("option");
       option.value = municipio;
       option.textContent = municipio;
 
+      if(selectedCity === municipio){
+        option.selected = true;
+      }
+
       city.appendChild(option);
-
     });
-
   }
+}
 
+// 🔥 evento cambio
+department.addEventListener("change", function(){
+  cargarMunicipios(this.value);
 });
 
+// 🔥 cargar valores al iniciar (CLAVE PARA QUE FUNCIONE)
+window.addEventListener("load", function(){
+  const dept = "{{ form_data.department|default:tienda.departamento }}";
+  const selectedCity = "{{ form_data.city|default:tienda.municipio }}";
+
+  if(dept){
+    department.value = dept;
+    cargarMunicipios(dept, selectedCity);
+  }
+});
 </script>
 
 {% endblock %}

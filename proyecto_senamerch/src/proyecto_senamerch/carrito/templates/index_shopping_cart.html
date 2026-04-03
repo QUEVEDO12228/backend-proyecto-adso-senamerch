@@ -20,6 +20,8 @@
       <div class="navbar-container-qqqq-qqq">
         {% if es_vendedor %}
             {% include 'components/navbar_home_store_seller.html' %}
+        {% elif tienda_inactiva %}
+            {% include 'components/navbar_home_client_but_seller.html' %}
         {% else %}
             {% include 'components/navbar_home_client.html' %}
         {% endif %}

@@ -22,6 +22,7 @@ from .views import (
     edit_profile_client2,
     edit_address_profile_user,
     edit_address_profile_user2,
+    check_email,
 )
 # Definición de las rutas URL para la aplicación 'usuarios'
 urlpatterns = [
@@ -69,6 +70,7 @@ urlpatterns = [
     # =========================
     path('edit-address/', edit_address_profile_user, name='edit_address_profile_user'),  # Editar dirección (Paso 1)
     path('edit-address-step-2/', edit_address_profile_user2, name='edit_address_profile_user2'),  # Editar dirección (Paso 2)
+    path('check-email/', check_email, name='check_email'),
 ]
 # Si el proyecto está en modo DEBUG, habilitar el acceso a los archivos de medios
 if settings.DEBUG:

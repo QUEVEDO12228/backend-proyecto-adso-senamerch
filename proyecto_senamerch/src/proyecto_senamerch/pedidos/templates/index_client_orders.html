@@ -3,26 +3,49 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>{% block title %}Mis Pedidos | SenaMerch {% endblock %}</title>
+  <title>{% block title %}Mis Pedidos | SenaMerch{% endblock %}</title>
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
 
+  <!-- Navbar general -->
   {% include 'components/navabar_go_go.html' %}
 
-  {# Navbar dinámico según si es vendedor o cliente #}
+  <!-- Navbar dinámico según el estado del usuario -->
   {% if es_vendedor %}
       {% include 'components/navbar_orders_seller.html' %}
+  {% elif tienda_inactiva %}
+      {% include 'components/navbar_home_client_but_seller.html' %}
   {% else %}
       {% include 'components/navbar_orders_client.html' %}
   {% endif %}
 
+  <!-- Contenido principal -->
   <main class="main-content">
     {% block content %}
-    <!-- Aquí tu HTML de los pedidos (tabs, lista de pedidos, etc.) -->
+    <!-- Aquí va tu lista de pedidos, tabs, etc. -->
+    <div class="orders-container">
+      {% for pedido in pedidos %}
+        <div class="order-card">
+          <h3>Pedido #{{ pedido.id }} - {{ pedido.estado|capfirst }}</h3>
+          <p>Fecha: {{ pedido.creado_en }}</p>
+          {% if pedido.estado == "pending" %}
+            <p>Tiempo restante para cancelar: {{ pedido.horas_restantes }}h {{ pedido.minutos_restantes }}m</p>
+          {% endif %}
+          <ul>
+            {% for item in pedido.items.all %}
+              <li>{{ item.cantidad }} x {{ item.producto.nombre }} ({{ item.producto.tienda.nombre }})</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% empty %}
+        <p>No tienes pedidos en este estado.</p>
+      {% endfor %}
+    </div>
     {% endblock %}
   </main>
 
+  <!-- Footer -->
   {% include 'components/footer.html' %}
   {% include 'components/footer_go_go.html' %}
 
