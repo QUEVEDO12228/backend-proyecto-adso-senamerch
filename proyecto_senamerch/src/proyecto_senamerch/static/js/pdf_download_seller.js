@@ -13,32 +13,32 @@ document.addEventListener("DOMContentLoaded", () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        const primary = [29, 150, 49];
+        const primary = [7, 44, 14]; // Verde principal
         const dark = [40, 40, 40];
         const lightGray = [240, 240, 240];
+        const borderGreen = [82, 214, 103]; // Borde siempre
+        const borderWidth = 0.5; // Borde 0.5 px
 
         // ============================
         // LOGO TIPO NAVBAR
         // ============================
         function drawSenaMerch(doc, x, y) {
-
-            const letters = ["S","e","n","a","M","e","r","c","h"];
+            const letters = ["S", "e", "n", "a", "M", "e", "r", "c", "h"];
             let posX = x;
 
             letters.forEach(letter => {
-
                 doc.setTextColor(140, 233, 155);
                 doc.setFontSize(20);
 
-                doc.text(letter, posX - 0.3, y);
-                doc.text(letter, posX + 0.3, y);
-                doc.text(letter, posX, y - 0.3);
-                doc.text(letter, posX, y + 0.3);
+                doc.text(letter, posX - 0.4, y);
+                doc.text(letter, posX + 0.4, y);
+                doc.text(letter, posX, y - 0.4);
+                doc.text(letter, posX, y + 0.4);
 
                 doc.setTextColor(255, 255, 255);
                 doc.text(letter, posX, y);
 
-                posX += 6;
+                posX += 8;
             });
         }
 
@@ -55,70 +55,83 @@ document.addEventListener("DOMContentLoaded", () => {
             doc.setFillColor(...primary);
             doc.rect(0, 0, 210, 35, "F");
 
+            doc.setLineWidth(borderWidth);
+            doc.setDrawColor(...borderGreen);
+            doc.rect(0, 0, 210, 35); // Borde del header
+
             drawSenaMerch(doc, 15, 22);
 
-            doc.setTextColor(255,255,255);
+            doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
             doc.text("Resumen de venta", 195, 18, { align: "right" });
 
             // ============================
-            // INFO GENERAL
+            // INFO TIENDA, VENDEDOR, CLIENTE
             // ============================
             y = 45;
 
-            const now = new Date();
-            const fecha = now.toLocaleDateString();
-            const hora = now.toLocaleTimeString();
+            const storeInfo = [
+                "Tienda",
+                "Nombre Tienda: LA LOLAfea",
+                "Teléfono: 3102973825",
+                "Correo: vendedor3senamerch@gmai.com"
+            ];
 
-            const orderTitle = document.querySelector(".sales-made-details__title").innerText;
+            const vendedorInfo = [
+                "Vendedor",
+                "Nombre: Emanuel Quevedo Escobar",
+                "Correo: vendedor3senamerch@gmai.com"
+            ];
 
-            doc.setTextColor(...dark);
-            doc.setFontSize(12);
-            doc.text("DETALLE DE VENTA", 15, y);
+            const clienteInfo = [
+                "Cliente",
+                "Nombre: Jeferson Alexis Duque",
+                "Correo: neithanmateo12@gmail.com"
+            ];
 
-            y += 8;
+            // Unir toda la info
+            const allInfo = [...storeInfo, ...vendedorInfo, ...clienteInfo];
 
-            doc.setFontSize(10);
-            doc.text(orderTitle, 15, y);
-            doc.text(`Fecha: ${fecha}`, 140, y);
-
-            y += 6;
-            doc.text(`Hora: ${hora}`, 140, y);
-
-            const numeroVenta = "VENTA-" + String(Math.floor(Math.random() * 999999)).padStart(6, "0");
-
-            y += 6;
-            doc.text(`N° Venta: ${numeroVenta}`, 140, y);
-
-            y += 10;
-
-            // ============================
-            // INFO CLIENTE / TIENDA
-            // ============================
-            const sidebar = document.querySelector(".sales-made-details__sidebar");
-            const lines = sidebar.innerText.split("\n").filter(l => l.trim() !== "");
+            // Ajustar alto de la caja dinámicamente (6px por línea + 6px entre secciones)
+            const boxHeight = allInfo.length * 6 + 12; // 12px total entre secciones
 
             doc.setFillColor(...lightGray);
-            doc.rect(15, y - 5, 180, 32, "F");
+            doc.rect(15, y - 5, 180, boxHeight, "F");
 
+            doc.setLineWidth(borderWidth);
+            doc.setDrawColor(...borderGreen);
+            doc.rect(15, y - 5, 180, boxHeight); // Borde verde
+
+            doc.setTextColor(...dark);
             doc.setFontSize(10);
 
-            let col1Y = y;
-            let col2Y = y;
+            let currentY = y;
 
-            lines.forEach((line, index) => {
-
-                if (index < Math.ceil(lines.length / 2)) {
-                    doc.text(line.trim(), 20, col1Y);
-                    col1Y += 6;
-                } else {
-                    doc.text(line.trim(), 110, col2Y);
-                    col2Y += 6;
-                }
-
+            // Colocar la información de Tienda
+            storeInfo.forEach(line => {
+                doc.text(line.trim(), 20, currentY);
+                currentY += 6;
             });
 
-            y += 38;
+            // Pequeño espacio entre Tienda y Vendedor
+            currentY += 6;
+
+            // Colocar la información de Vendedor
+            vendedorInfo.forEach(line => {
+                doc.text(line.trim(), 20, currentY);
+                currentY += 6;
+            });
+
+            // Pequeño espacio entre Vendedor y Cliente
+            currentY += 6;
+
+            // Colocar la información de Cliente
+            clienteInfo.forEach(line => {
+                doc.text(line.trim(), 20, currentY);
+                currentY += 6;
+            });
+
+            y += boxHeight + 5;
 
             // ============================
             // TABLA PRODUCTOS (VENDEDOR)
@@ -129,10 +142,9 @@ document.addEventListener("DOMContentLoaded", () => {
             let totalGeneral = 0;
 
             productCards.forEach(card => {
-
                 const ps = card.querySelectorAll("p");
 
-                let producto="", cantidad=0, precio=0, total=0;
+                let producto = "", cantidad = 0, precio = 0, total = 0, descuento = 0;
 
                 ps.forEach(p => {
                     const text = p.innerText;
@@ -146,6 +158,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (text.startsWith("Precio unitario:"))
                         precio = parseFloat(text.replace("Precio unitario: $", "").trim());
 
+                    if (text.startsWith("Descuento:"))
+                        descuento = parseFloat(text.replace("Descuento:", "").replace("%", "").trim());
+
                     if (text.startsWith("Total con descuento:"))
                         total = parseFloat(text.replace("Total con descuento: $", "").trim());
 
@@ -158,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 rows.push([
                     producto,
                     cantidad,
+                    descuento > 0 ? `${descuento}%` : "-",
                     `$${precio.toFixed(2)}`,
                     `$${total.toFixed(2)}`
                 ]);
@@ -165,23 +181,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             doc.autoTable({
                 startY: y,
-                head: [["Producto","Cantidad","Precio","Ingreso"]],
+                head: [["Producto", "Cantidad", "Descuento", "Precio", "Ingreso"]],
                 body: rows,
                 theme: "grid",
                 styles: {
                     fontSize: 9,
-                    cellPadding: 3
+                    cellPadding: 3,
+                    halign: "center"
                 },
                 headStyles: {
                     fillColor: primary,
-                    textColor: [255,255,255],
-                    halign: "center"
-                },
-                bodyStyles: {
+                    textColor: [255, 255, 255],
                     halign: "center"
                 },
                 alternateRowStyles: {
                     fillColor: [245, 255, 245]
+                },
+                didDrawCell: function (data) {
+                    doc.setLineWidth(borderWidth);
+                    doc.setDrawColor(...borderGreen);
+                    doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height);
                 }
             });
 
@@ -193,7 +212,11 @@ document.addEventListener("DOMContentLoaded", () => {
             doc.setFillColor(...primary);
             doc.roundedRect(120, finalY, 75, 22, 3, 3, "F");
 
-            doc.setTextColor(255,255,255);
+            doc.setLineWidth(borderWidth);
+            doc.setDrawColor(...borderGreen);
+            doc.roundedRect(120, finalY, 75, 22, 3, 3); // borde redondeado
+
+            doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
             doc.text("Total generado", 157, finalY + 8, { align: "center" });
 
