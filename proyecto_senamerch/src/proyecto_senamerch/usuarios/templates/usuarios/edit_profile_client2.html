@@ -34,16 +34,6 @@
       action="{% url 'usuarios:edit_profile_client2' %}">
       
       {% csrf_token %}
-
-      <div class="edit-profile-user__group">
-        <label class="edit-profile-user__label">Tipo de usuario</label>
-        <input
-          type="text"
-          class="edit-profile-user__input edit-profile-user__input--readonly"
-          value="Cliente"
-          readonly>
-      </div>
-
       <div class="edit-profile-user__group">
         <label class="edit-profile-user__label">Teléfono</label>
         <input
@@ -80,6 +70,9 @@
             Mostrar
           </button>
         </div>
+      </div>
+      <div class="edit-profile-user__group">
+        
       </div>
 
       <div class="edit-profile-user__secondary">
