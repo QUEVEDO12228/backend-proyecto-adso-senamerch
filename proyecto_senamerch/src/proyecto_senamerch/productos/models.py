@@ -62,6 +62,58 @@ class Producto(models.Model):
     def __str__(self):
         return f"{self.nombre} - {self.tienda.nombre}"
 
+    # =========================
+    # 🔥 OVERRIDE SAVE (AUTO CONTROL STOCK)
+    # =========================
+    def save(self, *args, **kwargs):
+        # Evitar stock negativo
+        if self.stock < 0:
+            self.stock = 0
+
+        # 🔥 AUTO DESACTIVAR / ACTIVAR
+        if self.stock == 0:
+            self.activo = False
+        else:
+            self.activo = True
+
+        super().save(*args, **kwargs)
+
+    # =========================
+    # 🔥 MÉTODOS DE STOCK
+    # =========================
+    def reducir_stock(self, cantidad):
+        if self.stock < cantidad:
+            raise ValueError(f"Stock insuficiente para {self.nombre}")
+
+        self.stock -= cantidad
+
+        # 🔥 seguridad extra
+        if self.stock <= 0:
+            self.stock = 0
+            self.activo = False
+
+        self.save()
+
+    def aumentar_stock(self, cantidad):
+        self.stock += cantidad
+
+        # 🔥 reactivar automáticamente
+        if self.stock > 0:
+            self.activo = True
+
+        self.save()
+
+    @property
+    def sin_stock(self):
+        return self.stock == 0
+
+    @property
+    def bajo_stock(self):
+        return self.stock <= self.stock_minimo
+
+    # =========================
+    # 💰 PRECIOS
+    # =========================
     @property
     def precio_con_descuento(self):
         if self.descuento > 0:
@@ -69,6 +121,9 @@ class Producto(models.Model):
             return self.precio - descuento
         return self.precio
 
+    # =========================
+    # 🖼️ IMAGEN
+    # =========================
     @property
     def imagen_principal(self):
         primera_imagen = self.imagenes.first()
@@ -76,6 +131,9 @@ class Producto(models.Model):
             return primera_imagen.imagen.url
         return "/static/assets/img/default-product.jpg"
 
+    # =========================
+    # ⭐ RATING
+    # =========================
     @property
     def rating_promedio(self):
         promedio = self.calificaciones.aggregate(promedio=Avg("puntuacion"))
@@ -103,7 +161,9 @@ class ImagenProducto(models.Model):
 class Calificacion(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="calificaciones")
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
-    puntuacion = models.PositiveIntegerField(choices=[(1, "1 estrella"), (2, "2 estrellas"), (3, "3 estrellas"), (4, "4 estrellas"), (5, "5 estrellas")])
+    puntuacion = models.PositiveIntegerField(
+        choices=[(1, "1 estrella"), (2, "2 estrellas"), (3, "3 estrellas"), (4, "4 estrellas"), (5, "5 estrellas")]
+    )
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:

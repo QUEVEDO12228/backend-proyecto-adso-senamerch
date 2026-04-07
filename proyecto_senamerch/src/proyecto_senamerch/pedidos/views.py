@@ -328,23 +328,59 @@ def cancel_order_store(request, pedido_id):
 # ===============================================================
 #  Actualizar estado del pedido Pendiente, Entregado, Cancelado
 # ===============================================================
-@login_required
-def deliver_order_store(request, pedido_id):
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.db import transaction
+from django.db.models import F
 
-    pedido = get_object_or_404(Pedido, id=pedido_id)
+from pedidos.models import Pedido
+from productos.models import Producto
+
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.db import transaction
+from django.contrib.auth.decorators import login_required
+from .models import Pedido
+
+@login_required
+@transaction.atomic
+def deliver_order_store(request, pedido_id):
+    """
+    Vista para marcar un pedido de la tienda como 'Entregado'.
+    Solo permite pedidos que estén en estado 'pending'.
+    Descuenta el stock de los productos involucrados.
+    """
+    pedido = get_object_or_404(
+        Pedido,
+        id=pedido_id,
+        items__producto__tienda__propietario=request.user
+    )
 
     if request.method == "POST":
+        # ✅ Validar estado
+        if pedido.estado != "pending":
+            messages.error(request, "Este pedido no se puede entregar porque ya no está pendiente.")
+            return redirect("pedidos:store_orders")
 
-        if pedido.estado == "pending":
-            pedido.estado = "delivered"
-            pedido.save()
+        items = pedido.items.select_related("producto")
 
-            # ALERTA
-            messages.success(request, "Pedido entregado correctamente.")
+        # 🔴 Intentar descontar stock
+        try:
+            for item in items:
+                item.producto.reducir_stock(item.cantidad)
+        except ValueError as e:
+            messages.error(request, f"No se puede entregar el pedido: {str(e)}")
+            return redirect("pedidos:store_orders")
 
-        else:
-            messages.error(request, "Este pedido no se puede entregar.")
+        # ✅ Cambiar estado a entregado
+        pedido.estado = "delivered"
+        pedido.save()
 
+        # ✅ Mensaje de éxito
+        messages.success(request, f"Pedido #{pedido.id} entregado correctamente y stock actualizado.")
+
+    # 🔁 Redirigir a la lista de pedidos de la tienda
     return redirect("pedidos:store_orders")
 # ==================================
 #  Detalles de los pedidos clientes

@@ -1,6 +1,7 @@
 {% extends 'index_description_product_client.html' %}
 {% load static %}
 {% block title %}Opciones de compra | SenaMerch {% endblock %}
+
 {% block main_content %}
 <section class="page-content">
   <!-- Sección de compra del producto -->
@@ -8,6 +9,16 @@
     <h2 class="product-purchase__title">
       Selecciona las opciones de compra: <br> {{ producto.nombre }}
     </h2>
+
+    <!-- Mensajes de error o éxito -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="product-purchase__message
+          {% if message.tags == 'error' %}product-purchase__message--error{% endif %}">
+          {{ message|safe }}
+        </div>
+      {% endfor %}
+    {% endif %}
 
     <!-- Formulario de compra -->
     <form method="POST" action="{% url 'carrito:agregar_al_carrito' producto.id %}" class="product-purchase__form">
@@ -34,9 +45,15 @@
           name="cantidad" 
           class="product-purchase__input" 
           min="1" 
-          value="1" 
+          value="{{ cantidad_actual|default:1 }}" 
+          max="{{ producto.stock }}"  
           required
         >
+
+        <!-- Mensaje de stock disponible -->
+        <span class="product-purchase__stock-info">
+          Stock disponible: {{ producto.stock }}
+        </span>
       </div>
 
       <!-- Botones de acción -->
@@ -63,4 +80,21 @@
     </form>
   </section>
 </section>
+
+<style>
+/* Mensaje de stock / error */
+.product-purchase__message--error {
+    color: #c00;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.product-purchase__stock-info {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.9rem;
+    color: #555;
+}
+</style>
+
 {% endblock %}

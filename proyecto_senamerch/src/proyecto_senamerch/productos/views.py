@@ -675,6 +675,13 @@ def toggle_product_status(request, producto_id):
 # =====================================================
 # COMPRA DE PRODUCTO
 # =====================================================
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from productos.models import Producto
+from tiendas.models import Tienda
+
+@login_required
 def buy_product(request, producto_id):
     # Obtener producto
     producto = get_object_or_404(Producto, id=producto_id)
@@ -691,6 +698,11 @@ def buy_product(request, producto_id):
                 es_vendedor = True
             else:
                 tienda_inactiva = True
+
+    # VALIDAR STOCK: si el producto no tiene stock, redirigir al listado y mostrar mensaje
+    if producto.stock <= 0:
+        messages.error(request, f"Lo sentimos, {producto.nombre} no tiene stock disponible.")
+        return redirect('productos:lista_productos')
 
     # Renderizar vista de compra pasando todas las variables necesarias
     return render(request, 'usuarios/buy_product.html', {
