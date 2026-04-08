@@ -303,3 +303,28 @@
     width: 100%;
   }
 }
+.store-orders__status {
+  padding: 6px 14px;
+  font-size: var(--fs-xxs);
+  font-weight: 700;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+/* PENDIENTE (igual al cliente) */
+.store-orders__status--pending {
+  background-color: var(--secundary-900);
+  color: var(--white);
+}
+
+/* ENTREGADO */
+.store-orders__status--delivered {
+  background-color: var(--secundary-300);
+  color: var(--black);
+}
+
+/* CANCELADO */
+.store-orders__status--canceled {
+  background-color: #e53935;
+  color: #ffffff;
+}

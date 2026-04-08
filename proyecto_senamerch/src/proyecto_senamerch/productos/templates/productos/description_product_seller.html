@@ -39,6 +39,12 @@
     <div class="product-admin-description__comments seller-comments">
       <h3 class="comments__title">Comentarios de los usuarios</h3>
 
+      {% if not producto.activo %}
+        <p class="product-disabled-message">
+          ⚠️ Este producto está deshabilitado. No puedes comentar.
+        </p>
+      {% endif %}
+
       <form id="formComentario" 
             data-producto-id="{{ producto.id }}"
             class="seller-comments__form">
@@ -53,9 +59,12 @@
             id="comentario"
             name="texto"
             class="seller-comments-products-store__textarea"
+            {% if not producto.activo %}disabled{% endif %}
             required></textarea>
 
-        <button type="submit" class="btn btn--primary comments-users-sidebar__pay">
+        <button type="submit"
+                class="btn btn--primary comments-users-sidebar__pay"
+                {% if not producto.activo %}disabled{% endif %}>
           Enviar comentario
           <img src="{% static 'assets/icons/contact.svg' %}" 
                alt="Icono enviar" 
@@ -64,9 +73,19 @@
 
       </form>
 
-      <!-- LISTA COMENTARIOS (SE LLENA CON JS) -->
+      <!-- LISTA COMENTARIOS -->
       <div id="listaComentarios" class="seller-comments__list">
-        <p>Cargando comentarios...</p>
+        {% if comentarios %}
+          {% for comentario in comentarios %}
+            <div class="comment-item">
+              <strong>{{ comentario.usuario.username }}</strong>
+              <p>{{ comentario.texto }}</p>
+              <small>{{ comentario.creado_en }}</small>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>No hay comentarios aún.</p>
+        {% endif %}
       </div>
 
     </div>
@@ -101,7 +120,7 @@
       </form>
     </div>
 
-    <!-- PROMEDIO DE CALIFICACIONES -->
+    <!-- PROMEDIO -->
     <div class="seller-details__rating rating">
       <p class="rating__text">Promedio de calificación</p>
       <p class="rating__score">⭐ {{ producto.rating_promedio }} / 5</p>
@@ -111,7 +130,10 @@
     <!-- ESTRELLAS -->
     <div class="details__rating rating" data-producto="{{ producto.id }}">
         {% for i in "12345"|make_list %}
-            <span class="star {% if forloop.counter <= producto.rating_promedio|floatformat:0 %}filled{% endif %}" data-value="{{ forloop.counter }}">★</span>
+            <span class="star {% if forloop.counter <= producto.rating_promedio|floatformat:0 %}filled{% endif %}"
+                  data-value="{{ forloop.counter }}">
+                ★
+            </span>
         {% endfor %}
     </div>
 
@@ -121,22 +143,31 @@
 
     <div class="seller-info">
       <h3 class="seller-info__subtitle">Lo que necesitas saber de este producto</h3>
-      <p class="seller-info__text"><strong>Unidad de medida:</strong> {{ producto.unidad_medida }}</p>
-      <p class="seller-info__text"><strong>Categoría:</strong> {{ producto.categoria }}</p>
-      <p class="seller-info__text"><strong>Descripción:</strong> {{ producto.descripcion }}</p>
-      <p class="seller-info__text"><strong>Fecha caducidad:</strong> {{ producto.fecha_caducidad }}</p>
-      <p class="seller-info__text"><strong>Tipo de envío:</strong> {{ producto.tipo_envio }}</p>
-      <p class="seller-info__text"><strong>Método de pago:</strong> {{ producto.metodo_pago }}</p>
-      <p class="seller-info__text"><strong>Descuento:</strong> {{ producto.descuento }}%</p>
+      <p><strong>Unidad de medida:</strong> {{ producto.unidad_medida }}</p>
+      <p><strong>Categoría:</strong> {{ producto.categoria }}</p>
+      <p><strong>Descripción:</strong> {{ producto.descripcion }}</p>
+      <p><strong>Fecha caducidad:</strong> {{ producto.fecha_caducidad }}</p>
+      <p><strong>Tipo de envío:</strong> {{ producto.tipo_envio }}</p>
+      <p><strong>Método de pago:</strong> {{ producto.metodo_pago }}</p>
+      <p><strong>Descuento:</strong> {{ producto.descuento }}%</p>
     </div>
 
-    <!-- EDITAR -->
+    <!-- EDITAR SOLO SI ESTÁ ACTIVO -->
+    {% if producto.activo %}
     <div class="seller-comments__secondary">
-      <a href="{% url 'productos:edit_product_seller' producto.id %}" class="btn-secundary btn-secundary-style seller-comments__edit">
+      <a href="{% url 'productos:edit_product_seller' producto.id %}"
+         class="btn-secundary btn-secundary-style seller-comments__edit">
         Editar
         <img src="{% static 'assets/icons/edit.svg' %}" class="btn-secundary__icon" alt="">
       </a>
     </div>
+    {% endif %}
+
+    {% if not producto.activo %}
+      <p class="product-disabled-message">
+        ⚠️ Producto deshabilitado. No puedes editarlo.
+      </p>
+    {% endif %}
 
   </div>
 
