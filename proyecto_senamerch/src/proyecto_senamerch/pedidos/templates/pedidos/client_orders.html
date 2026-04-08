@@ -22,9 +22,7 @@
 <section class="orders-panel">
   <div class="orders-panel__container">
 
-    <!-- ========================================
-        TABS
-    ======================================== -->
+    <!-- TABS -->
     <nav class="orders-panel__tabs">
       <button class="orders-panel__tab {% if selected_status == 'pending' %}orders-panel__tab--active{% endif %}" data-status="pending">
         Pendientes
@@ -39,9 +37,7 @@
       </button>
     </nav>
 
-    <!-- ========================================
-        SELECT RESPONSIVE
-    ======================================== -->
+    <!-- SELECT RESPONSIVE -->
     <div class="orders-panel__filter">
       <form method="get">
         <select name="status" class="orders-panel__select" onchange="this.form.submit()">
@@ -52,27 +48,20 @@
       </form>
     </div>
 
-    <!-- ========================================
-        LISTA DE PEDIDOS
-    ======================================== -->
+    <!-- LISTA DE PEDIDOS -->
     <div class="orders-panel__list">
 
       {% if pedidos %}
-
         {% for pedido in pedidos %}
-        <article class="order-card">
+        <article class="order-card {% if pedido.estado == 'canceled' or pedido.estado == 'cancelado' %}order-card--canceled{% endif %}
+        {% if pedido.estado == 'delivered' or pedido.estado == 'entregado' %}order-card--delivered{% endif %}">
 
           <!-- HEADER -->
           <header class="order-card__top">
 
             <div class="order-card__meta">
-              <h3 class="order-card__id">
-                Pedido #{{ pedido.id }}
-              </h3>
-
-              <p class="order-card__date">
-                {{ pedido.creado_en|date:"d/m/Y H:i" }}
-              </p>
+              <h3 class="order-card__id">Pedido #{{ pedido.id }}</h3>
+              <p class="order-card__date">{{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
             </div>
 
             <span class="order-card__status order-card__status--{{ pedido.estado }}">
@@ -99,34 +88,27 @@
           <!-- PRODUCTOS -->
           <div class="order-card__products">
             {% for item in pedido.items.all %}
-            <div class="order-card__product">
-              <p class="order-card__product-name">
-                {{ item.producto.nombre }}
-              </p>
-              <p class="order-card__product-qty">
-                x{{ item.cantidad }}
-              </p>
+            <div class="order-card__product {% if pedido.estado == 'canceled' or pedido.estado == 'cancelado' %}order-card__product--canceled{% endif %}
+            {% if pedido.estado == 'delivered' or pedido.estado == 'entregado' %}order-card__product--delivered{% endif %}">
+              <p class="order-card__product-name">{{ item.producto.nombre }}</p>
+              <p class="order-card__product-qty">x{{ item.cantidad }}</p>
             </div>
             {% endfor %}
           </div>
 
           <!-- TOTAL -->
           <div class="order-card__total">
-            Total del pedido:
-            <strong>${{ pedido.total }}</strong>
+            Total del pedido: <strong>${{ pedido.total }}</strong>
           </div>
 
           <!-- TIEMPO RESTANTE -->
           {% if pedido.estado == "pending" %}
           <div class="order-card__cancelation-time">
-
             {% if pedido.tiempo_restante_cancelacion %}
               <span>
                 Tiempo restante para cancelar el pedido:
-
                 {% if pedido.horas_restantes > 0 %}
-                  {{ pedido.horas_restantes }} horas
-                  y {{ pedido.minutos_restantes }} minutos
+                  {{ pedido.horas_restantes }} horas y {{ pedido.minutos_restantes }} minutos
                 {% else %}
                   Pedido cancelado automáticamente
                 {% endif %}
@@ -134,41 +116,30 @@
             {% else %}
               <span>Pedido cancelado automáticamente</span>
             {% endif %}
-
           </div>
           {% endif %}
 
           <!-- ACCIONES -->
           <div class="order-card__actions">
-
             {% if pedido.estado == "pending" %}
             <form method="post" action="{% url 'pedidos:cancel_order' pedido.id %}">
               {% csrf_token %}
-              <button type="submit"
-                class="btn-secundary btn-secundary-style order-card__cancel">
+              <button type="submit" class="btn-secundary btn-secundary-style order-card__cancel">
                 Cancelar
-                <img src="{% static 'assets/icons/cancel.svg' %}"
-                     class="btn__icon"
-                     alt="Cancelar">
+                <img src="{% static 'assets/icons/cancel.svg' %}" class="btn__icon" alt="Cancelar">
               </button>
             </form>
             {% endif %}
-
             {% if pedido.estado == "delivered" %}
-            <a href="{% url 'pedidos:view_purchase' pedido.id %}"
-               class="btn-secundary btn-secundary-style">
+            <a href="{% url 'pedidos:view_purchase' pedido.id %}" class="btn-secundary btn-secundary-style">
               Ver detalle
-              <img src="{% static 'assets/icons/details_white.svg' %}"
-                   class="btn__icon--big"
-                   alt="Detalle">
+              <img src="{% static 'assets/icons/details_white.svg' %}" class="btn__icon--big" alt="Detalle">
             </a>
             {% endif %}
-
           </div>
 
         </article>
         {% endfor %}
-
       {% else %}
         <p>No hay pedidos con este estado.</p>
       {% endif %}
@@ -181,50 +152,28 @@
 <!-- JS ALERTA -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-
   const overlay = document.querySelector(".custom-alert-overlay");
   const alertBox = document.querySelector(".custom-alert");
-
   if (overlay && alertBox) {
-
-    setTimeout(() => {
-      alertBox.classList.add("show");
-    }, 100);
-
+    setTimeout(() => alertBox.classList.add("show"), 100);
     setTimeout(() => {
       overlay.classList.add("hide");
-
-      setTimeout(() => {
-        overlay.remove();
-      }, 300);
-
+      setTimeout(() => overlay.remove(), 300);
     }, 2000);
   }
-
 });
 </script>
 
-<!-- TU JS ORIGINAL -->
+<!-- JS TABS -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-
   const tabs = document.querySelectorAll('.orders-panel__tab');
   const currentStatus = new URLSearchParams(window.location.search).get('status') || 'pending';
-
   tabs.forEach(tab => {
-
     const status = tab.dataset.status;
-
-    if (status === currentStatus) {
-      tab.classList.add('orders-panel__tab--active');
-    }
-
-    tab.addEventListener('click', () => {
-      window.location.search = `?status=${status}`;
-    });
-
+    if (status === currentStatus) tab.classList.add('orders-panel__tab--active');
+    tab.addEventListener('click', () => window.location.search = `?status=${status}`);
   });
-
 });
 </script>
 

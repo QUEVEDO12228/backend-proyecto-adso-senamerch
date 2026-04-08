@@ -4,6 +4,8 @@ from tiendas.models import Tienda
 from decimal import Decimal
 from django.contrib.auth.models import User
 from django.db.models import Avg
+from django.core.exceptions import ValidationError
+
 
 # ----------------------------
 # MODELO PRODUCTO
@@ -46,40 +48,46 @@ class Producto(models.Model):
     tienda = models.ForeignKey(Tienda, on_delete=models.CASCADE, related_name='productos')
     nombre = models.CharField(max_length=150)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
+
     categoria = models.CharField(max_length=50, choices=CATEGORIA_CHOICES, default='otros')
     unidad_medida = models.CharField(max_length=20, choices=UNIDAD_MEDIDA_CHOICES, default='kg')
     tipo_producto = models.CharField(max_length=20, choices=TIPO_PRODUCTO_CHOICES, default='solido')
-    descuento = models.PositiveIntegerField(default=0, help_text="Porcentaje de descuento")
+
+    descuento = models.PositiveIntegerField(default=0)
     fecha_caducidad = models.DateField(default=timezone.now)
+
     metodo_pago = models.CharField(max_length=20, choices=METODO_PAGO_CHOICES, default='efectivo')
     tipo_envio = models.CharField(max_length=20, choices=TIPO_ENVIO_CHOICES, default='contraentrega')
-    stock = models.PositiveIntegerField(default=0, verbose_name="Stock disponible", help_text="Cantidad actual disponible para la venta")
-    stock_minimo = models.PositiveIntegerField(default=0, verbose_name="Stock mínimo", help_text="Nivel mínimo antes de mostrar alerta")
+
+    stock = models.PositiveIntegerField(default=0)
+    stock_minimo = models.PositiveIntegerField(default=0)
+
     descripcion = models.TextField()
     activo = models.BooleanField(default=True)
+
     creado_en = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.nombre} - {self.tienda.nombre}"
 
     # =========================
-    # 🔥 OVERRIDE SAVE (AUTO CONTROL STOCK)
+    # 🔥 SAVE CORREGIDO (CLAVE)
     # =========================
     def save(self, *args, **kwargs):
+
         # Evitar stock negativo
         if self.stock < 0:
             self.stock = 0
 
-        # 🔥 AUTO DESACTIVAR / ACTIVAR
+        # 🚨 SOLO DESACTIVA SI NO HAY STOCK
+        # (NO vuelve a activar automáticamente)
         if self.stock == 0:
             self.activo = False
-        else:
-            self.activo = True
 
         super().save(*args, **kwargs)
 
     # =========================
-    # 🔥 MÉTODOS DE STOCK
+    # 📦 MÉTODOS DE STOCK
     # =========================
     def reducir_stock(self, cantidad):
         if self.stock < cantidad:
@@ -87,7 +95,6 @@ class Producto(models.Model):
 
         self.stock -= cantidad
 
-        # 🔥 seguridad extra
         if self.stock <= 0:
             self.stock = 0
             self.activo = False
@@ -97,8 +104,8 @@ class Producto(models.Model):
     def aumentar_stock(self, cantidad):
         self.stock += cantidad
 
-        # 🔥 reactivar automáticamente
-        if self.stock > 0:
+        # 🔥 SOLO reactivar si estaba desactivado
+        if self.stock > 0 and not self.activo:
             self.activo = True
 
         self.save()
@@ -162,13 +169,25 @@ class Calificacion(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name="calificaciones")
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     puntuacion = models.PositiveIntegerField(
-        choices=[(1, "1 estrella"), (2, "2 estrellas"), (3, "3 estrellas"), (4, "4 estrellas"), (5, "5 estrellas")]
+        choices=[
+            (1, "1 estrella"),
+            (2, "2 estrellas"),
+            (3, "3 estrellas"),
+            (4, "4 estrellas"),
+            (5, "5 estrellas")
+        ]
     )
     creado_en = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("producto", "usuario")
         ordering = ["-creado_en"]
+
+    def save(self, *args, **kwargs):
+        # 🚨 NO PERMITIR CALIFICAR PRODUCTO INACTIVO
+        if not self.producto.activo:
+            raise ValidationError("No puedes calificar un producto deshabilitado.")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.usuario.username} calificó {self.producto.nombre} con {self.puntuacion}"
@@ -185,6 +204,12 @@ class Comentario(models.Model):
 
     class Meta:
         ordering = ["-creado_en"]
+
+    def save(self, *args, **kwargs):
+        # 🚨 BLOQUEO GLOBAL (NADIE puede comentar si está deshabilitado)
+        if not self.producto.activo:
+            raise ValidationError("No puedes comentar en un producto deshabilitado.")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.usuario.username} comentó en {self.producto.nombre}"

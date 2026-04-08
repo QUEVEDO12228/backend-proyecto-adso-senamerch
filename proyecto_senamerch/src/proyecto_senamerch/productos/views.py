@@ -590,13 +590,22 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from productos.models import Producto, Comentario
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Producto, Comentario
+
 @login_required
 def description_product_seller(request, id):
-    # Obtener producto
     producto = get_object_or_404(Producto, id=id)
 
+    # 🚨 BLOQUEO TOTAL SI PRODUCTO INACTIVO
+    if not producto.activo:
+        if request.method == "POST":
+            return redirect("productos:description_product_seller", id=id)
+
     if request.method == "POST":
-        texto = request.POST.get("comentario", "").strip()
+        texto = request.POST.get("texto", "").strip()  # ✅ CORREGIDO
+
         if texto:
             Comentario.objects.create(
                 producto=producto,
@@ -605,10 +614,8 @@ def description_product_seller(request, id):
             )
             return redirect("productos:description_product_seller", id=id)
 
-    # Obtener comentarios usando el related_name único
     comentarios = producto.comentarios_producto.order_by("-creado_en")
 
-    # Renderizar la plantilla
     return render(request, "productos/description_product_seller.html", {
         "producto": producto,
         "comentarios": comentarios
@@ -654,23 +661,39 @@ def description_product_client(request, id):
 # =====================================================
 # ACTIVAR / DESACTIVAR PRODUCTO
 # =====================================================
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.contrib import messages
+from .models import Producto
+
+@require_POST
 @login_required
 def toggle_product_status(request, producto_id):
-    # Obtener producto del vendedor
     producto = get_object_or_404(
         Producto,
         id=producto_id,
         tienda__propietario=request.user
     )
-    # Cambiar estado activo/inactivo
-    producto.activo = not producto.activo
-    producto.save()
-    # Mostrar mensaje según estado
-    if producto.activo:
+
+    # 🔴 SI ESTÁ INACTIVO → INTENTAR ACTIVAR
+    if not producto.activo:
+
+        # 🚨 VALIDACIÓN: NO ACTIVAR SIN STOCK
+        if producto.stock == 0:
+            messages.error(request, "No puedes habilitar un producto sin stock.")
+            return redirect("productos:description_product_seller", producto.id)
+
+        producto.activo = True
         messages.success(request, "Producto habilitado correctamente.")
+
+    # 🟢 SI ESTÁ ACTIVO → DESHABILITAR
     else:
+        producto.activo = False
         messages.warning(request, "Producto deshabilitado correctamente.")
-    # Redirigir a la descripción del producto
+
+    producto.save()
+
     return redirect("productos:description_product_seller", producto.id)
 # =====================================================
 # COMPRA DE PRODUCTO
