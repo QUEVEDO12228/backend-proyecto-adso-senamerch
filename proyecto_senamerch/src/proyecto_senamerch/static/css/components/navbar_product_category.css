@@ -77,7 +77,12 @@
   z-index:20}
 
 .navbar_product_category__link--icon-nav-bar:hover .navbar_product_category__tooltip{opacity:1}
-
+.navbar_product_category__title--SenaMerch{
+    display: flex;
+    align-items: center; /* 🔥 centra verticalmente */
+    font-size: 0;
+    font-family: var(--font-primary-bold);
+}
 /* RESPONSIVE */
 
 @media (max-width:768px){

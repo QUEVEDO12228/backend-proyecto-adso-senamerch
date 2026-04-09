@@ -17,7 +17,6 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-
 import os
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -25,9 +24,6 @@ from django.core.files import File
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-# ==========================================
-# INICIO DEL VENDEDOR
-# ==========================================
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from productos.models import Producto, Calificacion
@@ -60,69 +56,45 @@ def home_seller(request):
     return render(request, "tiendas/card.html", {
         "productos": productos
     })
-# ==========================================
-# PASO 1 - DATOS BÁSICOS DE LA TIENDA
-# ==========================================
-import os
-import re
-from django.conf import settings
-from django.core.files.storage import FileSystemStorage
-from django.core.files import File
-from django.core.validators import validate_email
-from django.core.exceptions import ValidationError
-from django.contrib import messages
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-
-from .models import Tienda
-
-
+# ---> Lógica Creación tienda. PASO 1 - DATOS BÁSICOS DE LA TIENDA
 @login_required
 def create_store_view(request):
-    # Evitar que el usuario cree más de una tienda
+    # ---> Evitar que el usuario cree más de una tienda
     if Tienda.objects.filter(propietario=request.user).exists():
         messages.warning(request, 'Ya tienes una tienda creada.')
         return redirect('tiendas:home_seller')
-
     if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip().lower()
         phone = request.POST.get('phone', '').strip()
         category = request.POST.get('category', '').strip()
-
-        # 🔴 VALIDACIONES BÁSICAS
+        # ---> VALIDACIONES BÁSICAS
         if not all([name, email, phone, category]):
             messages.error(request, 'Todos los campos son obligatorios.')
             return redirect('tiendas:create_store')
-
         if len(name) < 3:
             messages.error(request, 'El nombre debe tener mínimo 3 caracteres.')
             return redirect('tiendas:create_store')
-
-        # ✅ VALIDAR NOMBRE ÚNICO
+        # ---> VALIDAR NOMBRE ÚNICO
         if Tienda.objects.filter(nombre__iexact=name).exists():
             messages.error(request, 'Ese nombre de tienda ya está en uso.')
             return redirect('tiendas:create_store')
-
-        # ✅ VALIDAR EMAIL ÚNICO
+        # ---> VALIDAR EMAIL ÚNICO
         if Tienda.objects.filter(email__iexact=email).exists():
             messages.error(request, 'Ese correo ya está en uso.')
             return redirect('tiendas:create_store')
-
-        # ✅ VALIDAR EMAIL FORMATO
+        # ---> VALIDAR EMAIL FORMATO
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Correo inválido.')
             return redirect('tiendas:create_store')
-
-        # ✅ VALIDAR TELÉFONO
+        # ---> VALIDAR TELÉFONO
         phone_clean = phone.replace(' ', '').replace('-', '')
         if not re.match(r'^(\+57)?[0-9]{10}$', phone_clean):
             messages.error(request, 'Teléfono inválido.')
             return redirect('tiendas:create_store')
-
-        # 💾 GUARDAR EN SESIÓN
+        # ---> GUARDAR EN SESIÓN
         request.session['store_data'] = {
             'name': name,
             'email': email,
@@ -130,57 +102,44 @@ def create_store_view(request):
             'category': category
         }
         request.session.modified = True
-
         return redirect('tiendas:create_store2')
-
     return render(request, 'tiendas/create_store.html')
-
-
+# ---> Lógica Creación tienda. PASO 2 - DATOS BÁSICOS DE LA TIENDA
 @login_required
 def create_store2(request):
     store_data = request.session.get('store_data')
     store_address = request.session.get('store_address', {})
     store_temp = request.session.get('store_temp', {})
-
     if not store_data:
         messages.error(request, 'Debes completar el paso 1.')
         return redirect('tiendas:create_store')
-
     if request.method == 'POST':
         description = request.POST.get('description', '').strip()
         imagen = request.FILES.get('cover')
-
         store_temp = store_temp.copy()
         store_temp['description'] = description
-
-        # 📌 GUARDAR IMAGEN EN /media/temp/
+        # ---> GUARDAR IMAGEN EN /media/temp/
         if imagen:
             fs = FileSystemStorage(location=os.path.join(settings.MEDIA_ROOT, 'temp'))
             filename = fs.save(imagen.name, imagen)
             store_temp['imagen_name'] = filename
-
         request.session['store_temp'] = store_temp
         request.session.modified = True
-
-        # 🔴 VALIDACIONES
+        # ---> VALIDACIONES
         if not store_address:
             messages.error(request, 'Debes agregar la dirección.')
             return redirect('tiendas:add_address_store')
-
         if not description:
             messages.error(request, 'La descripción es obligatoria.')
             return render(request, 'tiendas/create_store2.html', {'store_temp': store_temp})
-
         if not imagen and not store_temp.get('imagen_name'):
             messages.error(request, 'Debes subir una imagen.')
             return render(request, 'tiendas/create_store2.html', {'store_temp': store_temp})
-
-        # ✅ VALIDAR NOMBRE ÚNICO (por seguridad)
+        # ---> VALIDAR NOMBRE ÚNICO (por seguridad)
         if Tienda.objects.filter(nombre__iexact=store_data['name']).exists():
             messages.error(request, 'Ya existe una tienda con ese nombre.')
             return redirect('tiendas:create_store')
-
-        # 📌 RECUPERAR IMAGEN CORRECTAMENTE
+        # ---> RECUPERAR IMAGEN CORRECTAMENTE
         imagen_final = None
         if imagen:
             imagen_final = imagen
@@ -188,9 +147,8 @@ def create_store2(request):
             temp_path = os.path.join(settings.MEDIA_ROOT, 'temp', store_temp['imagen_name'])
             with open(temp_path, 'rb') as f:
                 imagen_final = File(f, name=store_temp['imagen_name'])
-                # ⚠️ Se crea File en memoria y el archivo se cierra al salir del with
-
-        # 🟢 CREAR TIENDA
+                # ---> Se crea File en memoria y el archivo se cierra al salir del with
+        # ---> CREAR TIENDA
         tienda = Tienda.objects.create(
             propietario=request.user,
             nombre=store_data['name'],
@@ -207,42 +165,36 @@ def create_store2(request):
             municipio=store_address.get('city', ''),
             informacion_adicional=store_address.get('additional_info', ''),
         )
-
-        # 🧹 BORRAR IMAGEN TEMPORAL
+        # ---> BORRAR IMAGEN TEMPORAL
         if store_temp.get('imagen_name'):
             temp_path = os.path.join(settings.MEDIA_ROOT, 'temp', store_temp['imagen_name'])
             try:
                 os.remove(temp_path)
             except PermissionError:
-                # ⚠️ Windows bloqueó el archivo, intentar eliminar más tarde
+                # ---> Windows bloqueó el archivo, intentar eliminar más tarde
                 pass
-
-        # 🧹 LIMPIAR SESIÓN
+        # ---> LIMPIAR SESIÓN
         request.session.pop('store_data', None)
         request.session.pop('store_address', None)
         request.session.pop('store_temp', None)
-
         messages.success(request, 'Tienda creada correctamente.')
         return redirect('tiendas:home_seller')
-
     return render(request, 'tiendas/create_store2.html', {
         'store_temp': store_temp
     })
-
+# ---> Lógica para agreagr la dirección de la tienda.
 @login_required
 def add_address_store(request):
-    # 🔹 Primero buscar step_1, si no existe usar step_2 (store_address)
+    # ---> Primero buscar step_1, si no existe usar step_2 (store_address)
     data = request.session.get('store_address_step_1', {})
     if not data:
         data = request.session.get('store_address', {})
-
     if request.method == 'POST':
         neighborhood = request.POST.get('neighborhood', '').strip()
         address_number = request.POST.get('address_number', '').strip()
         road_type = request.POST.get('road_type', '').strip()
         postal_code = request.POST.get('postal_code', '').strip()
-
-        # 🔥 Guardar en sesión step_1 siempre
+        # ---> Guardar en sesión step_1 siempre
         request.session['store_address_step_1'] = {
             'neighborhood': neighborhood,
             'address_number': address_number,
@@ -250,47 +202,38 @@ def add_address_store(request):
             'postal_code': postal_code,
         }
         request.session.modified = True
-
-        # 🔥 Validaciones
+        # ---> Validaciones
         if not neighborhood or not address_number:
             messages.error(request, 'Barrio y dirección obligatorios.')
             return redirect('tiendas:add_address_store')
-
         if len(neighborhood) < 3:
             messages.error(request, 'El barrio debe tener mínimo 3 caracteres.')
             return redirect('tiendas:add_address_store')
-
         if len(address_number) < 5:
             messages.error(request, 'Dirección inválida.')
             return redirect('tiendas:add_address_store')
-
         if postal_code and not postal_code.isdigit():
             messages.error(request, 'Código postal inválido.')
             return redirect('tiendas:add_address_store')
-
         return redirect('tiendas:add_address_store2')
-
     return render(request, 'tiendas/add_address_store.html', {
         'data': data
     })
+# ---> Lógica para terminar de agregar la dirección de la tienda.
 @login_required
 def add_address_store2(request):
     step_1 = request.session.get('store_address_step_1', {})
     step_2 = request.session.get('store_address', {})
-
-    # Combinar datos de step_1 y step_2 para mostrar en el template
+    # ---> Combinar datos de step_1 y step_2 para mostrar en el template
     data = {**step_1, **step_2}  # step_2 sobrescribe step_1 si hay datos
-
     if not step_1 and not step_2:
         messages.error(request, 'Debes completar el paso anterior.')
         return redirect('tiendas:add_address_store')
-
     if request.method == 'POST':
         department = request.POST.get('department', '').strip()
         city = request.POST.get('city', '').strip()
         additional_info = request.POST.get('additional_info', '').strip()
-
-        # Guardar todos los datos en la sesión
+        # ---> Guardar todos los datos en la sesión
         request.session['store_address'] = {
             **step_1,
             'department': department,
@@ -298,110 +241,100 @@ def add_address_store2(request):
             'additional_info': additional_info,
         }
         request.session.modified = True
-
-        # Limpiar step_1 porque ya se combinó
+        # ---> Limpiar step_1 porque ya se combinó
         request.session.pop('store_address_step_1', None)
-
         messages.success(request, 'Dirección agregada correctamente')
         return redirect('tiendas:create_store2')
-
     return render(request, 'tiendas/add_address_store2.html', {
         'data': data
     })
+# ---> Lógica para visualizar el perfil del vendedor.
 @login_required
 def profile_store_seller(request):
-    # Obtener la tienda del usuario
+    # ---> Obtener la tienda del usuario
     tienda = Tienda.objects.filter(propietario=request.user).first()
-    # Verificar si el usuario tiene tienda creada
+    # ---> Verificar si el usuario tiene tienda creada
     if not tienda:
         messages.warning(request, "Primero debes crear una tienda.")
         return redirect('tiendas:create_store')
-    # Obtener perfil del usuario si existe
+    # ---> Obtener perfil del usuario si existe
     profile = getattr(request.user, 'profile', None)
-    # Renderizar perfil de la tienda del vendedor
+    # ---> Renderizar perfil de la tienda del vendedor
     return render(request, 'tiendas/profile_store_seller.html', {
         'tienda': tienda,
         'profile': profile
     })
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib import messages
-
+# ---> Lógica para deshabilitar la tienda.
 @login_required
 def disable_store(request):
     if request.method == "POST":
         tienda = Tienda.objects.get(propietario=request.user)
-
         tienda.activo = False
         tienda.save()
-
         print("TIENDA DESHABILITADA:", tienda.activo)
-
     return redirect('usuarios:home_client')
+# ---> Lógica para habilitar tienda.
 @login_required
 def enable_store(request):
     tienda = get_object_or_404(Tienda, propietario=request.user)
-
     tienda.activo = True
     tienda.save()
-
     messages.success(request, "Tienda habilitada nuevamente.")
-
     return redirect('tiendas:profile_store_seller')
+# ---> Lógica para visualizar el catalogo de la tienda.
 @login_required
 def seller_catalog(request):
-    # Obtener la tienda del usuario
+    # ---> Obtener la tienda del usuario
     tienda = Tienda.objects.filter(propietario=request.user).first()
-    # Obtener productos que pertenecen al vendedor
+    # ---> Obtener productos que pertenecen al vendedor
     productos = Producto.objects.filter(
         tienda__propietario=request.user
     )
-    # Renderizar catálogo del vendedor
+    # ---> Renderizar catálogo del vendedor
     return render(request, 'tiendas/seller_card.html', {
         'productos': productos,
         'tienda': tienda   # Enviar tienda al template
     })
+# ---> Editar el perfil del vendedor paso 1.
 @login_required
 def edit_seller_profile(request):
-    # Obtener o crear perfil del usuario
+    # ---> Obtener o crear perfil del usuario
     profile, created = Profile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        # Guardar datos básicos del usuario en sesión
+        # ---> Guardar datos básicos del usuario en sesión
         request.session['edit_user_data'] = {
             "email": request.POST.get('email'),
             "first_name": request.POST.get('first_name'),
             "telefono": request.POST.get('telefono'),
         }
-        # Guardar imagen de perfil si fue enviada
+        # ---> Guardar imagen de perfil si fue enviada
         if 'imagen' in request.FILES:
             profile.image = request.FILES['imagen']
             profile.save()
-        request.session.modified = True  # Marcar sesión como modificada
-        # Redirigir al paso 2 de edición
+        request.session.modified = True  # ---> Marcar sesión como modificada
+        # ---> Redirigir al paso 2 de edición
         return redirect('tiendas:edit_seller_profile2')
-    # Renderizar formulario de edición
+    # ---> Renderizar formulario de edición
     return render(request, 'tiendas/edit_seller_profile.html', {
         'profile': profile
     })
+# ---> Editar el perfil del vendedor paso 2.
+# ---> Edición del perfil del vendedor (paso 2) con guardado y redirección al perfil de tienda
 @login_required
 def edit_seller_profile2(request):
     data_user = request.session.get('edit_user_data')
     data_address = request.session.get('edit_address_full')
-
     if not data_user:
         return redirect('tiendas:edit_seller_profile')
-
     if request.method == "POST":
         user = request.user
         profile = user.profile
-
+        # ---> Actualizar datos básicos
         user.email = data_user.get("email", user.email)
         user.first_name = data_user.get("first_name", user.first_name)
         user.save()
-
+        # ---> Actualizar perfil
         profile.phone = data_user.get("telefono", profile.phone)
-
         if data_address:
             profile.neighborhood = data_address.get("neighborhood")
             profile.address_number = data_address.get("address_number")
@@ -410,78 +343,66 @@ def edit_seller_profile2(request):
             profile.department = data_address.get("department")
             profile.city = data_address.get("city")
             profile.extra_info = data_address.get("additional_info")
-
         profile.save()
-
+        # ---> Cambio de contraseña
         password = request.POST.get("password")
         confirm = request.POST.get("confirm_password")
-
         if password and confirm:
             if password != confirm:
                 messages.error(request, "Las contraseñas no coinciden.")
                 return redirect('tiendas:edit_seller_profile2')
-
             user.set_password(password)
-            update_session_auth_hash(request, user)
             user.save()
-
+            update_session_auth_hash(request, user)
+        # ---> Limpiar sesión
         request.session.pop('edit_user_data', None)
         request.session.pop('edit_address_data', None)
         request.session.pop('edit_address_full', None)
-
-        # ALERTA
+        # ---> Mensaje éxito
         messages.success(request, "Cambios guardados correctamente.")
-
-        return render(request, 'tiendas/edit_seller_profile2.html', {
-            "profile": request.user.profile,
-            "redirect_url": "tiendas:profile_store_seller"
-        })
-
+        # ---> REDIRECCIÓN A LA VISTA QUE QUIERES
+        return redirect('tiendas:profile_store_seller')
     return render(request, 'tiendas/edit_seller_profile2.html', {
         "profile": request.user.profile
     })
+# ---> Editar dirección del perfil del vendedor paso 1.
 @login_required
 def edit_address_seller(request):
     """Paso 1: barrio, número, tipo de vía, código postal"""
-    # Obtener perfil del usuario
+    # ---> Obtener perfil del usuario
     profile = request.user.profile
-
     if request.method == "POST":
-        # Actualizar datos de dirección usando los campos existentes en el modelo
+        # ---> Actualizar datos de dirección usando los campos existentes en el modelo
         profile.neighborhood = request.POST.get("neighborhood", profile.neighborhood)
         profile.address_number = request.POST.get("address_number", profile.address_number)
         profile.road_type = request.POST.get("road_type", profile.road_type)
         profile.postal_code = request.POST.get("postal_code", profile.postal_code)
         profile.save()
-
-        # Guardar datos en sesión para el paso 2
+        # ---> Guardar datos en sesión para el paso 2
         request.session['edit_address_data'] = {
             "neighborhood": profile.neighborhood,
             "address_number": profile.address_number,
             "road_type": profile.road_type,
             "postal_code": profile.postal_code
         }
-
-        # Redirigir al paso 2
+        # ---> Redirigir al paso 2
         return redirect('tiendas:edit_address_seller2')
-
-    # Renderizar formulario de dirección paso 1
+    # ---> Renderizar formulario de dirección paso 1
     return render(request, 'tiendas/add_adress_seller_edit.html', {
         "profile": profile
     })
+# ---> Editar dirección del perfil del vendedor paso 2.
 @login_required
 def edit_address_seller2(request):
     """Paso 2: departamento, ciudad, info adicional"""
     profile = request.user.profile
-    # Recuperar datos guardados del paso 1
+    # ---> Recuperar datos guardados del paso 1
     data = request.session.get('edit_address_data', {})
     departamentos = ["Risaralda", "Quindío", "Caldas"]
-
     if request.method == "POST":
         department = request.POST.get("department", "").strip()
         city = request.POST.get("city", "").strip()
         additional_info = request.POST.get("additional_info", "").strip()
-
         if not department or not city:
             messages.error(request, "Departamento y municipio son obligatorios.")
             return render(request, 'tiendas/add_address_seller_edit2.html', {  # CORREGIDO
@@ -493,27 +414,21 @@ def edit_address_seller2(request):
                 },
                 "departamentos": departamentos
             })
-
-        # Guardar los datos del paso 2
+        # ---> Guardar los datos del paso 2
         profile.department = department
         profile.city = city
         profile.extra_info = additional_info
-
-        # Guardar también los datos del paso 1 desde sesión
+        # ---> Guardar también los datos del paso 1 desde sesión
         profile.neighborhood = data.get("neighborhood", profile.neighborhood)
         profile.address_number = data.get("address_number", profile.address_number)
         profile.road_type = data.get("road_type", profile.road_type)
         profile.postal_code = data.get("postal_code", profile.postal_code)
-
         profile.save()
-
-        # Limpiar sesión
+        # ---> Limpiar sesión
         request.session.pop('edit_address_data', None)
-
         messages.success(request, "Dirección actualizada correctamente.")
         return redirect('tiendas:edit_seller_profile2')
-
-    # GET
+    # ---> GET
     return render(request, 'tiendas/add_adress_seller_edit2.html', {  # CORREGIDO
         "profile": profile,
         "form_data": {
@@ -523,186 +438,129 @@ def edit_address_seller2(request):
         },
         "departamentos": departamentos
     })
-# ==========================================
-# EDITAR TIENDA - PASO 1
-# ==========================================
+# ---> Editar el perfil de la tienda paso 1.
 @login_required
 def edit_store_seller(request):
-    # Obtener tienda del vendedor
+    # ---> Obtener tienda del vendedor
     tienda = Tienda.objects.filter(propietario=request.user).first()
-    # Si no existe tienda, redirigir al perfil
+    # ---> Si no existe tienda, redirigir al perfil
     if not tienda:
         return redirect('tiendas:profile_store_seller')
     if request.method == "POST":
-        # Guardar datos básicos de la tienda en sesión
+        # ---> Guardar datos básicos de la tienda en sesión
         request.session['edit_store_data'] = {
             "nombre": request.POST.get("nombre"),
             "email": request.POST.get("email"),
             "telefono": request.POST.get("telefono"),
             "categoria": request.POST.get("categoria"),
         }
-        # Redirigir al paso 2
+        # ---> Redirigir al paso 2
         return redirect('tiendas:edit_store_seller2')
-    # Renderizar formulario de edición
+    # ---> Renderizar formulario de edición
     return render(request, 'tiendas/edit_store_seller.html', {
         'tienda': tienda
     })
-# ==========================================
-# EDITAR TIENDA - PASO 2
-# ==========================================
-from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from .models import Tienda
-
-
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.shortcuts import render, redirect
-
+# ---> Editar el perfil de la tienda paso 2
 @login_required
 def edit_store_seller2(request):
     tienda = Tienda.objects.filter(propietario=request.user).first()
     data = request.session.get('edit_store_data')
-
     if not tienda or not data:
         return redirect('tiendas:edit_store_seller')
-
     if request.method == "POST":
-
-        # -------------------------
-        # DATOS BÁSICOS
-        # -------------------------
+        # ---> DATOS BÁSICOS
         tienda.nombre = data.get("nombre", tienda.nombre)
         tienda.email = data.get("email", tienda.email)
         tienda.telefono = data.get("telefono", tienda.telefono)
         tienda.categoria = data.get("categoria", tienda.categoria)
-
-        # -------------------------
-        # DESCRIPCIÓN
-        # -------------------------
+        # ---> DESCRIPCIÓN
         descripcion = request.POST.get("descripcion", "").strip()
-
         if not descripcion:
             messages.error(request, "La descripción es obligatoria.")
             return render(request, 'tiendas/edit_store_seller2.html', {
                 'tienda': tienda
             })
-
         tienda.descripcion = descripcion
-
-        # -------------------------
-        # IMAGEN 🔥
-        # -------------------------
+        # ---> IMAGEN 
         imagen = request.FILES.get("imagen")
-
         if imagen:
             # eliminar anterior (PRO)
             if tienda.imagen_portada:
                 tienda.imagen_portada.delete(save=False)
-
             tienda.imagen_portada = imagen
-
-        # -------------------------
-        # GUARDAR
-        # -------------------------
+        # ---> GUARDAR
         tienda.save()
-
-        # -------------------------
-        # LIMPIAR SESIÓN
-        # -------------------------
+        # ---> LIMPIAR SESIÓN
         request.session.pop('edit_store_data', None)
-
-        # -------------------------
-        # MENSAJE
-        # -------------------------
+        # ---> MENSAJE
         messages.success(request, "Cambios guardados correctamente.")
-
-        # 🔥 REDIRECT (MEJOR PRÁCTICA)
+        # ---> REDIRECT (MEJOR PRÁCTICA)
         return redirect('tiendas:profile_store_seller')
-
     return render(request, 'tiendas/edit_store_seller2.html', {
         'tienda': tienda
     })
-# ==========================================
-# VISTA DIRECCIÓN DE LA TIENDA
-# ==========================================
+# ---> Visualizar el perfil de la direccción de la tienda 
 @login_required
 def store_address_view(request):
-    # Obtener tienda del vendedor
+    # ---> Obtener tienda del vendedor
     tienda = Tienda.objects.filter(propietario=request.user).first()
-    # Renderizar información de dirección
+    # ---> Renderizar información de dirección
     return render(request, 'tiendas/store_profile_address.html', {
         'tienda': tienda,
         'direccion': tienda
     })
 @login_required
+# ---> Visualizar la dirección del vendedor.
 def seller_address_view(request):
-    # Obtener o crear perfil del usuario
+    # ---> Obtener o crear perfil del usuario
     profile, created = Profile.objects.get_or_create(user=request.user)
-    # Renderizar dirección del vendedor
+    # ---> Renderizar dirección del vendedor
     return render(request, "tiendas/seller_profile_address.html", {
         "profile": profile
     })
-# ==========================================
-# EDITAR DIRECCIÓN TIENDA - PASO 1
-# ==========================================
+# ---> Editar la dirección del perfil de la tienda paso 1 DATOS BÁSICOS
 @login_required
 def edit_address_store(request):
-    # Obtener tienda del vendedor
+    # --> Obtener tienda del vendedor
     tienda = Tienda.objects.filter(propietario=request.user).first()
-
-    # Validar existencia de tienda
+    # ---> Validar existencia de tienda
     if not tienda:
         messages.error(request, "Primero debes crear la tienda.")
         return redirect('tiendas:create_store')
-
     if request.method == "POST":
-        # Obtener datos del formulario
+        # ---> Obtener datos del formulario
         neighborhood = request.POST.get("neighborhood", "").strip()
         address_number = request.POST.get("address_number", "").strip()
         road_type = request.POST.get("road_type", "").strip()
         postal_code = request.POST.get("postal_code", "").strip()
-
-        # Validar campos obligatorios
+        # ---> Validar campos obligatorios
         if not neighborhood or not address_number:
             messages.error(request, "Barrio y número de dirección son obligatorios.")
             return redirect('tiendas:edit_address_store')
-
-        # 🔥 GUARDAR EN BASE DE DATOS
+        # ---> GUARDAR EN BASE DE DATOS
         tienda.barrio = neighborhood
         tienda.numero_direccion = address_number
         tienda.tipo_via = road_type
         tienda.codigo_postal = postal_code
-
         tienda.save()
-
         messages.success(request, "Dirección actualizada correctamente.")
-
-        # Redirigir al paso 2
+        # ---> Redirigir al paso 2
         return redirect('tiendas:edit_address_store2')
-
-    # GET → mostrar formulario con datos actuales
+    # ---> GET → mostrar formulario con datos actuales
     return render(request, "tiendas/add_address_store_edit.html", {
         "tienda": tienda
     })
-# ==========================================
-# EDITAR DIRECCIÓN TIENDA - PASO 2
-# ==========================================
+# ---> Editar la dirección del perfil de la tienda paso 2 DATOS BÁSICOS
 @login_required
 def edit_address_store2(request):
     tienda = Tienda.objects.filter(propietario=request.user).first()
-
     if not tienda:
         return redirect("tiendas:edit_address_store")
-
     departamentos = ["Risaralda", "Quindío", "Caldas"]
-
     if request.method == "POST":
         department = request.POST.get("department", "").strip()
         city = request.POST.get("city", "").strip()
         additional_info = request.POST.get("additional_info", "").strip()
-
         if not department or not city:
             messages.error(request, "Departamento y municipio son obligatorios.")
             return render(request, "tiendas/add_address_store_edit2.html", {
@@ -714,23 +572,19 @@ def edit_address_store2(request):
                 },
                 "departamentos": departamentos
             })
-
-        # 🔥 GUARDAR DIRECTO (SIN SESSION)
+        # ---> GUARDAR DIRECTO (SIN SESSION)
         tienda.departamento = department
         tienda.municipio = city
         tienda.informacion_adicional = additional_info
-
         tienda.save()
-
         messages.success(request, "Dirección de la tienda actualizada correctamente.")
-
         return redirect("tiendas:edit_store_seller2")
-
     return render(request, "tiendas/add_address_store_edit2.html", {
         "tienda": tienda,
         "form_data": {},
         "departamentos": departamentos
     })
+# ---> Lógica para el listado de prodcutos de la tienda
 @login_required
 def list_products_store_seller(request):
     # Obtener tienda del vendedor
@@ -744,17 +598,11 @@ def list_products_store_seller(request):
         'productos': productos,
         'tienda': tienda
     })
-from django.shortcuts import render, get_object_or_404
-from tiendas.models import Tienda
-from productos.models import Producto, Calificacion
-
-
+# ---> Lógica para visualizar la tienda y sus productos como cliente.
 def profile_store_client(request, tienda_id):
-
-    # Obtener tienda o devolver 404
+    # ---> Obtener tienda o devolver 404
     tienda = get_object_or_404(Tienda, id=tienda_id)
-
-    # Obtener productos de la tienda
+    # ---> Obtener productos de la tienda
     productos = Producto.objects.filter(
         tienda=tienda
     ).select_related(
@@ -762,34 +610,29 @@ def profile_store_client(request, tienda_id):
     ).prefetch_related(
         'imagenes'
     )
-
-    # Validar si el usuario está autenticado
+    # ---> Validar si el usuario está autenticado
     if request.user.is_authenticated:
-
         calificaciones = Calificacion.objects.filter(
             usuario=request.user
         )
-
         cal_dict = {
             c.producto_id: c.puntuacion
             for c in calificaciones
         }
-
         for producto in productos:
             producto.user_rating = cal_dict.get(producto.id, 0)
-
     else:
         for producto in productos:
             producto.user_rating = 0
-
     return render(request, 'usuarios/store_products_client.html', {
         'productos': productos,
         'tienda': tienda
     })
+" ---> Lógica para el detalle del pedido de la tienda."
 def sales_details_order_store(request, pedido_id):
-    # Obtener pedido o devolver 404
+    # ---> Obtener pedido o devolver 404
     pedido = get_object_or_404(Pedido, id=pedido_id)
-    # Serializar datos del pedido para uso en JSON
+    # ---> Serializar datos del pedido para uso en JSON
     pedido_data = {
         "id": pedido.id,
         "fecha": pedido.creado_en.strftime("%d/%m/%Y"),
@@ -807,7 +650,7 @@ def sales_details_order_store(request, pedido_id):
         ],
         "total": f"{pedido.total:.2f}",
     }
-    # Contexto para el template
+    # ---> Contexto para el template
     context = {
         "pedido": pedido,
         "pedido_json": pedido_data,  # Datos preparados para json_script
