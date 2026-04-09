@@ -34,14 +34,14 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
 from tiendas.models import Tienda
-# =========================
-# Index SenaMerch
-# =========================
 from django.shortcuts import render
 from productos.models import Producto, Calificacion
-
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+from .models import Profile, Address
 def home_view(request):
-
     if request.user.is_authenticated:
         productos = Producto.objects.exclude(
             tienda__propietario=request.user
@@ -53,19 +53,15 @@ def home_view(request):
         ).prefetch_related(
             "imagenes"
         )
-
         calificaciones = Calificacion.objects.filter(
             usuario=request.user
         )
-
         cal_dict = {
             c.producto_id: c.puntuacion
             for c in calificaciones
         }
-
         for producto in productos:
             producto.user_rating = cal_dict.get(producto.id, 0)
-
     else:
         productos = Producto.objects.filter(
             activo=True,
@@ -75,41 +71,31 @@ def home_view(request):
         ).prefetch_related(
             "imagenes"
         )
-
         for producto in productos:
             producto.user_rating = 0
-
     return render(request, "usuarios/cards_home.html", {
         "productos": productos
     })
-# =========================
-# Inicio de Sessión en SenaMerch
-# =========================
+# ---> Lógica de Inicio de Sessión en SenaMerch
 User = get_user_model()
 def login_view(request):
     context = {'form_submitted': False}
-
     if request.method == 'POST':
         context['form_submitted'] = True
-
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
-
         # Validar campos vacíos
         if not email or not password:
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'usuarios/login.html', context)
-
         # Validar formato de email
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Ingresa un correo electrónico válido.')
             return render(request, 'usuarios/login.html', context)
-
         # Autenticación
         user = authenticate(request, username=email, password=password)
-
         if user is None:
             if User.objects.filter(username=email).exists():
                 user_obj = User.objects.get(username=email)
@@ -120,44 +106,31 @@ def login_view(request):
                     messages.error(request, 'Correo o contraseña incorrectos.')
             else:
                 messages.error(request, 'Correo o contraseña incorrectos.')
-
             return render(request, 'usuarios/login.html', context)
-
         # LOGIN CORRECTO
         login(request, user)
         nombre = user.get_full_name() or user.username
-
         tienda = Tienda.objects.filter(propietario=user).first()
-
         es_vendedor = False
         tienda_inactiva = False
-
         if tienda:
             if tienda.activo:
                 es_vendedor = True
             else:
                 tienda_inactiva = True
-
         # REDIRECCIÓN SEGÚN ESTADO
         if es_vendedor:
             messages.success(request, f'Bienvenido vendedor {nombre} ')
             redirect_url = reverse('tiendas:home_seller')
-
         elif tienda_inactiva:
             messages.success(request, f'Bienvenido {nombre} (tienda deshabilitada) ')
             redirect_url = reverse('usuarios:home_client')
-
         else:
             messages.success(request, f'Bienvenido cliente {nombre} ')
             redirect_url = reverse('usuarios:home_client')
-
         context['redirect_url'] = redirect_url
-
     return render(request, 'usuarios/login.html', context)
-# ==========================================
-# Registro de usuario en SenaMerch (PASO 1)
-# ==========================================
-
+# ---> Lógica de Registro de usuario en SenaMerch (PASO 1)
 import re
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -165,109 +138,71 @@ from django.urls import reverse
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-
 User = get_user_model()
-
-
 def register_view(request):
     """
     Vista para el primer paso del registro de un nuevo usuario.
     """
-
-    # ==========================================
-    # 🔥 CONTROL INTELIGENTE DE SESIÓN
-    # ==========================================
+    # CONTROL INTELIGENTE DE SESIÓN
     if request.method == 'GET':
-
         coming_from_address = request.GET.get('from_address')
         coming_from_step2 = request.GET.get('from_step2')
         returning = request.session.get('returning_to_step1')
-
-        # 🔥 NO borrar si viene de algún flujo
+        # NO borrar si viene de algún flujo
         if not coming_from_address and not coming_from_step2 and not returning:
             request.session.pop('address_full', None)
             request.session.pop('address_step_1', None)
             request.session.pop('register_temp', None)
-
-        # limpiar flag
         if returning:
             request.session.pop('returning_to_step1', None)
-
-    # ==========================================
     # 🔹 Recuperar datos guardados
-    # ==========================================
     data = request.session.get('register_temp', {})
-
-    # ==========================================
-    # 🔹 POST (cuando da siguiente)
-    # ==========================================
+    # POST (cuando da siguiente)
     if request.method == 'POST':
-
         name = request.POST.get('name', '').strip()
         phone = request.POST.get('phone', '').strip()
         email = request.POST.get('email', '').strip().lower()
-
-        # 🔥 Guardar temporal SIEMPRE
+        # Guardar temporal SIEMPRE
         request.session['register_temp'] = {
             'name': name,
             'phone': phone,
             'email': email
         }
         request.session.modified = True
-
-        # ==========================================
         # VALIDACIONES
-        # ==========================================
-
         if not all([name, phone, email]):
             messages.error(request, 'Todos los campos son obligatorios.')
             return redirect(f"{reverse('usuarios:register')}?error=1")
-
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúñÑ ]{3,}$', name):
             messages.error(request, 'Nombre inválido.')
             return redirect(f"{reverse('usuarios:register')}?error=1")
-
         phone_clean = phone.replace(' ', '').replace('-', '')
-
         if not re.match(r'^[0-9]{10}$', phone_clean):
             messages.error(request, 'Teléfono inválido.')
             return redirect(f"{reverse('usuarios:register')}?error=1")
-
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Correo inválido.')
             return redirect(f"{reverse('usuarios:register')}?error=1")
-
         if User.objects.filter(username=email).exists():
             messages.error(request, 'Correo ya registrado.')
             return redirect(f"{reverse('usuarios:register')}?error=1")
-
-        # ==========================================
-        # 🔥 VALIDACIÓN DIRECCIÓN
-        # ==========================================
+        # VALIDACIÓN DIRECCIÓN
         if not request.session.get('address_full'):
             messages.error(request, 'Debes agregar una dirección antes de continuar.')
             return redirect(f"{reverse('usuarios:register')}?error=address")
-
-        # ==========================================
-        # ✅ TODO OK → GUARDAR DEFINITIVO
-        # ==========================================
+        # TODO OK → GUARDAR DEFINITIVO
         request.session['register_name'] = name
         request.session['register_phone'] = phone_clean
         request.session['register_email'] = email
 
         return redirect('usuarios:register_step_2')
-
-    # ==========================================
-    # 🔹 GET
-    # ==========================================
+    #  GET
     return render(request, 'usuarios/register.html', {
         'data': data
     })
-# =====================================================
-# VALIDAR SI EL CORREO YA EXISTE (AJAX)
-# =====================================================
+# ---> Lógica VALIDAR SI EL CORREO YA EXISTE (AJAX)
 def check_email(request):
 
     email = request.GET.get('email', '').strip().lower()
@@ -280,67 +215,38 @@ def check_email(request):
     return JsonResponse({
         'exists': exists
     })
-
-
-# ==========================================
-# Registro de usuario en SenaMerch (PASO 2)
-# ==========================================
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.contrib.auth import get_user_model
-from django.http import JsonResponse
-
-from .models import Profile, Address
-
 User = get_user_model()
-
+# ---> Lógica para registrarse paso 2.
 def register_step_2(request):
-
     # Si no hay sesión evitar errores
     if not request.session.get('register_email'):
         messages.error(request, 'Sesión expirada. Vuelve a registrarte.')
         return redirect('usuarios:register')
-
     if request.method == 'POST':
-
         password = request.POST.get('password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
         image = request.FILES.get('cover_image')
-
-        # =========================
         # VALIDACIONES
-        # =========================
         if not password or not confirm_password:
             messages.error(request, 'Debes completar ambos campos.')
             return redirect('usuarios:register_step_2')
-
         if password != confirm_password:
             messages.error(request, 'Las contraseñas no coinciden.')
             return redirect('usuarios:register_step_2')
-
-        # =========================
         # DATOS DE SESIÓN
-        # =========================
         name = request.session.get('register_name')
         email = request.session.get('register_email')
         phone = request.session.get('register_phone')
         address = request.session.get('address_full')
-
         try:
-
-            # =========================
             # CREAR USUARIO
-            # =========================
             user = User.objects.create_user(
                 username=email,
                 email=email,
                 password=password,
                 first_name=name
             )
-
-            # =========================
             # CREAR PERFIL
-            # =========================
             Profile.objects.update_or_create(
                 user=user,
                 defaults={
@@ -348,12 +254,8 @@ def register_step_2(request):
                     'image': image
                 }
             )
-
-            # =========================
             # CREAR DIRECCIÓN
-            # =========================
             if address:
-
                 Address.objects.create(
                     user=user,
                     neighborhood=address.get('neighborhood'),
@@ -364,65 +266,41 @@ def register_step_2(request):
                     city=address.get('city'),
                     extra_info=address.get('additional_info')
                 )
-
-            # =========================
             # LIMPIAR SESIÓN
-            # =========================
             request.session.pop('register_name', None)
             request.session.pop('register_email', None)
             request.session.pop('register_phone', None)
             request.session.pop('address_full', None)
-
-            # =========================
             # MENSAJE FINAL
-            # =========================
             messages.success(request, 'Cuenta creada correctamente')
-
             return redirect('usuarios:login')
-
         except Exception:
-
             messages.error(request, 'Ocurrió un error al crear la cuenta.')
-
             return redirect('usuarios:register_step_2')
-
-    # =========================
     # GET
-    # =========================
     return render(request, 'usuarios/register2.html')
-
-from django.http import JsonResponse
-from django.contrib.auth import get_user_model
-
 User = get_user_model()
-
+# ---> Lógica para chekear el gmail.com
 def check_email(request):
     email = request.GET.get('email', '').strip().lower()
-
     exists = User.objects.filter(username=email).exists()
-
     return JsonResponse({
         'exists': exists
     })
-# ==========================================
-#  Añadir Dirección para Registrarse (PASO 1)
-# ==========================================
+# ---> Lógica para Añadir Dirección para Registrarse (PASO 1)
 def add_address_view(request):
     """
     Paso 1: Datos básicos de dirección
     """
-
-    # 🔹 Recuperar datos guardados (para no perder info)
+    # Recuperar datos guardados (para no perder info)
     data = request.session.get('address_step_1', {})
 
     if request.method == 'POST':
-
         neighborhood = request.POST.get('neighborhood', '').strip()
         address_number = request.POST.get('address_number', '').strip()
         road_type = request.POST.get('road_type', '').strip()
         postal_code = request.POST.get('postal_code', '').strip()
-
-        # 🔥 Guardar SIEMPRE (aunque falle validación)
+        # Guardar SIEMPRE (aunque falle validación)
         request.session['address_step_1'] = {
             'neighborhood': neighborhood,
             'address_number': address_number,
@@ -430,211 +308,159 @@ def add_address_view(request):
             'postal_code': postal_code,
         }
         request.session.modified = True
-
         # VALIDACIONES
         if not neighborhood or not address_number:
             messages.error(request, 'Barrio y dirección obligatorios.')
             return redirect('usuarios:add_address')
-
         if len(neighborhood) < 3:
             messages.error(request, 'El barrio debe tener mínimo 3 caracteres.')
             return redirect('usuarios:add_address')
-
         if len(address_number) < 5:
             messages.error(request, 'Dirección inválida.')
             return redirect('usuarios:add_address')
-
         if postal_code and not postal_code.isdigit():
             messages.error(request, 'Código postal inválido.')
             return redirect('usuarios:add_address')
-
         # TODO OK → siguiente paso
         return redirect('usuarios:add_address_step_2')
-
     return render(request, 'usuarios/add_address.html', {
         'data': data
     })
+# ---> Lógica para agregar la dirección del usuario.
 def add_address_step_2(request):
     """
     Paso 2: Datos finales de dirección
     """
-
     step_1 = request.session.get('address_step_1')
-
-    # 🔥 Seguridad de flujo
+    # Seguridad de flujo
     if not step_1:
         messages.error(request, 'Debes completar el paso anterior.')
         return redirect('usuarios:add_address')
-
-    # 🔹 Recuperar datos previos (para no perder info)
+    # Recuperar datos previos (para no perder info)
     step_2 = request.session.get('address_step_2', {})
-
     if request.method == 'POST':
-
         department = request.POST.get('department', '').strip()
         city = request.POST.get('city', '').strip()
         additional_info = request.POST.get('additional_info', '').strip()
-
-        # 🔥 Guardar temporal SIEMPRE
+        # Guardar temporal SIEMPRE
         request.session['address_step_2'] = {
             'department': department,
             'city': city,
             'additional_info': additional_info
         }
         request.session.modified = True
-
         # VALIDACIONES
         if not department or not city:
             messages.error(request, 'Debes seleccionar departamento y municipio.')
             return redirect('usuarios:add_address_step_2')
-
         if len(additional_info) > 120:
             messages.error(request, 'La información adicional es demasiado larga.')
             return redirect('usuarios:add_address_step_2')
-
         try:
-            # 🔥 UNIR TODO
+            # UNIR TODO
             request.session['address_full'] = {
                 **step_1,
                 **request.session['address_step_2']
             }
-
             request.session.modified = True
-
-            # 🔥 LIMPIEZA CONTROLADA
+            # LIMPIEZA CONTROLADA
             request.session.pop('address_step_1', None)
             request.session.pop('address_step_2', None)
-
             messages.success(request, 'Dirección agregada correctamente')
-
-            # 🔥 VOLVER SIN BORRAR DATOS
+            # VOLVER SIN BORRAR DATOS
             return redirect(f"{reverse('usuarios:register')}?from_address=1")
-
         except Exception:
             messages.error(request, 'Ocurrió un error al guardar la dirección.')
             return redirect('usuarios:add_address_step_2')
-
-    # 🔹 UNIR DATOS PARA RENDER
+    # UNIR DATOS PARA RENDER
     data = {
         **step_1,
         **step_2
     }
-
     return render(request, 'usuarios/add_address2.html', {
         'data': data
     })
-# ===========================================================
-#  Recuperar Contraseña Para Iniciar Sessión Ingresar correo
-# ===========================================================
+# ---> Lógica de Recuperar Contraseña Para Iniciar Sessión Ingresar correo
 def forgot_password_view(request):
     """
     Vista para la recuperación de contraseña.
     Envía un código de verificación de 6 dígitos al correo del usuario.
     """
-
     context = {'form_submitted': False}
-
     if request.method == 'POST':
-
         context['form_submitted'] = True
-
-        # Obtener correo
+        # ---> Lógica de Obtener correo
         email = request.POST.get('email', '').strip().lower()
-
         if not email:
             messages.error(request, 'El correo es obligatorio.')
             return render(request, 'usuarios/forgot_password.html', context)
-
-        # Validar formato
+        # ---> Lógica de Validar formato
         try:
             validate_email(email)
         except ValidationError:
             messages.error(request, 'Ingresa un correo válido.')
             return render(request, 'usuarios/forgot_password.html', context)
-
-        # Verificar usuario
+        # ---> Lógica de Verificar usuario
         if not User.objects.filter(email=email).exists():
             messages.error(request, 'No existe una cuenta con este correo.')
             return render(request, 'usuarios/forgot_password.html', context)
-
-        # Generar código OTP
+        # ---> Lógica para Generar código OTP
         code = random.randint(100000, 999999)
-
-        # Guardar en sesión
+        # ---> Lógica para Guardar en sesión
         request.session['reset_code'] = str(code)
         request.session['reset_email'] = email
         request.session['reset_code_time'] = time.time()
-
-        # Renderizar correo HTML
+        # ---> Lógica para Renderizar correo HTML
         html_content = render_to_string(
             'usuarios/reset_code_email.html',
             {'code': code}
         )
-
-        # Crear correo
+        # ---> Lógica para Crear correo
         email_message = EmailMultiAlternatives(
             'Código de recuperación - SenaMerch',
             f'Tu código de verificación es: {code}',
             settings.EMAIL_HOST_USER,
             [email]
         )
-
         email_message.attach_alternative(html_content, "text/html")
         email_message.send()
-
         messages.success(request, 'Te enviamos un código a tu correo.')
-
         return redirect('usuarios:code_verify')
-
     return render(request, 'usuarios/forgot_password.html', context)
-# ==========================================================================
-#  Recuperar Contraseña Para Iniciar Sessión Ingresar código de verificación
-# ==========================================================================
+# ---> Lógica de Recuperar Contraseña Para Iniciar Sessión Ingresar código de verificación
 def code_verify_view(request):
     """
     Vista para verificar el código enviado al correo.
     Si es correcto permite restablecer la contraseña.
     """
-
     if request.method == 'POST':
-
         code_entered = request.POST.get('code', '').strip()
-
         real_code = request.session.get('reset_code')
         code_time = request.session.get('reset_code_time')
-
-        # Validar campo vacío
+        # ---> Lógica de Validar campo vacío
         if not code_entered:
             messages.error(request, 'Debes ingresar el código completo.')
             return redirect('usuarios:code_verify')
-
-        # Validar formato
+        # ---> Lógica de Validar formato
         if not code_entered.isdigit() or len(code_entered) != 6:
             messages.error(request, 'El código debe ser de 6 números.')
             return redirect('usuarios:code_verify')
-
-        # Verificar existencia del código
+        # ---> Lógica de Verificar existencia del código
         if not real_code or not code_time:
             messages.error(request, 'El código expiró. Solicita uno nuevo.')
             return redirect('usuarios:forgot_password')
-
-        # Verificar expiración (5 minutos)
+        # ---> Lógica de Verificar expiración (5 minutos)
         if time.time() - code_time > 300:
             messages.error(request, 'El código expiró. Solicita uno nuevo.')
             return redirect('usuarios:forgot_password')
-
-        # Comparar código
+        # ---> Lógica de Comparar código
         if code_entered != real_code:
             messages.error(request, 'Código incorrecto.')
             return redirect('usuarios:code_verify')
-
-        # Código correcto
+        # ---> Lógica de Código correcto
         return redirect('usuarios:reset_password')
-
     return render(request, 'usuarios/code_verify.html')
-# =====================================================================
-#  Recuperar Contraseña Para Iniciar Sessión Ingresar nueva contraseña
-# =====================================================================
+# ---> Lógica para Recuperar Contraseña Para Iniciar Sessión Ingresar nueva contraseña
 def reset_password_view(request):
     """ Vista para restablecer la contraseña del usuario. Recibe y valida las contraseñas nuevas. """
     if request.method == 'POST':
@@ -668,33 +494,19 @@ def reset_password_view(request):
         messages.success(request, 'Contraseña actualizada correctamente.')
         return redirect('usuarios:login')
     return render(request, 'usuarios/reset_password.html')
-# ===========================================================
-#  Contacto SenaMerch
-# ===========================================================
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.conf import settings
-from django.contrib import messages
-
-
-# ===========================================================
-#  Contacto SenaMerch
-# ===========================================================
+# ---> Lógica para Contacto SenaMerch
 def contact_view(request):
-
     if request.method == 'POST':
-
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip().lower()
         query_type = request.POST.get('query_type', '').strip()
         message = request.POST.get('message', '').strip()
-
-        # VALIDACIÓN
+        # ---> Lógica para VALIDACIÓN
         if not name or not email or not query_type or not message:
             messages.error(request, 'Todos los campos son obligatorios.')
             return render(request, 'usuarios/contact.html')
 
-        # CONTENIDO HTML DEL CORREO
+        # ---> Lógica para el CONTENIDO HTML DEL CORREO
         html_content = render_to_string(
             'usuarios/contact_email.html',
             {
@@ -704,124 +516,97 @@ def contact_view(request):
                 'message': message
             }
         )
-
-        # CREAR CORREO
+        # ---> Lógica para CREAR CORREO
         email_message = EmailMultiAlternatives(
             f'Nuevo mensaje de contacto - {query_type}',
             f'''
 Nombre: {name}
 Correo: {email}
 Tipo de consulta: {query_type}
-
 Mensaje:
 {message}
 ''',
             settings.EMAIL_HOST_USER,
             [settings.EMAIL_HOST_USER]
         )
-
         email_message.attach_alternative(html_content, "text/html")
         email_message.send()
-
-        # ALERTA
+        # ---> Lógica ALERTA
         messages.success(request, 'Tu mensaje fue enviado correctamente.')
-
-        # CLAVE: render (NO redirect)
+        # ---> Lógica porque render (NO redirect)
         return render(request, 'usuarios/contact.html')
-
     return render(request, 'usuarios/contact.html')
-# =====================
-#  Perfil del cliente 
-# =====================
+# ---> Lógica para el Perfil del cliente 
 @login_required
 def profile_view(request):
     """ Vista para mostrar el perfil del cliente. Muestra la información del usuario y su dirección. """
     profile, created = Profile.objects.get_or_create(user=request.user)
-    # Obtener la dirección del usuario
+    # ---> Obtener la dirección del usuario
     address = Address.objects.filter(user=request.user).first()
     return render(request, 'usuarios/profile_user.html', {
         'profile': profile,
         'address': address
     })
-# ==========================
-#  Vuelve A Iniciar Sessión
-# ==========================
+# ---> Lógica que Vuelve A Iniciar Sessión
 def logout_view(request):
     """ Vista para cerrar sesión del usuario. """
     logout(request)
     return redirect('usuarios:login')
-# =========================================
-#  Editar Datos De Perfil Cliente (PASO 1)
-# =========================================
+# ---> Lógica Editar Datos De Perfil Cliente (PASO 1)
 @login_required
 def edit_profile_client(request):
     """ Vista para editar el perfil del cliente (Paso 1). Permite editar el nombre y correo del usuario, y subir una imagen de perfil. """
     profile, created = Profile.objects.get_or_create(user=request.user)
     if request.method == 'POST':
-        # Guardar datos temporales en sesión
+        # ---> Guardar datos temporales en sesión
         request.session['edit_client_data'] = {
             "email": request.POST.get("email"),
             "first_name": request.POST.get("name"),
         }
-        # Subir imagen de perfil si se ha seleccionado una
+        # ---> Subir imagen de perfil si se ha seleccionado una
         if request.FILES.get("cover_image"):
             profile.image = request.FILES.get("cover_image")
             profile.save()
         request.session.modified = True
-        # Redirigir al paso 2 de la edición
+        # ---> Redirigir al paso 2 de la edición
         return redirect('usuarios:edit_profile_client2')
     return render(request, 'usuarios/edit_profile_client.html', {
         "profile": profile
     })
-# =========================================
-#  Editar Datos De Perfil Cliente (PASO 2)
-# =========================================
+# ---> Lógica Editar Datos De Perfil Cliente (PASO 2)
 @login_required
 def edit_profile_client2(request):
     data = request.session.get("edit_client_data")
-
     if not data:
         return redirect("usuarios:edit_profile_client")
-
     if request.method == "POST":
         user = request.user
         profile = user.profile
-
         user.email = data.get("email", user.email)
         user.first_name = data.get("first_name", user.first_name)
         user.save()
-
         profile.phone = request.POST.get("phone", profile.phone)
         profile.save()
-
         password = request.POST.get("password")
         confirm = request.POST.get("password_confirm")
-
         if password and confirm:
             if password != confirm:
                 messages.error(request, "Las contraseñas no coinciden.")
                 return redirect("usuarios:edit_profile_client2")
-
             user.set_password(password)
             update_session_auth_hash(request, user)
             user.save()
-
         request.session.pop("edit_client_data", None)
-
-        # ALERTA
+        # ---> ALERTA
         messages.success(request, "Cambios guardados correctamente.")
-
         return render(request, "usuarios/edit_profile_client2.html", {
             "user": request.user,
             "redirect_url": "usuarios:profile"
         })
-
     return render(request, "usuarios/edit_profile_client2.html", {
         "user": request.user
     })
-# ===================================================
-#  Editar Datos De Perfil Cliente Dirección (PASO 1)
-# ===================================================
+# ---> Lógica Editar Datos De Perfil Cliente Dirección (PASO 1)
 @login_required
 def edit_address_profile_user(request):
     """
@@ -829,11 +614,11 @@ def edit_address_profile_user(request):
     Guarda temporalmente en sesión los datos básicos y luego redirige al paso 2.
     """
     user = request.user
-    # Traer dirección actual para mostrar en el formulario
+    # ---> Traer dirección actual para mostrar en el formulario
     address = user.addresses.first()
-    
+
     if request.method == "POST":
-        # Guardar los datos del paso 1 en sesión
+        # ---> Guardar los datos del paso 1 en sesión
         request.session["edit_client_address"] = {
             "neighborhood": request.POST.get("neighborhood"),
             "address_number": request.POST.get("address_number"),
@@ -846,22 +631,19 @@ def edit_address_profile_user(request):
     return render(request, "usuarios/edit_address_profile_client.html", {
         "address": address
     })
-# ===================================================
-#  Editar Datos De Perfil Cliente Dirección (PASO 2)
-# ===================================================
+# ---> Lógica Editar Datos De Perfil Cliente Dirección (PASO 2)
 @login_required
 def edit_address_profile_user2(request):
     """ Paso 2: guarda departamento, ciudad e info adicional """
-    # Obtener datos del paso 1
+    # ---> Obtener datos del paso 1
     data = request.session.get("edit_client_address")
     if not data:
         return redirect("usuarios:edit_address_profile_user")
-
     user = request.user
-    # Obtener la dirección existente
+    # ---> Obtener la dirección existente
     address = user.addresses.first()
     if not address:
-        # Si no existe, crearla con los datos del paso 1
+        # ---> Si no existe, crearla con los datos del paso 1
         address = Address.objects.create(
             user=user,
             neighborhood=data.get("neighborhood"),
@@ -869,75 +651,57 @@ def edit_address_profile_user2(request):
             road_type=data.get("road_type"),
             postal_code=data.get("postal_code")
         )
-
     if request.method == "POST":
         department = request.POST.get("department")
         city = request.POST.get("city")
         extra_info = request.POST.get("extra_info")
-
         if not department or not city:
             messages.error(request, "Departamento y ciudad son obligatorios.")
             return redirect("usuarios:edit_address_profile_user2")
 
-        # Guardar los campos del paso 2
+        # ---> Guardar los campos del paso 2
         address.department = department
         address.city = city
         address.extra_info = extra_info
         address.save()
-
-        # Limpiar sesión
+        # ---> Limpiar sesión
         request.session.pop("edit_client_address", None)
         messages.success(request, "Dirección actualizada correctamente.")
         return redirect("usuarios:profile")
-
     return render(request, "usuarios/edit_address_profile_client2.html", {
         "address": address
     })
-# ==================================
-#  Vista Cliente Al Iniciar Sessión
-# ==================================
-from productos.models import Producto, Calificacion
-
+# ---> Lógica para la Vista Cliente Al Iniciar Sessión
 def home_client_view(request):
-
     es_vendedor = False
     tienda_inactiva = False
-
     productos = Producto.objects.select_related(
         'tienda'
     ).prefetch_related('imagenes').filter(
         activo=True,
         tienda__activo=True 
     )
-
     if request.user.is_authenticated:
-
         tienda = Tienda.objects.filter(propietario=request.user).first()
-
         if tienda:
             if tienda.activo:
                 es_vendedor = True
             else:
                 tienda_inactiva = True
-
         calificaciones = Calificacion.objects.filter(
             usuario=request.user
         )
-
         cal_dict = {
             c.producto_id: c.puntuacion
             for c in calificaciones
         }
-
         for producto in productos:
             producto.user_rating = cal_dict.get(producto.id, 0)
-
     else:
         for producto in productos:
             producto.user_rating = 0
-
     return render(request, "usuarios/card_client.html", {
         "productos": productos,
-        "es_vendedor": es_vendedor,           # CLAVE
-        "tienda_inactiva": tienda_inactiva    # CLAVE
+        "es_vendedor": es_vendedor,           
+        "tienda_inactiva": tienda_inactiva    
     })

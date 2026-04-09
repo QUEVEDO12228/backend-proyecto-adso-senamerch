@@ -13,17 +13,42 @@ document.addEventListener("DOMContentLoaded", () => {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        const primary = [7, 44, 14]; // Verde principal
-        const dark = [40, 40, 40];
+        // 🎨 COLORES SENAMERCH
+        const primary = [7, 44, 14];        // --secundary-950
+        const borderGreen = [82, 214, 103]; // --secundary-400
         const lightGray = [240, 240, 240];
-        const borderGreen = [82, 214, 103]; // Borde siempre
-        const borderWidth = 0.5; // Borde 0.5 px
+        const dark = [40, 40, 40];
 
-        // ============================
-        // LOGO TIPO NAVBAR
-        // ============================
+        const borderWidth = 0.5;
+
+        // =========================
+        // 🔥 LIMPIAR NÚMEROS (FIX REAL)
+        // =========================
+        function cleanNumber(text) {
+            if (!text) return 0;
+
+            return parseFloat(
+                text
+                    .replace(/\./g, "")
+                    .replace(",", ".")
+                    .replace(/[^\d.-]/g, "")
+            ) || 0;
+        }
+
+        // =========================
+        // EXTRAER TEXTO
+        // =========================
+        function getText(id) {
+            const el = document.getElementById(id);
+            if (!el) return "-";
+            return el.innerText.split(":")[1]?.trim() || "-";
+        }
+
+        // =========================
+        // LOGO SENAMERCH
+        // =========================
         function drawSenaMerch(doc, x, y) {
-            const letters = ["S", "e", "n", "a", "M", "e", "r", "c", "h"];
+            const letters = ["S","e","n","a","M","e","r","c","h"];
             let posX = x;
 
             letters.forEach(letter => {
@@ -42,22 +67,19 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // ============================
-        // GENERAR PDF
-        // ============================
         function generatePDF() {
 
             let y = 20;
 
-            // ============================
+            // =========================
             // HEADER
-            // ============================
+            // =========================
             doc.setFillColor(...primary);
             doc.rect(0, 0, 210, 35, "F");
 
-            doc.setLineWidth(borderWidth);
             doc.setDrawColor(...borderGreen);
-            doc.rect(0, 0, 210, 35); // Borde del header
+            doc.setLineWidth(borderWidth);
+            doc.rect(0, 0, 210, 35);
 
             drawSenaMerch(doc, 15, 22);
 
@@ -65,108 +87,84 @@ document.addEventListener("DOMContentLoaded", () => {
             doc.setFontSize(10);
             doc.text("Resumen de venta", 195, 18, { align: "right" });
 
-            // ============================
-            // INFO TIENDA, VENDEDOR, CLIENTE
-            // ============================
+            // =========================
+            // INFO
+            // =========================
             y = 45;
 
             const storeInfo = [
                 "Tienda",
-                "Nombre Tienda: LA LOLAfea",
-                "Teléfono: 3102973825",
-                "Correo: vendedor3senamerch@gmai.com"
+                `Nombre Tienda: ${getText("pdf-store-name")}`,
+                `Teléfono: ${getText("pdf-store-phone")}`,
+                `Correo: ${getText("pdf-store-email")}`
             ];
 
             const vendedorInfo = [
                 "Vendedor",
-                "Nombre: Emanuel Quevedo Escobar",
-                "Correo: vendedor3senamerch@gmai.com"
+                `Nombre: ${getText("pdf-seller-name")}`,
+                `Correo: ${getText("pdf-seller-email")}`
             ];
 
             const clienteInfo = [
                 "Cliente",
-                "Nombre: Jeferson Alexis Duque",
-                "Correo: neithanmateo12@gmail.com"
+                `Nombre: ${getText("pdf-client-name")}`,
+                `Correo: ${getText("pdf-client-email")}`
             ];
 
-            // Unir toda la info
             const allInfo = [...storeInfo, ...vendedorInfo, ...clienteInfo];
-
-            // Ajustar alto de la caja dinámicamente (6px por línea + 6px entre secciones)
-            const boxHeight = allInfo.length * 6 + 12; // 12px total entre secciones
+            const boxHeight = allInfo.length * 6 + 12;
 
             doc.setFillColor(...lightGray);
             doc.rect(15, y - 5, 180, boxHeight, "F");
 
-            doc.setLineWidth(borderWidth);
             doc.setDrawColor(...borderGreen);
-            doc.rect(15, y - 5, 180, boxHeight); // Borde verde
+            doc.rect(15, y - 5, 180, boxHeight);
 
             doc.setTextColor(...dark);
             doc.setFontSize(10);
 
             let currentY = y;
 
-            // Colocar la información de Tienda
             storeInfo.forEach(line => {
-                doc.text(line.trim(), 20, currentY);
+                doc.text(line, 20, currentY);
                 currentY += 6;
             });
 
-            // Pequeño espacio entre Tienda y Vendedor
             currentY += 6;
 
-            // Colocar la información de Vendedor
             vendedorInfo.forEach(line => {
-                doc.text(line.trim(), 20, currentY);
+                doc.text(line, 20, currentY);
                 currentY += 6;
             });
 
-            // Pequeño espacio entre Vendedor y Cliente
             currentY += 6;
 
-            // Colocar la información de Cliente
             clienteInfo.forEach(line => {
-                doc.text(line.trim(), 20, currentY);
+                doc.text(line, 20, currentY);
                 currentY += 6;
             });
 
             y += boxHeight + 5;
 
-            // ============================
-            // TABLA PRODUCTOS (VENDEDOR)
-            // ============================
+            // =========================
+            // PRODUCTOS (FIX TOTAL)
+            // =========================
             const productCards = document.querySelectorAll(".sales-made-details__product-card");
             const rows = [];
 
             let totalGeneral = 0;
 
             productCards.forEach(card => {
-                const ps = card.querySelectorAll("p");
 
-                let producto = "", cantidad = 0, precio = 0, total = 0, descuento = 0;
+                const producto = card.querySelector(".pdf-product-name")?.innerText.split(":")[1]?.trim() || "-";
 
-                ps.forEach(p => {
-                    const text = p.innerText;
+                const cantidad = cleanNumber(card.querySelector(".pdf-product-qty")?.innerText);
 
-                    if (text.startsWith("Producto:"))
-                        producto = text.replace("Producto:", "").trim();
+                const precio = cleanNumber(card.querySelector(".pdf-product-price")?.innerText);
 
-                    if (text.startsWith("Cantidad:"))
-                        cantidad = parseFloat(text.replace("Cantidad:", "").trim());
+                const descuento = cleanNumber(card.querySelector(".pdf-product-discount")?.innerText);
 
-                    if (text.startsWith("Precio unitario:"))
-                        precio = parseFloat(text.replace("Precio unitario: $", "").trim());
-
-                    if (text.startsWith("Descuento:"))
-                        descuento = parseFloat(text.replace("Descuento:", "").replace("%", "").trim());
-
-                    if (text.startsWith("Total con descuento:"))
-                        total = parseFloat(text.replace("Total con descuento: $", "").trim());
-
-                    if (text.startsWith("Total:"))
-                        total = parseFloat(text.replace("Total: $", "").trim());
-                });
+                const total = cleanNumber(card.querySelector(".pdf-product-total")?.innerText);
 
                 totalGeneral += total;
 
@@ -191,30 +189,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 },
                 headStyles: {
                     fillColor: primary,
-                    textColor: [255, 255, 255],
-                    halign: "center"
+                    textColor: [255, 255, 255]
                 },
                 alternateRowStyles: {
-                    fillColor: [245, 255, 245]
+                    fillColor: [241, 252, 242]
                 },
                 didDrawCell: function (data) {
-                    doc.setLineWidth(borderWidth);
                     doc.setDrawColor(...borderGreen);
+                    doc.setLineWidth(borderWidth);
                     doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height);
                 }
             });
 
-            // ============================
-            // RESUMEN FINANCIERO
-            // ============================
+            // =========================
+            // TOTAL
+            // =========================
             let finalY = doc.lastAutoTable.finalY + 12;
 
             doc.setFillColor(...primary);
             doc.roundedRect(120, finalY, 75, 22, 3, 3, "F");
 
-            doc.setLineWidth(borderWidth);
             doc.setDrawColor(...borderGreen);
-            doc.roundedRect(120, finalY, 75, 22, 3, 3); // borde redondeado
+            doc.roundedRect(120, finalY, 75, 22, 3, 3);
 
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
@@ -223,9 +219,9 @@ document.addEventListener("DOMContentLoaded", () => {
             doc.setFontSize(12);
             doc.text(`$${totalGeneral.toFixed(2)}`, 157, finalY + 16, { align: "center" });
 
-            // ============================
+            // =========================
             // FOOTER
-            // ============================
+            // =========================
             finalY += 35;
 
             doc.setDrawColor(...primary);
@@ -238,13 +234,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             doc.text("Reporte generado para el vendedor", 15, finalY);
             doc.text("SenaMerch - Panel de ventas", 15, finalY + 5);
-
-            doc.setFontSize(8);
             doc.text("© 2026 SenaMerch", 15, finalY + 10);
 
-            // ============================
+            // =========================
             // GUARDAR
-            // ============================
+            // =========================
             doc.save("reporte_venta.pdf");
 
             setTimeout(() => {
@@ -253,7 +247,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         generatePDF();
-
     });
-
 });

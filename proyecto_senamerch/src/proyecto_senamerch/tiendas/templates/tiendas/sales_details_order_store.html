@@ -7,56 +7,61 @@
 
 <section class="sales-made-details">
 
-  <!-- Sidebar con información de tienda, vendedor y cliente -->
+  <!-- SIDEBAR -->
   <aside class="sales-made-details__sidebar">
-    <h3 class="sales-made-details__subtitle">Tienda</h3>
-    <p><strong>Nombre Tienda:</strong> {{ pedido.tienda.nombre }}</p>
-    <p><strong>Teléfono:</strong> {{ pedido.tienda.telefono }}</p>
-    <p><strong>Correo:</strong> {{ pedido.tienda.email }}</p>
+
+    <h3>Tienda</h3>
+    <p id="pdf-store-name">Nombre Tienda: {{ pedido.tienda.nombre }}</p>
+    <p id="pdf-store-phone">Teléfono: {{ pedido.tienda.telefono }}</p>
+    <p id="pdf-store-email">Correo: {{ pedido.tienda.email }}</p>
 
     <hr>
 
-    <h3 class="sales-made-details__subtitle">Vendedor</h3>
-    <p><strong>Nombre:</strong> {{ pedido.tienda.propietario.get_full_name }}</p>
-    <p><strong>Correo:</strong> {{ pedido.tienda.propietario.email }}</p>
+    <h3>Vendedor</h3>
+    <p id="pdf-seller-name">Nombre: {{ pedido.tienda.propietario.get_full_name }}</p>
+    <p id="pdf-seller-email">Correo: {{ pedido.tienda.propietario.email }}</p>
 
     <hr>
 
-    <h3 class="sales-made-details__subtitle">Cliente</h3>
-    <p><strong>Nombre:</strong> {{ pedido.usuario.get_full_name }}</p>
-    <p><strong>Correo:</strong> {{ pedido.usuario.email }}</p>
+    <h3>Cliente</h3>
+    <p id="pdf-client-name">Nombre: {{ pedido.usuario.get_full_name }}</p>
+    <p id="pdf-client-email">Correo: {{ pedido.usuario.email }}</p>
+
   </aside>
 
-  <!-- Contenido principal del pedido -->
+  <!-- CONTENIDO -->
   <div class="sales-made-details__content">
 
-    <h2 class="sales-made-details__title">Detalle del Pedido #{{ pedido.id }}</h2>
+    <h2 id="pdf-order-id">Pedido #{{ pedido.id }}</h2>
+    <p id="pdf-order-date">Fecha: {{ pedido.creado_en|date:"d/m/Y H:i" }}</p>
 
-    <section class="sales-made-details__section">
-      <h3 class="sales-made-details__subtitle">Productos</h3>
+    <section>
+      <h3>Productos</h3>
+
       <div class="sales-made-details__grid">
         {% for item in pedido.items.all %}
-          <div class="sales-made-details__product-card">
-            <p><strong>Fecha:</strong> {{ pedido.creado_en|date:"d/m/Y" }}</p>
-            <p><strong>Producto:</strong> {{ item.producto.nombre }}</p>
-            <p><strong>Cantidad:</strong> {{ item.cantidad }}</p>
-            <p><strong>Precio unitario:</strong> ${{ item.producto.precio|floatformat:2 }}</p>
+        <div class="sales-made-details__product-card">
 
+          <p class="pdf-product-name">Producto: {{ item.producto.nombre }}</p>
+          <p class="pdf-product-qty">Cantidad: {{ item.cantidad }}</p>
+          <p class="pdf-product-price">Precio: {{ item.producto.precio|floatformat:2 }}</p>
+          <p class="pdf-product-discount">Descuento: {{ item.producto.descuento }}%</p>
+          <p class="pdf-product-total">
+            Total: 
             {% if item.producto.descuento > 0 %}
-              <p><strong>Descuento:</strong> {{ item.producto.descuento }}%</p>
-              <p><strong>Precio con descuento:</strong> ${{ item.producto.precio_con_descuento|floatformat:2 }}</p>
-              <p><strong>Total con descuento:</strong> ${{ item.subtotal_con_descuento|floatformat:2 }}</p>
+              {{ item.subtotal_con_descuento|floatformat:2 }}
             {% else %}
-              <p><strong>Total:</strong> ${{ item.subtotal|floatformat:2 }}</p>
+              {{ item.subtotal|floatformat:2 }}
             {% endif %}
-          </div>
+          </p>
+
+        </div>
         {% endfor %}
       </div>
     </section>
 
-    <!-- Totales -->
-    <div class="sales-made-details__totals">
-      <p><strong>Total pagado:</strong> ${{ pedido.total|floatformat:2 }}</p>
+    <div>
+      <h3>Total: $<span id="pdf-total">{{ pedido.total|floatformat:2 }}</span></h3>
     </div>
 
     <!-- Botón para descargar PDF -->

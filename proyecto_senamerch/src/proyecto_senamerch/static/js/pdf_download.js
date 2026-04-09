@@ -7,36 +7,52 @@ document.addEventListener("DOMContentLoaded", () => {
 
         e.preventDefault();
 
-        if (button.dataset.clicked === "true") return;
-        button.dataset.clicked = "true";
-
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        const primary = [29, 150, 49]; // verde principal
-        const dark = [40, 40, 40];
+        const primary = [7, 44, 14];
+        const borderGreen = [82, 214, 103];
         const lightGray = [240, 240, 240];
+        const dark = [40, 40, 40];
+        const borderWidth = 0.5;
 
-        // ============================
-        // FUNCION LOGO (ESTILO NAVBAR)
-        // ============================
+        // 🔥 LIMPIAR NÚMEROS
+        function cleanNumber(text) {
+            if (!text) return 0;
+
+            return parseFloat(
+                text.replace(/\./g, "")
+                    .replace(",", ".")
+                    .replace(/[^\d.-]/g, "")
+            ) || 0;
+        }
+
+        // 🔥 EXTRAER TEXTO POR LABEL (SIN IDS)
+        function getValue(label, container) {
+            const elements = container.querySelectorAll("p");
+
+            for (let el of elements) {
+                if (el.innerText.includes(label)) {
+                    return el.innerText.split(":")[1]?.trim() || "-";
+                }
+            }
+
+            return "-";
+        }
+
         function drawSenaMerch(doc, x, y) {
-
             const letters = ["S","e","n","a","M","e","r","c","h"];
             let posX = x;
 
             letters.forEach(letter => {
-
-                // borde verde (simulado)
                 doc.setTextColor(140, 233, 155);
                 doc.setFontSize(20);
 
-                doc.text(letter, posX - 0.3, y);
-                doc.text(letter, posX + 0.3, y);
-                doc.text(letter, posX, y - 0.3);
-                doc.text(letter, posX, y + 0.3);
+                doc.text(letter, posX - 0.4, y);
+                doc.text(letter, posX + 0.4, y);
+                doc.text(letter, posX, y - 0.4);
+                doc.text(letter, posX, y + 0.4);
 
-                // letra blanca
                 doc.setTextColor(255, 255, 255);
                 doc.text(letter, posX, y);
 
@@ -44,194 +60,130 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
-        // ============================
-        // GENERAR PDF
-        // ============================
         function generatePDF() {
 
             let y = 20;
 
-            // ============================
             // HEADER
-            // ============================
             doc.setFillColor(...primary);
             doc.rect(0, 0, 210, 35, "F");
 
+            doc.setDrawColor(...borderGreen);
+            doc.setLineWidth(borderWidth);
+            doc.rect(0, 0, 210, 35);
+
             drawSenaMerch(doc, 15, 22);
 
-            doc.setTextColor(255,255,255);
+            doc.setTextColor(255, 255, 255);
             doc.setFontSize(10);
             doc.text("Comprobante de compra", 195, 18, { align: "right" });
 
-            // ============================
-            // INFO FACTURA
-            // ============================
+            // 🔥 CONTENEDORES
+            const sidebar = document.querySelector(".sales-made-details__sidebar");
+
+            // INFO REAL
+            const storeInfo = [
+                "Tienda",
+                `Nombre Tienda: ${getValue("Nombre Tienda", sidebar)}`,
+                `Teléfono: ${getValue("Teléfono", sidebar)}`,
+                `Correo: ${getValue("Correo", sidebar)}`
+            ];
+
+            const vendedorInfo = [
+                "Vendedor",
+                `Nombre: ${getValue("Nombre", sidebar)}`,
+                `Correo: ${getValue("Correo", sidebar)}`
+            ];
+
+            const allInfo = [...storeInfo, ...vendedorInfo];
+            const boxHeight = allInfo.length * 6 + 10;
+
             y = 45;
 
-            const now = new Date();
-            const fecha = now.toLocaleDateString();
-            const hora = now.toLocaleTimeString();
+            doc.setFillColor(...lightGray);
+            doc.rect(15, y - 5, 180, boxHeight, "F");
 
-            const orderTitle = document.querySelector(".sales-made-details__title").innerText;
+            doc.setDrawColor(...borderGreen);
+            doc.rect(15, y - 5, 180, boxHeight);
 
             doc.setTextColor(...dark);
-            doc.setFontSize(12);
-            doc.text("FACTURA ELECTRÓNICA", 15, y);
-
-            y += 8;
-
-            doc.setFontSize(10);
-            doc.text(orderTitle, 15, y);
-            doc.text(`Fecha: ${fecha}`, 140, y);
-
-            y += 6;
-            doc.text(`Hora: ${hora}`, 140, y);
-
-            const numeroFactura = "SM-" + String(Math.floor(Math.random() * 999999)).padStart(6, "0");
-
-            y += 6;
-            doc.text(`Factura N°: ${numeroFactura}`, 140, y);
-
-            y += 10;
-
-            // ============================
-            // BLOQUE TIENDA / VENDEDOR
-            // ============================
-            const sidebar = document.querySelector(".sales-made-details__sidebar");
-            const lines = sidebar.innerText.split("\n").filter(l => l.trim() !== "");
-
-            doc.setFillColor(...lightGray);
-            doc.rect(15, y - 5, 180, 32, "F");
-
             doc.setFontSize(10);
 
-            let col1Y = y;
-            let col2Y = y;
+            let currentY = y;
 
-            lines.forEach((line, index) => {
-
-                if (index < Math.ceil(lines.length / 2)) {
-                    doc.text(line.trim(), 20, col1Y);
-                    col1Y += 6;
-                } else {
-                    doc.text(line.trim(), 110, col2Y);
-                    col2Y += 6;
-                }
-
+            storeInfo.forEach(line => {
+                doc.text(line, 20, currentY);
+                currentY += 6;
             });
 
-            y += 38;
+            currentY += 6;
 
-            // ============================
-            // TABLA PRODUCTOS
-            // ============================
+            vendedorInfo.forEach(line => {
+                doc.text(line, 20, currentY);
+                currentY += 6;
+            });
+
+            y += boxHeight + 5;
+
+            // 🔥 PRODUCTOS
             const productCards = document.querySelectorAll(".sales-made-details__product-card");
+
             const rows = [];
+            let totalGeneral = 0;
 
             productCards.forEach(card => {
 
-                const ps = card.querySelectorAll("p");
+                const producto = getValue("Producto", card);
+                const cantidad = cleanNumber(getValue("Cantidad", card));
+                const precio = cleanNumber(getValue("Precio unitario", card));
+                const descuento = cleanNumber(getValue("Descuento", card));
 
-                let producto="", cantidad="", precio="", descuento="0%", total="";
+                let total = cleanNumber(getValue("Total con descuento", card));
+                if (!total) {
+                    total = cleanNumber(getValue("Total", card));
+                }
 
-                ps.forEach(p => {
-                    const text = p.innerText;
-
-                    if (text.startsWith("Producto:"))
-                        producto = text.replace("Producto:", "").trim();
-
-                    if (text.startsWith("Cantidad:"))
-                        cantidad = text.replace("Cantidad:", "").trim();
-
-                    if (text.startsWith("Precio unitario:"))
-                        precio = text.replace("Precio unitario: $", "").trim();
-
-                    if (text.startsWith("Descuento:"))
-                        descuento = text.replace("Descuento:", "").trim();
-
-                    if (text.startsWith("Total con descuento:"))
-                        total = text.replace("Total con descuento: $", "").trim();
-
-                    if (text.startsWith("Total:"))
-                        total = text.replace("Total: $", "").trim();
-                });
+                totalGeneral += total;
 
                 rows.push([
                     producto,
                     cantidad,
-                    `$${precio}`,
-                    descuento,
-                    `$${total}`
+                    descuento > 0 ? `${descuento}%` : "-",
+                    `$${precio.toFixed(2)}`,
+                    `$${total.toFixed(2)}`
                 ]);
             });
 
             doc.autoTable({
                 startY: y,
-                head: [["Producto","Cant.","Valor Unit.","Desc.","Total"]],
+                head: [["Producto", "Cantidad", "Descuento", "Precio", "Total"]],
                 body: rows,
                 theme: "grid",
                 styles: {
                     fontSize: 9,
-                    cellPadding: 3
+                    halign: "center"
                 },
                 headStyles: {
                     fillColor: primary,
-                    textColor: [255,255,255],
-                    halign: "center"
-                },
-                bodyStyles: {
-                    halign: "center"
-                },
-                alternateRowStyles: {
-                    fillColor: [245, 255, 245]
+                    textColor: [255, 255, 255]
                 }
             });
 
-            // ============================
-            // TOTAL DESTACADO
-            // ============================
+            // TOTAL
             let finalY = doc.lastAutoTable.finalY + 12;
 
-            const totalText = document.querySelector(".sales-made-details__totals p").innerText;
-
             doc.setFillColor(...primary);
-            doc.roundedRect(120, finalY, 75, 18, 3, 3, "F");
+            doc.roundedRect(120, finalY, 75, 22, 3, 3, "F");
 
-            doc.setTextColor(255,255,255);
-            doc.setFontSize(12);
-            doc.text(totalText, 157, finalY + 11, { align: "center" });
+            doc.setTextColor(255, 255, 255);
+            doc.text("Total pagado", 157, finalY + 8, { align: "center" });
 
-            // ============================
-            // FOOTER
-            // ============================
-            finalY += 30;
+            doc.text(`$${totalGeneral.toFixed(2)}`, 157, finalY + 16, { align: "center" });
 
-            doc.setDrawColor(...primary);
-            doc.line(15, finalY, 195, finalY);
-
-            finalY += 8;
-
-            doc.setFontSize(9);
-            doc.setTextColor(100);
-
-            doc.text("Gracias por tu compra en SenaMerch", 15, finalY);
-            doc.text("Este comprobante fue generado automáticamente", 15, finalY + 5);
-
-            doc.setFontSize(8);
-            doc.text("© 2026 SenaMerch - Todos los derechos reservados", 15, finalY + 10);
-
-            // ============================
-            // GUARDAR
-            // ============================
-            doc.save("factura_senamerch.pdf");
-
-            setTimeout(() => {
-                button.dataset.clicked = "false";
-            }, 1000);
+            // SAVE
+            doc.save("comprobante_compra.pdf");
         }
 
         generatePDF();
-
     });
-
 });
