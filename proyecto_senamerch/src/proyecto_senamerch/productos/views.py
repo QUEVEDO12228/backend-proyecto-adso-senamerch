@@ -667,6 +667,11 @@ from django.views.decorators.http import require_POST
 from django.contrib import messages
 from .models import Producto
 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+
 @require_POST
 @login_required
 def toggle_product_status(request, producto_id):
@@ -694,6 +699,7 @@ def toggle_product_status(request, producto_id):
 
     producto.save()
 
+    # 🔁 REDIRECCIÓN FINAL (como pediste)
     return redirect("productos:description_product_seller", producto.id)
 # =====================================================
 # COMPRA DE PRODUCTO
@@ -740,7 +746,7 @@ def lista_productos(request):
     # Obtener productos activos
     productos = Producto.objects.filter(activo=True)
     # Renderizar lista de productos
-    return render(request, 'productos/lista_productos.html', {
+    return render(request, 'tiendas/list_products_store_seller.html', {
         'productos': productos
     })
 # =====================================================

@@ -8,13 +8,60 @@
   <script src="{% static 'js/comments.js' %}" defer></script>
 </head>
 <body>
+
     {% include 'components/navabar_go_go.html' %}
     {% include 'components/navbar_profile_store_seller.html' %}
+
+    <!-- 🔥 ALERTAS (AQUÍ ERA EL FALLO) -->
+    {% if messages %}
+    <div class="custom-alert-overlay">
+      {% for message in messages %}
+        <div class="custom-alert custom-alert--{{ message.tags }}">
+          <div class="custom-alert__content">
+            <span class="custom-alert__icon">
+              {% if message.tags == 'success' %}✔{% endif %}
+              {% if message.tags == 'error' %}✖{% endif %}
+              {% if message.tags == 'warning' %}⚠{% endif %}
+              {% if message.tags == 'info' %}ℹ{% endif %}
+            </span>
+            <p>{{ message }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
     <main class="main-content">
-    {% block content %}{% endblock %}
+      {% block content %}{% endblock %}
     </main> 
+
     {% include 'components/footer.html' %}
     {% include 'components/footer_go_go.html' %}
-<script src="{% static 'js/comments_description.js' %}" defer></script>
+
+    <script src="{% static 'js/comments_description.js' %}" defer></script>
+
+    <!-- 🔥 JS ALERTA -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+      const overlay = document.querySelector(".custom-alert-overlay");
+      const alertBox = document.querySelector(".custom-alert");
+
+      if (overlay && alertBox) {
+        setTimeout(() => alertBox.classList.add("show"), 100);
+
+        setTimeout(() => {
+          overlay.classList.add("hide");
+
+          setTimeout(() => {
+            overlay.remove();
+          }, 300);
+
+        }, 2000);
+      }
+
+    });
+    </script>
+
 </body>
 </html>

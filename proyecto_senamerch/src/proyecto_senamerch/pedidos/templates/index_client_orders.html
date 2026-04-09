@@ -7,47 +7,56 @@
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
+  <section class="section-footer-content-foter-footer">
+    <!-- Navbar general -->
+    {% include 'components/navabar_go_go.html' %}
 
-  <!-- Navbar general -->
-  {% include 'components/navabar_go_go.html' %}
+    <!-- Navbar dinámico según el estado del usuario -->
+    {% if es_vendedor %}
+        {% include 'components/navbar_orders_seller.html' %}
+    {% elif tienda_inactiva %}
+        {% include 'components/navbar_home_client_but_seller.html' %}
+    {% else %}
+        {% include 'components/navbar_orders_client.html' %}
+    {% endif %}
 
-  <!-- Navbar dinámico según el estado del usuario -->
-  {% if es_vendedor %}
-      {% include 'components/navbar_orders_seller.html' %}
-  {% elif tienda_inactiva %}
-      {% include 'components/navbar_home_client_but_seller.html' %}
-  {% else %}
-      {% include 'components/navbar_orders_client.html' %}
-  {% endif %}
+    <!-- Contenido principal -->
+    <main class="main-content">
+      {% block content %}
+      <!-- Aquí va tu lista de pedidos, tabs, etc. -->
+      <div class="orders-container">
+        {% for pedido in pedidos %}
+          <div class="order-card">
+            <h3>Pedido #{{ pedido.id }} - {{ pedido.estado|capfirst }}</h3>
+            <p>Fecha: {{ pedido.creado_en }}</p>
+            {% if pedido.estado == "pending" %}
+              <p>Tiempo restante para cancelar: {{ pedido.horas_restantes }}h {{ pedido.minutos_restantes }}m</p>
+            {% endif %}
+            <ul>
+              {% for item in pedido.items.all %}
+                <li>{{ item.cantidad }} x {{ item.producto.nombre }} ({{ item.producto.tienda.nombre }})</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% empty %}
+          <p>No tienes pedidos en este estado.</p>
+        {% endfor %}
+      </div>
+      {% endblock %}
+    </main>
+  </section>
 
-  <!-- Contenido principal -->
-  <main class="main-content">
-    {% block content %}
-    <!-- Aquí va tu lista de pedidos, tabs, etc. -->
-    <div class="orders-container">
-      {% for pedido in pedidos %}
-        <div class="order-card">
-          <h3>Pedido #{{ pedido.id }} - {{ pedido.estado|capfirst }}</h3>
-          <p>Fecha: {{ pedido.creado_en }}</p>
-          {% if pedido.estado == "pending" %}
-            <p>Tiempo restante para cancelar: {{ pedido.horas_restantes }}h {{ pedido.minutos_restantes }}m</p>
-          {% endif %}
-          <ul>
-            {% for item in pedido.items.all %}
-              <li>{{ item.cantidad }} x {{ item.producto.nombre }} ({{ item.producto.tienda.nombre }})</li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% empty %}
-        <p>No tienes pedidos en este estado.</p>
-      {% endfor %}
-    </div>
-    {% endblock %}
-  </main>
-
-  <!-- Footer -->
-  {% include 'components/footer.html' %}
-  {% include 'components/footer_go_go.html' %}
+  <!-- >>> Sección Footer -->
+  <footer class="footer-client-views">
+      <div class="footer-container">
+          {% include 'components/footer.html' %}
+      </div>
+  </footer>
+  <footer class="footer-index-view">
+      <div class="govco-container__two">
+      {% include 'components/footer_go_go.html' %}    
+      </div>
+  </footer>
 
   {% block extra_js %}{% endblock %}
 </body>

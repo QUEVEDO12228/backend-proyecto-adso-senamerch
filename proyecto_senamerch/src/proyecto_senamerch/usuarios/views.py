@@ -577,16 +577,21 @@ def edit_profile_client(request):
 @login_required
 def edit_profile_client2(request):
     data = request.session.get("edit_client_data")
+    # ---> Si no viene del paso 1
     if not data:
         return redirect("usuarios:edit_profile_client")
+    # ---> POST (cuando da guardar)
     if request.method == "POST":
         user = request.user
         profile = user.profile
+        # ---> Actualizar datos básicos
         user.email = data.get("email", user.email)
         user.first_name = data.get("first_name", user.first_name)
         user.save()
+        # ---> Actualizar teléfono
         profile.phone = request.POST.get("phone", profile.phone)
         profile.save()
+        # ---> Cambio de contraseña
         password = request.POST.get("password")
         confirm = request.POST.get("password_confirm")
         if password and confirm:
@@ -594,15 +599,15 @@ def edit_profile_client2(request):
                 messages.error(request, "Las contraseñas no coinciden.")
                 return redirect("usuarios:edit_profile_client2")
             user.set_password(password)
-            update_session_auth_hash(request, user)
             user.save()
+            update_session_auth_hash(request, user)
+        # ---> Limpiar sesión del paso 1
         request.session.pop("edit_client_data", None)
-        # ---> ALERTA
+        # ---> Mensaje de éxito
         messages.success(request, "Cambios guardados correctamente.")
-        return render(request, "usuarios/edit_profile_client2.html", {
-            "user": request.user,
-            "redirect_url": "usuarios:profile"
-        })
+        # ---> REDIRECCIÓN REAL (AQUÍ ESTABA EL ERROR)
+        return redirect("usuarios:profile")
+    # ---> GET (solo mostrar formulario)
     return render(request, "usuarios/edit_profile_client2.html", {
         "user": request.user
     })

@@ -32,6 +32,7 @@
           type="text"
           name="neighborhood"
           class="address-store-form__input"
+          placeholder="Ingresa tu barrio"
           value="{{ data.neighborhood|default:'' }}"
           required
         >
@@ -45,6 +46,7 @@
           type="text"
           name="address_number"
           class="address-store-form__input"
+          placeholder="Ej: #25A - 45"
           value="{{ data.address_number|default:'' }}"
           required
         >
@@ -58,6 +60,7 @@
           type="text"
           name="road_type"
           class="address-store-form__input"
+          placeholder="Ej: Calle, Carrera, Avenida"
           value="{{ data.road_type|default:'' }}"
         >
       </div>
@@ -69,6 +72,7 @@
           type="text"
           name="postal_code"
           class="address-store-form__input"
+          placeholder="Ej: 110111"
           value="{{ data.postal_code|default:'' }}"
         >
         <small id="errorPostal" class="error-text"></small>

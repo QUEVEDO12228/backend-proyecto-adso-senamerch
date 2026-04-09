@@ -15,7 +15,7 @@
       </p>
     </header>
 
-    <!-- 🔔 MENSAJES -->
+    <!-- MENSAJES -->
     {% if messages %}
       <div id="alert-container">
         {% for message in messages %}
@@ -112,7 +112,7 @@ const municipios = {
 const departmentSelect = document.getElementById("department");
 const citySelect = document.getElementById("city");
 
-// 🔥 Función para cargar municipios
+// Función para cargar municipios
 function loadCities(selectedDept, selectedCity=null) {
 
   citySelect.innerHTML = "<option value=''>Selecciona municipio</option>";
@@ -134,12 +134,12 @@ function loadCities(selectedDept, selectedCity=null) {
   }
 }
 
-// 🔹 Cambio manual
+// Cambio manual
 departmentSelect.addEventListener("change", function(){
   loadCities(this.value);
 });
 
-// 🔹 Cargar datos si ya existen (modo edición / error)
+// Cargar datos si ya existen (modo edición / error)
 window.addEventListener("DOMContentLoaded", function() {
   const selectedDept = "{{ data.department|default:'' }}";
   const selectedCity = "{{ data.city|default:'' }}";

@@ -7,13 +7,108 @@
   <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
 <body>
-    {% include 'components/navabar_go_go.html' %}
-    {% include 'components/navbar_edit_store_seller.html' %}
-    <main class="main-content">
+
+  {% include 'components/navabar_go_go.html' %}
+  {% include 'components/navbar_edit_store_seller.html' %}
+
+  <!-- 🔥 ALERTAS GLOBALES (FUNCIONAN CON REDIRECT) -->
+  {% if messages %}
+  <div class="custom-alert-overlay">
+    {% for message in messages %}
+      <div class="custom-alert custom-alert--{{ message.tags }}">
+        <div class="custom-alert__content">
+          <span class="custom-alert__icon">
+            {% if message.tags == 'success' %}✔{% endif %}
+            {% if message.tags == 'error' %}✖{% endif %}
+            {% if message.tags == 'warning' %}⚠{% endif %}
+            {% if message.tags == 'info' %}ℹ{% endif %}
+          </span>
+          <p>{{ message }}</p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <main class="main-content">
     {% block content %}{% endblock %}
-    </main> 
-    {% include 'components/footer.html' %}
-    {% include 'components/footer_go_go.html' %}
+  </main>
+
+  {% include 'components/footer.html' %}
+  {% include 'components/footer_go_go.html' %}
+
+  <!-- 🔥 JS ALERTAS -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+
+    const overlay = document.querySelector(".custom-alert-overlay");
+    const alertBox = document.querySelector(".custom-alert");
+
+    if (overlay && alertBox) {
+
+      // Mostrar animación
+      setTimeout(() => alertBox.classList.add("show"), 100);
+
+      // Ocultar después de 2s
+      setTimeout(() => {
+        overlay.classList.add("hide");
+
+        setTimeout(() => {
+          overlay.remove();
+        }, 300);
+
+      }, 2000);
+    }
+
+  });
+  </script>
+
+  <!-- 🔥 ESTILOS ALERTAS (puedes mover a CSS global luego) -->
+  <style>
+  .custom-alert-overlay {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+  }
+
+  .custom-alert {
+    background: #333;
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.3s ease;
+    min-width: 250px;
+  }
+
+  .custom-alert.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .custom-alert.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  .custom-alert--success { background: #28a745; }
+  .custom-alert--error { background: #dc3545; }
+  .custom-alert--warning { background: #ffc107; color: #000; }
+  .custom-alert--info { background: #17a2b8; }
+
+  .custom-alert__content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .custom-alert__icon {
+    font-weight: bold;
+  }
+  </style>
 
 </body>
 </html>
