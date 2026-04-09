@@ -16,7 +16,7 @@
           <th class="product-seller__table-header">Fecha creación</th>
           <th class="product-seller__table-header">Precio * Unidad</th>
           <th class="product-seller__table-header">Categoría</th>
-          <th class="product-seller__table-header">Stock</th> <!-- 🔹 NUEVO -->
+          <th class="product-seller__table-header">Stock</th>
           <th class="product-seller__table-header">Estado</th>
           <th class="product-seller__table-header">Acción</th>
           <th class="product-seller__table-header">Detalles</th>
@@ -45,41 +45,39 @@
             {{ producto.get_categoria_display }}
           </td>
 
-          <td class="product-seller__table-cell" data-label="Stock"> <!-- 🔹 NUEVO -->
+          <td class="product-seller__table-cell" data-label="Stock">
             {{ producto.stock }} {{ producto.unidad_medida }}
           </td>
 
+          <!-- ESTADO: SOLO BOTÓN -->
           <td class="product-seller__table-cell" data-label="Estado">
-            {% if producto.activo %}
-              <span class="status-enabled">Habilitado</span>
-            {% else %}
-              <span class="status-disabled">Deshabilitado</span>
-            {% endif %}
+            <form method="post" action="{% url 'productos:toggle_product_status' producto.id %}" style="margin:0;">
+              {% csrf_token %}
+              {% if producto.activo %}
+                <button type="submit" class="btn btn--warning product-admin-description__suspend">
+                  Deshabilitar producto
+                  <img src="{% static 'assets/icons/off.svg' %}" class="btn__icon"/>
+                </button>
+              {% else %}
+                <button type="submit" class="btn btn--success">
+                  Habilitar
+                  <img src="{% static 'assets/icons/mobiledata.svg' %}"
+                      class="btn-secundary__icon"
+                      alt="">
+                </button>
+              {% endif %}
+            </form>
           </td>
 
           <!-- ACCIÓN -->
           <td class="product-seller__table-cell" data-label="Acción">
-            <div class="product-seller__table-secondary">
-
-              {% if producto.activo %}
-                <a href="{% url 'productos:edit_product_seller' producto.id %}"
-                   class="btn-secundary btn-secundary-style product-seller__gestor">
-                  Editar
-                  <img src="{% static 'assets/icons/edit.svg' %}"
-                       class="btn-secundary__icon"
-                       alt="">
-                </a>
-              {% else %}
-                <a href="{% url 'productos:toggle_product_status' producto.id %}"
-                   class="btn btn--success product-seller__gestor">
-                  Habilitar
-                  <img src="{% static 'assets/icons/mobiledata.svg' %}"
-                    class="btn-secundary__icon"
-                    alt="">
-                </a>
-              {% endif %}
-
-            </div>
+            {% if producto.activo %}
+              <a href="{% url 'productos:edit_product_seller' producto.id %}"
+                 class="btn-secundary btn-secundary-style product-seller__gestor">
+                Editar
+                <img src="{% static 'assets/icons/edit.svg' %}" class="btn-secundary__icon" alt="">
+              </a>
+            {% endif %}
           </td>
 
           <!-- DETALLES -->

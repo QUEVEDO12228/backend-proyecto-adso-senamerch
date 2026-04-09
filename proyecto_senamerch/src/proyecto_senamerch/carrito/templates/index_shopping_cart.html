@@ -9,43 +9,43 @@
 </head>
 
 <body>
-<!-- <section class="section-footer-content"> -->
-    <nav class="navbar-go-go">
-      <div class="govco-container__one">
-        {% include 'components/navabar_go_go.html' %}
-      </div>
-    </nav>  
-    <!-- >>> Sección Navbar -->
-    <nav class="navbar_shopping_cart">
-      <div class="navbar-container-qqqq-qqq">
-        {% if es_vendedor %}
-            {% include 'components/navbar_home_store_seller.html' %}
-        {% elif tienda_inactiva %}
-            {% include 'components/navbar_home_client_but_seller.html' %}
-        {% else %}
-            {% include 'components/navbar_home_client.html' %}
-        {% endif %}
-      </div>
-    </nav>
-    <!-- >>>  Sección main grid-->
-    <article class="view_car_pay_method">
-      <div class="car-pay-grid">
-        <!-- >>>  Sección Carrito de compras-->
-        <section class="car-buys">
-          <div class="shopping-car-container">
-            {% block main_content %}
-            {% endblock %}  
-          </div>
-        </section>
-        <!-- >>>  Sección Metodo de pago-->
-        <section class="pay-method-product">
-          <div class="payment-method-container">
-            {% include 'carrito/option_payment_method.html' %}
-          </div>
-        </section>
-      </div>
-    </article>
-</section>
+  <section class="section-footer-content-foter-footer">
+      <nav class="navbar-go-go">
+        <div class="govco-container__one">
+          {% include 'components/navabar_go_go.html' %}
+        </div>
+      </nav>  
+      <!-- >>> Sección Navbar -->
+      <nav class="navbar_shopping_cart">
+        <div class="navbar-container-qqqq-qqq">
+          {% if es_vendedor %}
+              {% include 'components/navbar_home_store_seller.html' %}
+          {% elif tienda_inactiva %}
+              {% include 'components/navbar_home_client_but_seller.html' %}
+          {% else %}
+              {% include 'components/navbar_home_client.html' %}
+          {% endif %}
+        </div>
+      </nav>
+      <!-- >>>  Sección main grid-->
+      <article class="view_car_pay_method">
+        <div class="car-pay-grid">
+          <!-- >>>  Sección Carrito de compras-->
+          <section class="car-buys">
+            <div class="shopping-car-container">
+              {% block main_content %}
+              {% endblock %}  
+            </div>
+          </section>
+          <!-- >>>  Sección Metodo de pago-->
+          <section class="pay-method-product">
+            <div class="payment-method-container">
+              {% include 'carrito/option_payment_method.html' %}
+            </div>
+          </section>
+        </div>
+      </article>
+  </section>
   <!-- >>>  Sección footer-->
   <footer class="footer-view-car-pay">
     <div class="footer-container">

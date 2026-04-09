@@ -113,15 +113,17 @@
                  alt="">
           </a>
       {% else %}
-          <p class="disabled-label">Producto deshabilitado</p>
+          <p class="disabled-label">Producto <br> deshabilitado</p>
 
-          <a href="{% url 'productos:toggle_product_status' producto.id %}"
-             class="btn btn--success">
-            Habilitar
-            <img src="{% static 'assets/icons/mobiledata.svg' %}"
-                 class="btn-secundary__icon"
-                 alt="">
-          </a>
+          <form action="{% url 'productos:toggle_product_status' producto.id %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn--success">
+              Habilitar
+              <img src="{% static 'assets/icons/mobiledata.svg' %}"
+                  class="btn-secundary__icon"
+                  alt="">
+            </button>
+          </form>
       {% endif %}
 
   </div>

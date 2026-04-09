@@ -1,20 +1,60 @@
 {% load static %}
+
 <section class="payment-method"> 
   <h2 class="payment-method__title">Método de Pago</h2>
 
+  <!-- 🔥 Variable para JS -->
+  <input type="hidden" id="hasItems" value="{{ carrito.items.exists|yesno:'true,false' }}">
+
   <form method="POST" action="{% url 'pedidos:payment_method' %}" class="payment-method__form">
     {% csrf_token %}
+
     <div class="payment-method__options">
-        <label class="payment-method__option">
-            <input type="radio" name="payment" value="efectivo" checked class="payment-method__input"/>
-            <span class="payment-method__label">Efectivo</span>
-        </label>
+      <label class="payment-method__option">
+        <input type="radio" name="payment" value="efectivo" checked class="payment-method__input"/>
+        <span class="payment-method__label">Efectivo</span>
+      </label>
     </div>
+
     <div class="payment-method__actions">
-        <button type="submit" class="btn btn--primary payment-method__pay">
-            Realizar Pedido
-            <img src="{% static 'assets/icons/get_into.svg' %}" alt="Icono Comprar" class="btn__icon payment-method__icon" />
-        </button>
+      <button 
+        type="submit" 
+        id="btnPay"
+        class="btn btn--primary payment-method__pay"
+        {% if not carrito.items.exists %}disabled{% endif %}
+      >
+        Realizar Pedido
+        <img src="{% static 'assets/icons/get_into.svg' %}" 
+             alt="Icono Comprar" 
+             class="btn__icon payment-method__icon" />
+      </button>
     </div>
-</form>
+  </form>
 </section>
+
+<!-- 🔥 JS CONTROL -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const hasItems = document.getElementById("hasItems").value === "true";
+  const btn = document.getElementById("btnPay");
+  const form = document.querySelector(".payment-method__form");
+
+  if (!hasItems) {
+
+    // 🔴 Estilo visual
+    btn.style.opacity = "0.5";
+    btn.style.cursor = "not-allowed";
+
+    // 🔴 Bloquear envío
+    form.addEventListener("submit", function(e){
+      e.preventDefault();
+
+      // 👉 Puedes cambiar esto por toast después
+      alert("Tu carrito está vacío 🛒");
+    });
+
+  }
+
+});
+</script>

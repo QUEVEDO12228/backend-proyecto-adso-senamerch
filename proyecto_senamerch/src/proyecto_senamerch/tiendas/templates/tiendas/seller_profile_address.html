@@ -1,6 +1,7 @@
 {% extends 'index_profile_store_seller.html' %}
 {% load static %}
 {% block title %}Visualizar mi dirección | SenaMerch {% endblock %}
+
 {% block content %}
 
 <section class="admin-profile">
@@ -23,40 +24,51 @@
 
     <div class="admin-profile__details">
 
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Barrio:</span>
-        <span class="admin-profile__value">{{ profile.neighborhood|default:"No registrado" }}</span>
-      </div>
+      {% if address %}
 
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Número / Dirección:</span>
-        <span class="admin-profile__value">{{ profile.address_number|default:"No registrado" }}</span>
-      </div>
+        <div class="admin-profile__field">
+          <span class="admin-profile__label">Barrio:</span>
+          <span class="admin-profile__value">{{ address.neighborhood }}</span>
+        </div>
 
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Tipo de vía:</span>
-        <span class="admin-profile__value">{{ profile.road_type|default:"No registrado" }}</span>
-      </div>
+        <div class="admin-profile__field">
+          <span class="admin-profile__label">Número / Dirección:</span>
+          <span class="admin-profile__value">{{ address.address_number }}</span>
+        </div>
 
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Código postal:</span>
-        <span class="admin-profile__value">{{ profile.postal_code|default:"No registrado" }}</span>
-      </div>
+        <div class="admin-profile__field">
+          <span class="admin-profile__label">Tipo de vía:</span>
+          <span class="admin-profile__value">{{ address.road_type|default:"No registrado" }}</span>
+        </div>
 
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Departamento:</span>
-        <span class="admin-profile__value">{{ profile.department|default:"No registrado" }}</span>
-      </div>
+        <div class="admin-profile__field">
+          <span class="admin-profile__label">Código postal:</span>
+          <span class="admin-profile__value">{{ address.postal_code|default:"No registrado" }}</span>
+        </div>
 
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Municipio:</span>
-        <span class="admin-profile__value">{{ profile.city|default:"No registrado" }}</span>
-      </div>
+        <div class="admin-profile__field">
+          <span class="admin-profile__label">Departamento:</span>
+          <span class="admin-profile__value">{{ address.department }}</span>
+        </div>
 
-      <div class="admin-profile__field">
-        <span class="admin-profile__label">Información adicional:</span>
-        <span class="admin-profile__value">{{ profile.extra_info|default:"No registrada" }}</span>
-      </div>
+        <div class="admin-profile__field">
+          <span class="admin-profile__label">Municipio:</span>
+          <span class="admin-profile__value">{{ address.city }}</span>
+        </div>
+
+        <div class="admin-profile__field">
+          <span class="admin-profile__label">Información adicional:</span>
+          <span class="admin-profile__value">{{ address.extra_info|default:"No registrada" }}</span>
+        </div>
+
+      {% else %}
+
+        <div class="admin-profile__field">
+          <span class="admin-profile__label">Dirección:</span>
+          <span class="admin-profile__value">No tienes dirección registrada.</span>
+        </div>
+
+      {% endif %}
 
     </div>
 

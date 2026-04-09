@@ -51,6 +51,7 @@
           type="text"
           name="additional_info"
           class="address-store-form__input"
+          placeholder="Apartamento, interior, referencias, etc."
           maxlength="150"
           value="{{ data.additional_info|default:'' }}"
         >
@@ -79,10 +80,27 @@
 
   // Municipios por departamento
   const municipios = {
-    Risaralda: ["Pereira","Dosquebradas","Santa Rosa de Cabal","La Virginia"],
-    Quindio: ["Armenia","Calarcá","Circasia"],
-    Caldas: ["Manizales","Villamaría","Chinchiná"]
-  };
+
+  Risaralda: [
+    "Pereira","Dosquebradas","Santa Rosa de Cabal","La Virginia","Apía","Balboa",
+    "Belén de Umbría","Guática","La Celia","Marsella","Mistrató","Pueblo Rico",
+    "Quinchía","Santuario"
+  ],
+
+  Quindio: [
+    "Armenia","Calarcá","Circasia","Córdoba","Filandia","Génova",
+    "La Tebaida","Montenegro","Pijao","Quimbaya","Salento","Buenavista"
+  ],
+
+  Caldas: [
+    "Manizales","Villamaría","Chinchiná","La Dorada","Riosucio","Anserma",
+    "Salamina","Aguadas","Supía","Neira","Aranzazu","Belalcázar",
+    "Filadelfia","La Merced","Marmato","Marquetalia","Marulanda",
+    "Norcasia","Pácora","Palestina","Pensilvania","Risaralda",
+    "Samaná","San José","Victoria","Viterbo"
+  ]
+
+};
 
   const departmentSelect = document.getElementById("department");
   const citySelect = document.getElementById("city");

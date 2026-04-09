@@ -322,46 +322,83 @@ def edit_seller_profile(request):
 # ---> Edición del perfil del vendedor (paso 2) con guardado y redirección al perfil de tienda
 @login_required
 def edit_seller_profile2(request):
+
     data_user = request.session.get('edit_user_data')
     data_address = request.session.get('edit_address_full')
+
+    # 🔴 Validación clave
     if not data_user:
+        messages.warning(request, "Primero debes completar el paso 1.")
         return redirect('tiendas:edit_seller_profile')
+
     if request.method == "POST":
+
         user = request.user
         profile = user.profile
-        # ---> Actualizar datos básicos
+
+        # -------------------------
+        # 🔹 ACTUALIZAR USUARIO
+        # -------------------------
         user.email = data_user.get("email", user.email)
         user.first_name = data_user.get("first_name", user.first_name)
         user.save()
-        # ---> Actualizar perfil
+
+        # -------------------------
+        # 🔹 ACTUALIZAR PERFIL
+        # -------------------------
         profile.phone = data_user.get("telefono", profile.phone)
+
         if data_address:
-            profile.neighborhood = data_address.get("neighborhood")
-            profile.address_number = data_address.get("address_number")
-            profile.road_type = data_address.get("road_type")
-            profile.postal_code = data_address.get("postal_code")
-            profile.department = data_address.get("department")
-            profile.city = data_address.get("city")
-            profile.extra_info = data_address.get("additional_info")
+            profile.neighborhood = data_address.get("neighborhood", profile.neighborhood)
+            profile.address_number = data_address.get("address_number", profile.address_number)
+            profile.road_type = data_address.get("road_type", profile.road_type)
+            profile.postal_code = data_address.get("postal_code", profile.postal_code)
+            profile.department = data_address.get("department", profile.department)
+            profile.city = data_address.get("city", profile.city)
+            profile.extra_info = data_address.get("additional_info", profile.extra_info)
+
         profile.save()
-        # ---> Cambio de contraseña
+
+        # -------------------------
+        # 🔹 CAMBIO DE CONTRASEÑA
+        # -------------------------
         password = request.POST.get("password")
         confirm = request.POST.get("confirm_password")
-        if password and confirm:
+
+        if password or confirm:
+
             if password != confirm:
                 messages.error(request, "Las contraseñas no coinciden.")
                 return redirect('tiendas:edit_seller_profile2')
+
+            if len(password) < 8:
+                messages.error(request, "La contraseña debe tener al menos 8 caracteres.")
+                return redirect('tiendas:edit_seller_profile2')
+
             user.set_password(password)
             user.save()
+
+            # 🔥 Mantener sesión activa
             update_session_auth_hash(request, user)
-        # ---> Limpiar sesión
+
+            messages.success(request, "Contraseña actualizada correctamente.")
+
+        # -------------------------
+        # 🔹 LIMPIAR SESIÓN
+        # -------------------------
         request.session.pop('edit_user_data', None)
-        request.session.pop('edit_address_data', None)
         request.session.pop('edit_address_full', None)
-        # ---> Mensaje éxito
-        messages.success(request, "Cambios guardados correctamente.")
-        # ---> REDIRECCIÓN A LA VISTA QUE QUIERES
+
+        # -------------------------
+        # 🔹 MENSAJE FINAL
+        # -------------------------
+        messages.success(request, "Perfil actualizado correctamente.")
+
         return redirect('tiendas:profile_store_seller')
+
+    # -------------------------
+    # 🔹 GET
+    # -------------------------
     return render(request, 'tiendas/edit_seller_profile2.html', {
         "profile": request.user.profile
     })
@@ -512,11 +549,15 @@ def store_address_view(request):
 @login_required
 # ---> Visualizar la dirección del vendedor.
 def seller_address_view(request):
-    # ---> Obtener o crear perfil del usuario
+    # Perfil del usuario
     profile, created = Profile.objects.get_or_create(user=request.user)
-    # ---> Renderizar dirección del vendedor
+
+    # 🔥 Obtener dirección real del usuario (modelo Address)
+    address = request.user.addresses.first()
+
     return render(request, "tiendas/seller_profile_address.html", {
-        "profile": profile
+        "profile": profile,
+        "address": address
     })
 # ---> Editar la dirección del perfil de la tienda paso 1 DATOS BÁSICOS
 @login_required
