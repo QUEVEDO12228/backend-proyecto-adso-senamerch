@@ -16,71 +16,74 @@ from productos.models import Calificacion
 # =====================================================
 # CREAR PRODUCTO - PASO 1
 # =====================================================
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from datetime import date, timedelta
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from datetime import date, timedelta
+
 @login_required
 def create_product(request):
-    fecha_max = (timezone.now().date() + timedelta(days=14)).isoformat()
-    
-    # Si hay datos guardados en sesión, los usamos para rellenar el formulario
-    session_data = request.session.get("product_data", {})
-    
+
+    # 🔥 SOLO 15 DÍAS
+    fecha_min = date.today()  # hoy
+    fecha_max = date.today() + timedelta(days=15)  # máximo 15 días
+
+    form_data = {}
+
     if request.method == "POST":
-        nombre = request.POST.get("name", "").strip()
-        descripcion = request.POST.get("description", "").strip()
-        expiration_date = request.POST.get("expiration_date")
+        nombre = request.POST.get("name")
+        descripcion = request.POST.get("description")
+        fecha = request.POST.get("expiration_date")
         tipo_producto = request.POST.get("tipo_producto")
-        
-        if not all([nombre, descripcion, expiration_date, tipo_producto]):
-            messages.error(request, "Todos los campos son obligatorios.")
-            # Renderizamos con los datos ingresados para que no se pierdan
-            return render(request, "productos/create_product.html", {
-                "fecha_max": fecha_max,
-                "form_data": {
-                    "nombre": nombre,
-                    "descripcion": descripcion,
-                    "expiration_date": expiration_date,
-                    "tipo_producto": tipo_producto,
-                }
-            })
-        
-        if tipo_producto not in ["solido", "liquido"]:
-            messages.error(request, "Tipo de producto inválido.")
-            return render(request, "productos/create_product.html", {
-                "fecha_max": fecha_max,
-                "form_data": session_data
-            })
-        
-        try:
-            fecha = datetime.strptime(expiration_date, "%Y-%m-%d").date()
-        except ValueError:
-            messages.error(request, "Fecha inválida.")
-            return render(request, "productos/create_product.html", {
-                "fecha_max": fecha_max,
-                "form_data": session_data
-            })
-        
-        hoy = timezone.now().date()
-        limite = hoy + timedelta(days=14)
-        if fecha < hoy or fecha > limite:
-            messages.error(request, "La fecha debe estar entre hoy y dos semanas.")
-            return render(request, "productos/create_product.html", {
-                "fecha_max": fecha_max,
-                "form_data": session_data
-            })
-        
-        # Guardar datos en sesión
-        request.session["product_data"] = {
+
+        form_data = {
             "nombre": nombre,
             "descripcion": descripcion,
-            "expiration_date": expiration_date,
-            "tipo_producto": tipo_producto,
+            "expiration_date": fecha,
+            "tipo_producto": tipo_producto
         }
-        
+
+        if not all([nombre, descripcion, fecha, tipo_producto]):
+            messages.error(request, "Todos los campos son obligatorios.")
+            return render(request, "productos/create_product.html", {
+                "fecha_min": fecha_min,
+                "fecha_max": fecha_max,
+                "form_data": form_data
+            })
+
+        # 🔥 VALIDACIÓN DE 15 DÍAS
+        try:
+            fecha_obj = date.fromisoformat(fecha)
+
+            if fecha_obj < fecha_min or fecha_obj > fecha_max:
+                messages.error(request, "La fecha debe estar dentro de los próximos 15 días.")
+                return render(request, "productos/create_product.html", {
+                    "fecha_min": fecha_min,
+                    "fecha_max": fecha_max,
+                    "form_data": form_data
+                })
+
+        except:
+            messages.error(request, "Fecha inválida.")
+            return render(request, "productos/create_product.html", {
+                "fecha_min": fecha_min,
+                "fecha_max": fecha_max,
+                "form_data": form_data
+            })
+
+        request.session["product_data"] = form_data
+
         return redirect("productos:create_product_step2")
-    
-    # GET: precargar datos de sesión si existen
+
     return render(request, "productos/create_product.html", {
+        "fecha_min": fecha_min,
         "fecha_max": fecha_max,
-        "form_data": session_data
+        "form_data": form_data
     })
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -321,46 +324,58 @@ def create_product_step4(request):
 # =====================================================
 # EDITAR PRODUCTO - PASO 1
 # =====================================================
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from datetime import timedelta, datetime
+from django.utils import timezone
+
 @login_required
 def edit_product_seller(request, id):
-    # Obtener producto que pertenece al vendedor
+
     producto = get_object_or_404(
         Producto,
         id=id,
         tienda__propietario=request.user
     )
-    # Fecha máxima permitida (14 días desde hoy)
-    fecha_max = (timezone.now().date() + timedelta(days=14)).isoformat()
+
+    # 🔥 MISMA LÓGICA: 15 días
+    fecha_min = timezone.now().date()
+    fecha_max = fecha_min + timedelta(days=15)
+
     if request.method == "POST":
-        # Obtener datos del formulario
         nombre = request.POST.get("name")
         descripcion = request.POST.get("description")
         expiration_date = request.POST.get("expiration_date")
         tipo_producto = request.POST.get("tipo_producto")
-        # Validar campos obligatorios
+
         if not all([nombre, descripcion, expiration_date, tipo_producto]):
             messages.error(request, "Todos los campos son obligatorios.")
             return redirect("productos:edit_product_seller", id=id)
-        # Convertir fecha enviada
-        fecha = datetime.strptime(expiration_date, "%Y-%m-%d").date()
-        # Validar rango máximo de fecha
-        hoy = timezone.now().date()
-        limite = hoy + timedelta(days=14)
-        if fecha > limite:
-            messages.error(request, "La fecha no puede superar 2 semanas desde hoy.")
+
+        try:
+            fecha = datetime.strptime(expiration_date, "%Y-%m-%d").date()
+
+            if fecha < fecha_min or fecha > fecha_max:
+                messages.error(request, "La fecha debe estar dentro de los próximos 15 días.")
+                return redirect("productos:edit_product_seller", id=id)
+
+        except:
+            messages.error(request, "Fecha inválida.")
             return redirect("productos:edit_product_seller", id=id)
-        # Guardar datos en sesión para siguientes pasos
+
         request.session["edit_product_data"] = {
             "nombre": nombre,
             "descripcion": descripcion,
             "fecha_caducidad": expiration_date,
             "tipo_producto": tipo_producto,
         }
-        # Redirigir al paso 2
+
         return redirect("productos:edit_product_step2", id=id)
-    # Renderizar formulario de edición
+
     return render(request, "productos/edit_product_seller.html", {
         "producto": producto,
+        "fecha_min": fecha_min,
         "fecha_max": fecha_max
     })
 # =====================================================

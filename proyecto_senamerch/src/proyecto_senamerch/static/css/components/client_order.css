@@ -170,11 +170,6 @@
   background-color: #ffebee; /* rojo suave */
   border: 2px solid #e53935;
 }
-.order-card--delivered {
-  background-color: var(--white); /* rojo suave */
-  border: 2px solid var(--secundary-700);
-}
-
 /* PRODUCTOS CANCELADOS */
 .order-card__product--canceled {
   background-color: #e53935;
@@ -182,22 +177,23 @@
   border: 2px solid #b71c1c;
   font-weight: 600;
 }
-/* PRODUCTOS CANCELADOS */
-.order-card__product--delivered {
-  background-color: var(--secundary-300);
-  color: var(--black);
-  border: 2px solid var(--secundary-700);
-  font-weight: 600;
-}
-
 /* ESTADO EN LABEL */
 .order-card__status--canceled {
   background-color: #e53935;
   color: #ffffff;
 }
-
 .order-card__status--delivered {
-  background-color:var(--secundary-300);
+  background-color:var(--secundary-100);
   color: var(--black);
 }
-
+/* PRODUCTOS CANCELADOS */
+.order-card__product--delivered {
+  background-color: var(--secundary-100);
+  color: var(--black);
+  border: 2px solid var(--secundary-400);
+  font-weight: 600;
+}
+.order-card--delivered {
+  background-color: var(--white); /* rojo suave */
+  border: 2px solid var(--secundary-400);
+}

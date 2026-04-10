@@ -1,9 +1,13 @@
 {% extends "index_create_product.html" %}
 {% load static %}
 {% block title %}Editar producto paso 1 | SenaMerch {% endblock %}
+
 {% block content %}
 
 {% include "components/navbar_create_product.html" %}
+
+<!-- FLATPICKR CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <section class="edit-product-one">
   <div class="edit-product-one__wrapper">
@@ -17,13 +21,14 @@
 
     {% if messages %}
       {% for message in messages %}
-        <div class="alert">{{ message }}</div>
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
       {% endfor %}
     {% endif %}
 
     <form method="POST" action="{% url 'productos:edit_product_seller' producto.id %}" class="edit-product-one__form">
       {% csrf_token %}
 
+      <!-- NOMBRE -->
       <div class="edit-product-one__group">
         <label class="edit-product-one__label">Edita el nombre del producto</label>
         <input 
@@ -34,6 +39,7 @@
           required>
       </div>
 
+      <!-- DESCRIPCIÓN -->
       <div class="edit-post-two__group">
         <label class="edit-post-two__label">Edita la Descripción producto</label>
         <textarea 
@@ -42,17 +48,24 @@
           required>{{ producto.descripcion }}</textarea>
       </div>
 
+      <!-- FECHA -->
       <div class="edit-post-two__group">
         <label class="edit-post-two__label">Edita la Fecha de caducidad</label>
+
         <input 
-          type="date"
+          type="text"
           name="expiration_date"
-          value="{{ producto.fecha_caducidad|date:'Y-m-d' }}"
-          max="{{ fecha_max }}"
+          id="expiration_date"
           class="edit-post-two__input"
-          required>
+          required
+          value="{{ producto.fecha_caducidad|date:'Y-m-d' }}">
+
+        <small style="color:#888;">
+          Solo puedes elegir una fecha dentro de los próximos 15 días
+        </small>
       </div>
 
+      <!-- TIPO -->
       <div class="edit-post-two__group">
         <label class="edit-post-two__label">Edita el Tipo de producto</label>
         <select name="tipo_producto" class="edit-post-two__input" required>
@@ -64,6 +77,7 @@
         </select>
       </div>
 
+      <!-- BOTONES -->
       <div class="edit-product-one__secondary">
         <a href="{% url 'tiendas:seller_catalog' %}"
           class="btn-secundary btn-secundary-style edit-product-one__cancel">
@@ -84,5 +98,27 @@
     </form>
   </div>
 </section>
+
+<!-- FLATPICKR JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- ESPAÑOL -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    flatpickr("#expiration_date", {
+        locale: "es",
+        minDate: "{{ fecha_min|date:'Y-m-d' }}",
+        maxDate: "{{ fecha_max|date:'Y-m-d' }}",
+        dateFormat: "Y-m-d",
+        disableMobile: true,
+        allowInput: false,
+
+        // 🔥 mantiene la fecha actual del producto
+        defaultDate: "{{ producto.fecha_caducidad|date:'Y-m-d' }}"
+    });
+});
+</script>
 
 {% endblock %}

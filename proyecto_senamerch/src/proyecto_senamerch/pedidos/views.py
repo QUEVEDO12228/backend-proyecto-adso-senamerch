@@ -22,45 +22,65 @@ from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from .models import Pedido
 #  # ---> Lógica para los Pedidos Clientes o del vendedor.
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Pedido
+from tiendas.models import Tienda
+
 @login_required
 def client_orders(request):
     """
     Vista que muestra los pedidos del usuario actual (cliente),
     filtrados por estado: pending, delivered, canceled.
     """
+
     ESTADOS_VALIDOS = ["pending", "delivered", "canceled"]
+
     selected_status = request.GET.get("status", "pending")
     if selected_status not in ESTADOS_VALIDOS:
         selected_status = "pending"
-    # ---> Traemos solo los pedidos donde el usuario es el cliente
+
+    # 🔥 Traer pedidos
     pedidos = Pedido.objects.filter(
         usuario=request.user,
         estado=selected_status
     ).prefetch_related("items__producto__tienda").order_by("-creado_en")
-    # ---> Calculamos el tiempo restante para cancelar
+
+    # 🔥 Procesar pedidos
     for pedido in pedidos:
+
+        # ✅ RECALCULAR TOTAL CON DESCUENTO
+        pedido.calcular_total()
+
+        # ✅ TIEMPO RESTANTE
         pedido.horas_restantes = 0
         pedido.minutos_restantes = 0
+
         if pedido.estado == "pending":
             tiempo_restante = pedido.tiempo_restante_cancelacion()
+
             if tiempo_restante > 0:
                 pedido.horas_restantes = int(tiempo_restante // 3600)
                 pedido.minutos_restantes = int((tiempo_restante % 3600) // 60)
-    # ---> Determinar si el usuario es vendedor o tiene tienda inactiva
+
+    # 🔥 Validar si es vendedor
     es_vendedor = False
     tienda_inactiva = False
+
     tienda = Tienda.objects.filter(propietario=request.user).first()
+
     if tienda:
         if tienda.activo:
             es_vendedor = True
         else:
             tienda_inactiva = True
+
     return render(request, "pedidos/client_orders.html", {
         "pedidos": pedidos,
         "selected_status": selected_status,
         "es_vendedor": es_vendedor,
         "tienda_inactiva": tienda_inactiva,
-    })
+    })  
 # ---> Lógica para Editar Pedido Cliente
 @login_required
 def edit_order(request, pedido_id):
