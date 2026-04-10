@@ -17,15 +17,47 @@
           alt="{{ item.producto.nombre }}" 
           class="shopping-cart__item-image"
         />
+
         <div class="shopping-cart__item-details">
-          <h3 class="shopping-cart__item-name">{{ item.producto.nombre }}</h3>
+          <h3 class="shopping-cart__item-name">
+            {{ item.producto.nombre }}
+          </h3>
+
+          <!-- PRECIO UNITARIO CON DESCUENTO -->
           <p class="shopping-cart__item-price">
-            Precio unitario: ${{ item.producto.precio }} / {{ item.producto.unidad_medida }}
+            {% if item.producto.descuento > 0 %}
+              <span style="text-decoration: line-through; color: gray;">
+                ${{ item.producto.precio }}
+              </span>
+              <strong style="color: green;">
+                ${{ item.producto.precio_con_descuento }}
+              </strong>
+              ({{ item.producto.descuento }}% OFF)
+            {% else %}
+              ${{ item.producto.precio }}
+            {% endif %}
+            / {{ item.producto.unidad_medida }}
           </p>
-          <p class="shopping-cart__item-quantity">Cantidad: {{ item.cantidad }}</p>
+
+          <p class="shopping-cart__item-quantity">
+            Cantidad: {{ item.cantidad }}
+          </p>
+
+          <!-- SUBTOTAL CON DESCUENTO -->
           <p class="shopping-cart__item-subtotal">
-            Subtotal: ${{ item.subtotal }}
+            {% if item.producto.descuento > 0 %}
+              Subtotal: 
+              <span style="text-decoration: line-through; color: gray;">
+                ${{ item.subtotal }}
+              </span>
+              <strong style="color: green;">
+                ${{ item.subtotal_con_descuento }}
+              </strong>
+            {% else %}
+              Subtotal: ${{ item.subtotal }}
+            {% endif %}
           </p>
+
           <p class="shopping-cart__item-unit-store">
             Tienda: {{ item.producto.tienda.nombre }}
           </p>
@@ -49,7 +81,10 @@
   <!-- Resumen del carrito -->
   <div class="shopping-cart__summary">
     <p class="shopping-cart__total">
-      Total: <strong class="shopping-cart__total-price">${{ carrito.get_total }}</strong>
+      Total: 
+      <strong class="shopping-cart__total-price">
+        ${{ carrito.get_total_con_descuento }}
+      </strong>
     </p>
   </div>
   {% endif %}
@@ -58,19 +93,25 @@
   {% if items %}
     <div class="shopping-cart__actions-buttons">
 
-      <!-- Volver al primer producto agregado -->
+      <!-- Volver -->
       {% with first_item=items.0 %}
-      <a href="{% url 'productos:buy_product' producto_id=first_item.producto.id %}" class="btn-secundary btn-secundary-style shopping-cart__return">
+      <a href="{% url 'productos:buy_product' producto_id=first_item.producto.id %}" 
+         class="btn-secundary btn-secundary-style shopping-cart__return">
         Volver
-        <img src="{% static 'assets/icons/return.svg' %}" alt="Icono volver" class="btn-secundary__icon">
+        <img src="{% static 'assets/icons/return.svg' %}" 
+             alt="Icono volver" 
+             class="btn-secundary__icon">
       </a>
       {% endwith %}
 
-      <!-- Continuar a compra -->
+      <!-- Continuar -->
       <div class="shopping-cart__actions-buttons--primary">
-        <a href="{% url 'usuarios:home_client' %}"  class="btn btn--primary shopping-cart__continue">
+        <a href="{% url 'usuarios:home_client' %}"  
+           class="btn btn--primary shopping-cart__continue">
           Continuar comprando
-          <img src="{% static 'assets/icons/shopping-cart-dollar.svg' %}" alt="Icono comprar" class="btn__icon">
+          <img src="{% static 'assets/icons/shopping-cart-dollar.svg' %}" 
+               alt="Icono comprar" 
+               class="btn__icon">
         </a>
       </div>
 

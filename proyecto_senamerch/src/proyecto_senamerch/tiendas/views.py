@@ -641,16 +641,19 @@ def list_products_store_seller(request):
     })
 # ---> Lógica para visualizar la tienda y sus productos como cliente.
 def profile_store_client(request, tienda_id):
-    # ---> Obtener tienda o devolver 404
-    tienda = get_object_or_404(Tienda, id=tienda_id)
-    # ---> Obtener productos de la tienda
+    # ---> Obtener tienda o devolver 404 (solo activa)
+    tienda = get_object_or_404(Tienda, id=tienda_id, activo=True)
+
+    # ---> Obtener SOLO productos activos de la tienda
     productos = Producto.objects.filter(
-        tienda=tienda
+        tienda=tienda,
+        activo=True
     ).select_related(
         'tienda'
     ).prefetch_related(
         'imagenes'
     )
+
     # ---> Validar si el usuario está autenticado
     if request.user.is_authenticated:
         calificaciones = Calificacion.objects.filter(
@@ -660,11 +663,13 @@ def profile_store_client(request, tienda_id):
             c.producto_id: c.puntuacion
             for c in calificaciones
         }
+
         for producto in productos:
             producto.user_rating = cal_dict.get(producto.id, 0)
     else:
         for producto in productos:
             producto.user_rating = 0
+
     return render(request, 'usuarios/store_products_client.html', {
         'productos': productos,
         'tienda': tienda
